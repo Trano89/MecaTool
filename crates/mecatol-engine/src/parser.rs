@@ -33,20 +33,95 @@ pub enum ParsedInput {
         unit: Unit,
         class: ToleranceClass,
     },
+    /// Une dimension nominale seule, sans classe.
+    ///
+    /// Insuffisant pour calculer, mais suffisant pour lancer une recherche de
+    /// solutions a partir d'un besoin fonctionnel. C'est a l'appelant de dire si
+    /// cela lui suffit ; le parser se contente de rapporter ce qu'il a lu.
+    NominalOnly { nominal: Length, unit: Unit },
 }
 
 impl ParsedInput {
     pub fn nominal(&self) -> Length {
         match self {
-            ParsedInput::Fit { nominal, .. } | ParsedInput::Feature { nominal, .. } => *nominal,
+            ParsedInput::Fit { nominal, .. }
+            | ParsedInput::Feature { nominal, .. }
+            | ParsedInput::NominalOnly { nominal, .. } => *nominal,
         }
     }
 
     pub fn unit(&self) -> Unit {
         match self {
-            ParsedInput::Fit { unit, .. } | ParsedInput::Feature { unit, .. } => *unit,
+            ParsedInput::Fit { unit, .. }
+            | ParsedInput::Feature { unit, .. }
+            | ParsedInput::NominalOnly { unit, .. } => *unit,
         }
     }
+}
+
+/// Lit une fenetre de jeu ecrite `"MIN..MAX"`.
+///
+/// Les valeurs sont en micrometres par defaut ; une unite peut suivre et
+/// s'applique aux deux bornes. Une borne vide signifie « non exigee ».
+///
+/// ```
+/// # use mecatol_engine::parser::parse_clearance_window;
+/// # use mecatol_core::Length;
+/// let (min, max) = parse_clearance_window("10..30").unwrap();
+/// assert_eq!(min, Some(Length::from_micrometres(10)));
+/// assert_eq!(max, Some(Length::from_micrometres(30)));
+///
+/// // Une seule borne suffit.
+/// let (min, max) = parse_clearance_window("10..").unwrap();
+/// assert_eq!(max, None);
+/// assert_eq!(min, Some(Length::from_micrometres(10)));
+/// ```
+pub fn parse_clearance_window(input: &str) -> Result<(Option<Length>, Option<Length>)> {
+    let trimmed = input.trim();
+    let (body, unit) = split_trailing_unit(trimmed);
+
+    let Some((low, high)) = body.split_once("..") else {
+        return Err(EngineError::Unparsable {
+            input: input.to_string(),
+            hint: "Une fenêtre de jeu s'écrit \"MIN..MAX\", par ex. \"10..30\" (en \u{b5}m) \
+                   ou \"0.01..0.03 mm\"."
+                .to_string(),
+        });
+    };
+
+    let bound = |text: &str| -> Result<Option<Length>> {
+        let text = text.trim();
+        if text.is_empty() {
+            Ok(None)
+        } else {
+            Ok(Some(Length::parse(text, unit)?))
+        }
+    };
+
+    let (min, max) = (bound(low)?, bound(high)?);
+    if min.is_none() && max.is_none() {
+        return Err(EngineError::Unparsable {
+            input: input.to_string(),
+            hint: "Indiquez au moins une des deux bornes.".to_string(),
+        });
+    }
+    Ok((min, max))
+}
+
+/// Detache une unite ecrite en fin de chaine ; le micrometre par defaut.
+fn split_trailing_unit(text: &str) -> (&str, Unit) {
+    for (suffix, unit) in [
+        ("\u{b5}m", Unit::Micrometre),
+        ("um", Unit::Micrometre),
+        ("mm", Unit::Millimetre),
+        ("inch", Unit::Inch),
+        ("in", Unit::Inch),
+    ] {
+        if let Some(head) = text.strip_suffix(suffix) {
+            return (head.trim_end(), unit);
+        }
+    }
+    (text, Unit::Micrometre)
 }
 
 /// Caracteres qui marquent un diametre ou separent deux classes.
@@ -94,7 +169,7 @@ pub fn parse(input: &str) -> Result<ParsedInput> {
 
     let (number, rest) = split_leading_number(trimmed).ok_or_else(|| EngineError::Unparsable {
         input: input.to_string(),
-        hint: "La designation doit commencer par la dimension nominale, par ex. \"20 H7/g6\"."
+        hint: "La désignation doit commencer par la dimension nominale, par ex. \"20 H7/g6\"."
             .to_string(),
     })?;
 
@@ -113,19 +188,15 @@ pub fn parse(input: &str) -> Result<ParsedInput> {
     if !nominal.is_positive() {
         return Err(EngineError::Unparsable {
             input: input.to_string(),
-            hint: "La dimension nominale doit etre strictement positive.".to_string(),
+            hint: "La dimension nominale doit être strictement positive.".to_string(),
         });
     }
 
     let classes: Vec<&str> = tokens.collect();
     match classes.as_slice() {
-        [] => Err(EngineError::Unparsable {
-            input: input.to_string(),
-            hint: format!(
-                "Aucune classe de tolerance apres la dimension. Attendu par ex. \"{number} H7\" \
-                 ou \"{number} H7/g6\"."
-            ),
-        }),
+        // Une dimension seule n'est pas une erreur : c'est le point de depart
+        // d'une recherche de solutions. L'appelant tranche.
+        [] => Ok(ParsedInput::NominalOnly { nominal, unit }),
 
         [single] => Ok(ParsedInput::Feature {
             nominal,
@@ -165,8 +236,8 @@ pub fn parse(input: &str) -> Result<ParsedInput> {
         more => Err(EngineError::Ambiguous {
             input: input.to_string(),
             question: format!(
-                "{} classes de tolerance ont ete lues ({}). Un ajustement en associe exactement \
-                 deux, un element une seule. Laquelle faut-il retenir ?",
+                "{} classes de tolérance ont été lues ({}). Un ajustement en associe exactement \
+                 deux, un élément une seule. Laquelle faut-il retenir ?",
                 more.len(),
                 more.join(", ")
             ),
@@ -281,16 +352,71 @@ mod tests {
     }
 
     #[test]
-    fn entrees_incompletes_ou_illisibles() {
+    fn entrees_illisibles() {
         assert!(matches!(parse(""), Err(EngineError::Unparsable { .. })));
         assert!(matches!(
             parse("H7/g6"),
             Err(EngineError::Unparsable { .. })
         ));
-        assert!(matches!(parse("10"), Err(EngineError::Unparsable { .. })));
+        assert!(matches!(parse("   "), Err(EngineError::Unparsable { .. })));
+    }
+
+    #[test]
+    fn une_dimension_seule_est_un_point_de_depart_valide() {
+        for text in ["10", "\u{d8}10", "\u{d8} 10 mm"] {
+            match parse(text).unwrap() {
+                ParsedInput::NominalOnly { nominal, .. } => {
+                    assert_eq!(nominal, Length::from_millimetres(10), "entree {text:?}");
+                }
+                other => panic!("{text:?} : attendu une dimension seule, obtenu {other:?}"),
+            }
+        }
+    }
+
+    #[test]
+    fn fenetres_de_jeu() {
+        let um = Length::from_micrometres;
+        assert_eq!(
+            parse_clearance_window("10..30").unwrap(),
+            (Some(um(10)), Some(um(30)))
+        );
+        assert_eq!(
+            parse_clearance_window("10..").unwrap(),
+            (Some(um(10)), None)
+        );
+        assert_eq!(
+            parse_clearance_window("..30").unwrap(),
+            (None, Some(um(30)))
+        );
+        // L'unite s'applique aux deux bornes.
+        assert_eq!(
+            parse_clearance_window("0.01..0.03 mm").unwrap(),
+            (Some(um(10)), Some(um(30)))
+        );
+        assert_eq!(
+            parse_clearance_window("10..30 \u{b5}m").unwrap(),
+            (Some(um(10)), Some(um(30)))
+        );
+        // Un serrage s'exprime comme un jeu negatif.
+        assert_eq!(
+            parse_clearance_window("-20..-5").unwrap(),
+            (Some(um(-20)), Some(um(-5)))
+        );
+    }
+
+    #[test]
+    fn fenetres_de_jeu_malformees() {
         assert!(matches!(
-            parse("\u{d8}10"),
+            parse_clearance_window("10"),
             Err(EngineError::Unparsable { .. })
+        ));
+        assert!(matches!(
+            parse_clearance_window(".."),
+            Err(EngineError::Unparsable { .. })
+        ));
+        assert!(matches!(
+            parse_clearance_window("dix..trente"),
+            Err(EngineError::Length(_))
         ));
     }
 

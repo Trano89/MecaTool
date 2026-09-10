@@ -26,7 +26,11 @@ pub mod error;
 pub mod format;
 pub mod iso286;
 pub mod parser;
+pub mod requirement;
+pub mod search;
 
 pub use error::{EngineError, Result};
 pub use iso286::{FeatureAnalysis, FitAnalysis, Iso286Engine};
 pub use parser::{parse, ParsedInput};
+pub use requirement::{verify_clearance, ClearanceRequirement, Margins, Verification};
+pub use search::{find_fits, Basis, SearchOptions, SearchResult, Solution};

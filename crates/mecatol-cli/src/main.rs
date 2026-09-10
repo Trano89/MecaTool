@@ -14,7 +14,9 @@ use std::process::ExitCode;
 
 use mecatol_core::{Feature, FeatureTolerance, Length, ReasoningStep, Unit};
 use mecatol_engine::iso286::{classification_conclusion, FitAnalysis, Iso286Engine};
-use mecatol_engine::parser::{parse, ParsedInput};
+use mecatol_engine::parser::{parse, parse_clearance_window, ParsedInput};
+use mecatol_engine::requirement::{verify_clearance, ClearanceRequirement};
+use mecatol_engine::search::{find_fits, SearchOptions, SearchResult};
 
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -22,10 +24,20 @@ fn main() -> ExitCode {
     enable_utf8_console();
 
     let mut expert = false;
+    let mut window: Option<String> = None;
     let mut parts: Vec<String> = Vec::new();
-    for arg in std::env::args().skip(1) {
+
+    let mut args = std::env::args().skip(1);
+    while let Some(arg) = args.next() {
         match arg.as_str() {
             "--expert" | "-x" => expert = true,
+            "--jeu" | "-j" => match args.next() {
+                Some(value) => window = Some(value),
+                None => {
+                    eprintln!("\nErreur : --jeu attend une fenêtre, par ex. --jeu 10..30\n");
+                    return ExitCode::FAILURE;
+                }
+            },
             "--help" | "-h" => {
                 print_usage();
                 return ExitCode::SUCCESS;
@@ -43,7 +55,7 @@ fn main() -> ExitCode {
         return ExitCode::FAILURE;
     }
 
-    match run(&parts.join(" "), expert) {
+    match run(&parts.join(" "), window.as_deref(), expert) {
         Ok(()) => ExitCode::SUCCESS,
         Err(message) => {
             eprintln!("\nErreur : {message}\n");
@@ -52,10 +64,19 @@ fn main() -> ExitCode {
     }
 }
 
-fn run(input: &str, expert: bool) -> Result<(), String> {
+fn run(input: &str, window: Option<&str>, expert: bool) -> Result<(), String> {
     let engine = Iso286Engine::new().map_err(|e| e.to_string())?;
     let parsed = parse(input).map_err(|e| e.to_string())?;
     let unit = parsed.unit();
+
+    // La fenêtre de jeu, si elle est donnée, transforme le calcul en verdict.
+    let requirement = match window {
+        Some(text) => {
+            let (min, max) = parse_clearance_window(text).map_err(|e| e.to_string())?;
+            Some(ClearanceRequirement::new(parsed.nominal(), min, max).map_err(|e| e.to_string())?)
+        }
+        None => None,
+    };
 
     match parsed {
         ParsedInput::Fit {
@@ -67,8 +88,9 @@ fn run(input: &str, expert: bool) -> Result<(), String> {
             let analysis = engine
                 .fit(nominal, hole, shaft)
                 .map_err(|e| e.to_string())?;
-            report_fit(&analysis, nominal, unit, expert);
+            report_fit(&analysis, nominal, unit, expert, requirement.as_ref());
         }
+
         ParsedInput::Feature { nominal, class, .. } => {
             let analysis = engine.feature(nominal, class).map_err(|e| e.to_string())?;
             title(&format!(
@@ -82,11 +104,30 @@ fn run(input: &str, expert: bool) -> Result<(), String> {
             }
             standards_block(&analysis.provenance);
         }
+
+        ParsedInput::NominalOnly { nominal, .. } => {
+            let Some(requirement) = requirement else {
+                return Err(format!(
+                    "« {input} » ne donne qu'une dimension nominale. Ajoutez une classe de \
+                     tolérance (par ex. \"{input} H7/g6\") pour calculer, ou une fenêtre de jeu \
+                     (par ex. --jeu 10..30) pour rechercher les solutions possibles."
+                ));
+            };
+            let result = find_fits(&engine, &requirement, &SearchOptions::default())
+                .map_err(|e| e.to_string())?;
+            report_search(&result, &requirement, nominal, unit);
+        }
     }
     Ok(())
 }
 
-fn report_fit(analysis: &FitAnalysis, nominal: Length, unit: Unit, expert: bool) {
+fn report_fit(
+    analysis: &FitAnalysis,
+    nominal: Length,
+    unit: Unit,
+    expert: bool,
+    requirement: Option<&ClearanceRequirement>,
+) {
     let fit = &analysis.fit;
     title(&format!(
         "Ajustement Ø{} {}",
@@ -105,13 +146,34 @@ fn report_fit(analysis: &FitAnalysis, nominal: Length, unit: Unit, expert: bool)
         row("Serrage maximum", &plain_um(interference));
     }
 
-    let conclusion = classification_conclusion(analysis);
     section("CONCLUSION");
     println!("  {}", analysis.classification_fr());
-    println!("  {}", conclusion.detail);
+
+    match requirement {
+        // Sans exigence, on décrit ce que l'ajustement produit sans juger.
+        None => println!("  {}", classification_conclusion(analysis).detail),
+        Some(requirement) => match verify_clearance(fit, requirement) {
+            Ok(verification) => {
+                println!();
+                println!("  Besoin exprimé          {}", requirement.window_fr());
+                println!(
+                    "  Plage obtenue           {} à {}",
+                    plain_um(fit.min_clearance),
+                    plain_um(fit.max_clearance)
+                );
+                println!();
+                println!("  {}", verification.conclusion.headline());
+                println!("  {}", verification.conclusion.detail);
+                if expert {
+                    steps_block("POURQUOI ?", &verification.conclusion.why);
+                }
+            }
+            Err(error) => println!("  Vérification impossible : {error}"),
+        },
+    }
 
     if expert {
-        steps_block("POURQUOI ?", &analysis.fit_steps);
+        steps_block("DÉTAIL — AJUSTEMENT", &analysis.fit_steps);
         steps_block(
             &format!("DÉTAIL — ALÉSAGE {}", fit.hole.class),
             &analysis.hole_steps,
@@ -123,6 +185,125 @@ fn report_fit(analysis: &FitAnalysis, nominal: Length, unit: Unit, expert: bool)
     }
 
     standards_block(&analysis.provenance);
+}
+
+fn report_search(
+    result: &SearchResult,
+    requirement: &ClearanceRequirement,
+    nominal: Length,
+    unit: Unit,
+) {
+    title(&format!(
+        "Recherche pour Ø{}, jeu {}",
+        trim_number(nominal.to_decimal_string(unit, unit.default_decimals())),
+        requirement.window_fr()
+    ));
+
+    if result.is_empty() {
+        section("AUCUNE SOLUTION");
+        println!("  Aucun ajustement normalisé du périmètre exploré ne répond à ce besoin.");
+        if let Some(diagnosis) = result.diagnosis_fr(requirement) {
+            println!();
+            println!("  {diagnosis}");
+        }
+        perimeter_block(result);
+        standards_block(&result.provenance);
+        return;
+    }
+
+    let compatible = result.fully_compatible().count();
+    let partial = result.solutions.len() - compatible;
+
+    // Une absence de solution exacte mérite une explication, pas seulement une
+    // liste de solutions approchantes.
+    if compatible == 0 {
+        section("AUCUNE SOLUTION EXACTE");
+        if let Some(diagnosis) = result.diagnosis_fr(requirement) {
+            println!("  {diagnosis}");
+        }
+    }
+
+    section(&format!(
+        "SOLUTIONS — {compatible} compatible(s), {partial} partielle(s) sur {} combinaisons examinées",
+        result.examined
+    ));
+    println!(
+        "  {:<10} {:>10} {:>10} {:>11}  Verdict",
+        "Ajustement", "Jeu min", "Jeu max", "Dispersion"
+    );
+    println!("  {}", "-".repeat(58));
+    for solution in result.solutions.iter().take(20) {
+        println!(
+            "  {:<10} {:>10} {:>10} {:>11}  {} {}",
+            solution.designation(),
+            plain_um(solution.fit.min_clearance),
+            plain_um(solution.fit.max_clearance),
+            plain_um(solution.total_tolerance),
+            solution.verification.verdict.badge(),
+            solution.verification.verdict.headline_fr(),
+        );
+    }
+    if result.solutions.len() > 20 {
+        println!("  ... et {} autres.", result.solutions.len() - 20);
+    }
+
+    if let Some(best) = result.recommended() {
+        let compatible = best.verification.verdict == mecatol_core::Verdict::Compatible;
+        section(if compatible {
+            "RECOMMANDATION"
+        } else {
+            "SOLUTION LA PLUS PROCHE"
+        });
+        println!("  {}", best.designation());
+        println!("  {}", best.verification.conclusion.detail);
+        println!();
+        if compatible {
+            println!(
+                "  Retenue parce qu'elle satisfait le besoin avec la dispersion la plus large"
+            );
+            println!("  du classement, donc la plus facile à tenir en fabrication.");
+        } else {
+            println!("  Aucune solution du périmètre ne satisfait entièrement le besoin. Celle-ci");
+            println!(
+                "  s'en approche le plus, avec {} de dépassement cumulé.",
+                plain_um(best.violation())
+            );
+        }
+    }
+
+    if let (Some(tightest), Some(widest)) = (result.tightest(), result.widest()) {
+        if tightest.designation() != widest.designation() {
+            section("EXTRÊMES");
+            row(
+                "La plus serrée",
+                &format!(
+                    "{} — dispersion {}",
+                    tightest.designation(),
+                    plain_um(tightest.total_tolerance)
+                ),
+            );
+            row(
+                "La plus large",
+                &format!(
+                    "{} — dispersion {}",
+                    widest.designation(),
+                    plain_um(widest.total_tolerance)
+                ),
+            );
+        }
+    }
+
+    perimeter_block(result);
+    standards_block(&result.provenance);
+}
+
+/// Rappelle ce qui a été exploré : une absence de résultat doit se lire
+/// « aucune solution dans ce périmètre », jamais « aucune solution n'existe ».
+fn perimeter_block(result: &SearchResult) {
+    section("PÉRIMÈTRE DE LA RECHERCHE");
+    for note in &result.notes {
+        println!("  {note}");
+    }
 }
 
 fn feature_block(tolerance: &FeatureTolerance, unit: Unit) {
@@ -262,15 +443,24 @@ USAGE
   mecatol [OPTIONS] <DÉSIGNATION>
 
 OPTIONS
-  -x, --expert     affiche le détail du calcul, formules comprises
-  -h, --help       affiche cette aide
-  -V, --version    affiche la version
+  -j, --jeu MIN..MAX   fenêtre de jeu voulue, en µm sauf unité précisée
+  -x, --expert         affiche le détail du calcul, formules comprises
+  -h, --help           affiche cette aide
+  -V, --version        affiche la version
 
-EXEMPLES
+CALCULER
   mecatol \"Ø10 H7/g6\"
   mecatol --expert \"Ø20 H7/k6\"
   mecatol \"25 H7\"
   mecatol \"1 in H7/g6\"
+
+VÉRIFIER — est-ce que cet ajustement convient ?
+  mecatol \"Ø20 H7/g6\" --jeu 10..30
+  mecatol \"Ø20 H7/g6\" --jeu 0.01..0.03mm
+
+TROUVER — quels ajustements répondent à mon besoin ?
+  mecatol \"Ø20\" --jeu 10..30
+  mecatol \"Ø20\" --jeu 5..
 
 Ce binaire est un outil de vérification du moteur, pas le produit fini.
 "

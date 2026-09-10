@@ -25,13 +25,16 @@ BESOIN → CALCUL → COMPARAISON → VALIDATION → EXPLICATION → VISUALISATI
 | Données ISO 286 — écarts fondamentaux | ⚠️ saisies, non vérifiées, 10 lettres sur 28 |
 | Moteur : tolérances et ajustements | ✅ |
 | Parser d'entrées (`Ø10 H7/g6`) | ✅ |
+| Vérification d'une exigence fonctionnelle | ✅ |
+| Recherche de solutions à partir d'un besoin | ✅ |
 | CLI de vérification | ✅ |
-| Vérification d'une exigence fonctionnelle | ⏳ |
-| Recherche de solutions, comparaison | ⏳ |
+| Comparateur de solutions | ⏳ |
 | Graphique des zones de tolérance | ⏳ |
 | Interface Tauri + React | ⏳ |
 
 ## Essayer
+
+**Calculer** — que va donner cet ajustement ?
 
 ```bash
 cargo run -p mecatol-cli -- "Ø10 H7/g6"
@@ -68,6 +71,42 @@ CONCLUSION
 ```
 
 L'option `--expert` déplie tout le calcul, formules comprises.
+
+**Vérifier** — est-ce que ça convient ?
+
+```bash
+cargo run -p mecatol-cli -- "Ø20 H7/g6" --jeu 5..50
+```
+
+```
+  Besoin exprimé          5 µm à 50 µm
+  Plage obtenue           7 µm à 41 µm
+
+  🟢 COMPATIBLE
+  La plage de jeu calculée (7 µm à 41 µm) reste entièrement dans votre fenêtre
+  fonctionnelle (5 µm à 50 µm). Toute pièce conforme au plan conviendra.
+```
+
+**Trouver** — quels ajustements répondent à mon besoin ?
+
+```bash
+cargo run -p mecatol-cli -- "Ø20" --jeu 10..30
+```
+
+Quand rien ne convient exactement, Mecatol dit **pourquoi** plutôt que de
+renvoyer une liste vide :
+
+```
+AUCUNE SOLUTION EXACTE
+----------------------
+  La fenêtre demandée mesure 20 µm, et le plus fin ajustement du périmètre
+  disperse de 18 µm : une solution serait géométriquement possible. Mais aucune
+  des lettres disponibles ne positionne sa plage à l'intérieur de la fenêtre.
+  La solution la plus proche est G5/h6, à 3 µm de dépassement cumulé.
+```
+
+Le périmètre exploré est toujours rappelé : une recherche infructueuse se lit
+« aucune solution dans ce périmètre », jamais « aucune solution n'existe ».
 
 ## Architecture
 
@@ -118,7 +157,7 @@ Chacun de ces refus est couvert par un test.
 ## Développement
 
 ```bash
-cargo test --workspace      # 110 tests
+cargo test --workspace      # 141 tests
 cargo clippy --workspace --all-targets
 cargo fmt --all
 ```
