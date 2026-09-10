@@ -1,0 +1,29 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/mecatol-core",
+    "crates/mecatol-standards",
+    "crates/mecatol-engine",
+    "crates/mecatol-cli",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.77"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/USER/mecatol"
+authors = ["Mecatol contributors"]
+
+[workspace.dependencies]
+mecatol-core = { path = "crates/mecatol-core", version = "0.1.0" }
+mecatol-standards = { path = "crates/mecatol-standards", version = "0.1.0" }
+mecatol-engine = { path = "crates/mecatol-engine", version = "0.1.0" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true
