@@ -124,6 +124,131 @@ fn split_trailing_unit(text: &str) -> (&str, Unit) {
     (text, Unit::Micrometre)
 }
 
+/// Une demande de comparaison : une dimension, plusieurs ajustements.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ComparisonRequest {
+    pub nominal: Length,
+    pub unit: Unit,
+    /// Dans l'ordre de la saisie.
+    pub pairs: Vec<(ToleranceClass, ToleranceClass)>,
+}
+
+/// Lit `"Ou20 H7/g6, H7/h6, H7/k6, H7/p6"`.
+///
+/// La virgule separe les ajustements, la barre separe l'alesage de l'arbre. Un
+/// espace fait aussi office de barre : `"H7 g6"` est accepte.
+///
+/// ```
+/// # use mecatol_engine::parser::parse_comparison;
+/// let request = parse_comparison("\u{d8}20 H7/g6, H7/p6").unwrap();
+/// assert_eq!(request.pairs.len(), 2);
+/// assert_eq!(request.pairs[0].0.to_string(), "H7");
+/// assert_eq!(request.pairs[1].1.to_string(), "p6");
+/// ```
+pub fn parse_comparison(input: &str) -> Result<ComparisonRequest> {
+    // La barre est ici significative : elle lie les deux elements d'un couple.
+    // Seules les marques de diametre sont neutralisees.
+    let cleaned: String = input
+        .chars()
+        .map(|c| if is_diameter_mark(c) { ' ' } else { c })
+        .collect();
+    let trimmed = cleaned.trim();
+
+    if trimmed.is_empty() {
+        return Err(EngineError::Unparsable {
+            input: input.to_string(),
+            hint: "Indiquez une dimension puis les ajustements à comparer, par exemple \
+                   \"20 H7/g6, H7/k6\"."
+                .to_string(),
+        });
+    }
+
+    let (number, rest) = split_leading_number(trimmed).ok_or_else(|| EngineError::Unparsable {
+        input: input.to_string(),
+        hint: "La comparaison doit commencer par la dimension nominale, par exemple \
+               \"20 H7/g6, H7/k6\"."
+            .to_string(),
+    })?;
+
+    let mut chunks: Vec<&str> = rest.split(',').map(str::trim).collect();
+
+    // Une unite peut suivre le nombre ; elle appartient au premier morceau.
+    let mut unit = Unit::Millimetre;
+    if let Some(first) = chunks.first_mut() {
+        let mut tokens = first.split_whitespace();
+        if let Some(head) = tokens.next() {
+            if let Ok(parsed) = Unit::from_str(head) {
+                unit = parsed;
+                *first = first[head.len()..].trim_start();
+            }
+        }
+    }
+
+    let nominal = Length::parse(number, unit)?;
+    if !nominal.is_positive() {
+        return Err(EngineError::Unparsable {
+            input: input.to_string(),
+            hint: "La dimension nominale doit être strictement positive.".to_string(),
+        });
+    }
+
+    let mut pairs = Vec::with_capacity(chunks.len());
+    for chunk in chunks {
+        if chunk.is_empty() {
+            continue;
+        }
+        pairs.push(parse_pair(chunk, input)?);
+    }
+
+    if pairs.is_empty() {
+        return Err(EngineError::Unparsable {
+            input: input.to_string(),
+            hint: "Aucun ajustement après la dimension. Attendu par exemple \
+                   \"H7/g6, H7/k6\"."
+                .to_string(),
+        });
+    }
+
+    Ok(ComparisonRequest {
+        nominal,
+        unit,
+        pairs,
+    })
+}
+
+/// Lit un couple `"H7/g6"` ou `"H7 g6"`.
+fn parse_pair(chunk: &str, original: &str) -> Result<(ToleranceClass, ToleranceClass)> {
+    let normalised = chunk.replace('/', " ");
+    let tokens: Vec<&str> = normalised.split_whitespace().collect();
+
+    let [first, second] = tokens.as_slice() else {
+        return Err(EngineError::Unparsable {
+            input: original.to_string(),
+            hint: format!(
+                "« {chunk} » n'est pas un ajustement : il en faut deux éléments, \
+                 par exemple « H7/g6 »."
+            ),
+        });
+    };
+
+    let a = ToleranceClass::parse(first)?;
+    let b = ToleranceClass::parse(second)?;
+    match (a.feature, b.feature) {
+        (Feature::Hole, Feature::Shaft) => Ok((a, b)),
+        // La casse dit qui est qui : l'ordre inverse ne cree pas d'ambiguite.
+        (Feature::Shaft, Feature::Hole) => Ok((b, a)),
+        _ => Err(EngineError::NotAFitPair {
+            first: a.to_string(),
+            second: b.to_string(),
+        }),
+    }
+}
+
+/// Marques de diametre, neutralisees a la lecture.
+fn is_diameter_mark(c: char) -> bool {
+    matches!(c, '\u{d8}' | '\u{f8}' | '\u{2300}')
+}
+
 /// Caracteres qui marquent un diametre ou separent deux classes.
 fn is_separator(c: char) -> bool {
     matches!(
@@ -402,6 +527,74 @@ mod tests {
             parse_clearance_window("-20..-5").unwrap(),
             (Some(um(-20)), Some(um(-5)))
         );
+    }
+
+    #[test]
+    fn lecture_dune_liste_dajustements() {
+        let request = parse_comparison("\u{d8}20 H7/g6, H7/h6, H7/k6, H7/p6").unwrap();
+        assert_eq!(request.nominal, Length::from_millimetres(20));
+        assert_eq!(request.pairs.len(), 4);
+        assert_eq!(
+            request
+                .pairs
+                .iter()
+                .map(|(h, s)| format!("{h}/{s}"))
+                .collect::<Vec<_>>(),
+            vec!["H7/g6", "H7/h6", "H7/k6", "H7/p6"]
+        );
+    }
+
+    #[test]
+    fn lespace_vaut_la_barre_dans_un_couple() {
+        assert_eq!(
+            parse_comparison("20 H7 g6, H7 p6").unwrap().pairs,
+            parse_comparison("20 H7/g6, H7/p6").unwrap().pairs
+        );
+    }
+
+    #[test]
+    fn une_unite_explicite_est_respectee_dans_un_comparatif() {
+        let request = parse_comparison("1 in H7/g6, H7/p6").unwrap();
+        assert_eq!(request.unit, Unit::Inch);
+        assert_eq!(request.nominal, Length::from_nanometres(25_400_000));
+        assert_eq!(request.pairs.len(), 2);
+    }
+
+    #[test]
+    fn les_espaces_et_virgules_surnumeraires_sont_tolerees() {
+        let request = parse_comparison("  20   H7/g6 ,, H7/p6 ,  ").unwrap();
+        assert_eq!(request.pairs.len(), 2);
+    }
+
+    #[test]
+    fn un_couple_incomplet_dit_ce_qui_manque() {
+        let error = parse_comparison("20 H7/g6, H7").unwrap_err();
+        match error {
+            EngineError::Unparsable { hint, .. } => {
+                assert!(hint.contains("deux éléments"), "piste : {hint}");
+            }
+            other => panic!("une piste d'action était attendue, obtenu {other}"),
+        }
+    }
+
+    #[test]
+    fn deux_elements_de_meme_nature_dans_un_couple_sont_refuses() {
+        assert!(matches!(
+            parse_comparison("20 H7/G6"),
+            Err(EngineError::NotAFitPair { .. })
+        ));
+    }
+
+    #[test]
+    fn un_comparatif_sans_ajustement_est_refuse() {
+        assert!(matches!(
+            parse_comparison("20"),
+            Err(EngineError::Unparsable { .. })
+        ));
+        assert!(matches!(
+            parse_comparison(""),
+            Err(EngineError::Unparsable { .. })
+        ));
     }
 
     #[test]

@@ -19,6 +19,11 @@ interface Props {
 }
 
 export function DiagramView({ diagram }: Props) {
+  // Au-delà d'une paire, l'espace par zone se réduit : les étiquettes d'écarts
+  // se chevaucheraient. Le dessin porte alors les positions, le tableau porte
+  // les valeurs.
+  const dense = diagram.bands.length > 2;
+
   // Deux diagrammes sur une même page ne doivent pas partager leurs motifs.
   const uid = useId().replace(/:/g, "");
   const holeHatch = `hole-${uid}`;
@@ -86,7 +91,7 @@ export function DiagramView({ diagram }: Props) {
           0
         </text>
 
-        {diagram.bands.map((band) => {
+        {diagram.bands.map((band, index) => {
           const isHole = band.feature === "hole";
           const colour = isHole ? "var(--hole)" : "var(--shaft)";
           // En mode fidèle, la hauteur réelle peut tomber sous le pixel : sans
@@ -96,8 +101,14 @@ export function DiagramView({ diagram }: Props) {
           const labelX = isHole ? band.x - 6 : band.x + band.width + 6;
           const anchor = isHole ? "end" : "start";
 
+          // Sur un comparatif, les écarts de chaque zone se chevaucheraient :
+          // ils se lisent dans le tableau, le dessin porte les positions.
+          const showDeviations = !dense;
+          // Le nom du groupe ne s'écrit qu'une fois par paire, sous l'alésage.
+          const showGroup = dense && isHole && band.group !== null;
+
           return (
-            <g key={band.label}>
+            <g key={`${band.group ?? ""}-${band.label}-${index}`}>
               <rect
                 x={band.x}
                 y={band.top}
@@ -109,36 +120,61 @@ export function DiagramView({ diagram }: Props) {
               />
               <text
                 x={centre}
-                y={band.top - 22}
+                y={band.top - (dense ? 8 : 22)}
                 fill={colour}
                 textAnchor="middle"
                 fontWeight="700"
-                fontSize="13"
+                fontSize={dense ? 11 : 13}
               >
                 {band.label}
               </text>
-              <text
-                x={centre}
-                y={band.top - 9}
-                fill="var(--ink-faint)"
-                textAnchor="middle"
-                fontSize="10"
-              >
-                {band.it_label}
-              </text>
-              <text x={labelX} y={band.top} dy="-2" fill={colour} textAnchor={anchor} fontSize="10">
-                {band.upper_label}
-              </text>
-              <text
-                x={labelX}
-                y={band.top + height}
-                dy="9"
-                fill={colour}
-                textAnchor={anchor}
-                fontSize="10"
-              >
-                {band.lower_label}
-              </text>
+              {!dense ? (
+                <text
+                  x={centre}
+                  y={band.top - 9}
+                  fill="var(--ink-faint)"
+                  textAnchor="middle"
+                  fontSize="10"
+                >
+                  {band.it_label}
+                </text>
+              ) : null}
+              {showGroup ? (
+                <text
+                  x={band.x + band.width}
+                  y={diagram.height - 6}
+                  fill="var(--ink-muted)"
+                  textAnchor="middle"
+                  fontWeight="600"
+                  fontSize="11"
+                >
+                  {band.group}
+                </text>
+              ) : null}
+              {showDeviations ? (
+                <>
+                  <text
+                    x={labelX}
+                    y={band.top}
+                    dy="-2"
+                    fill={colour}
+                    textAnchor={anchor}
+                    fontSize="10"
+                  >
+                    {band.upper_label}
+                  </text>
+                  <text
+                    x={labelX}
+                    y={band.top + height}
+                    dy="9"
+                    fill={colour}
+                    textAnchor={anchor}
+                    fontSize="10"
+                  >
+                    {band.lower_label}
+                  </text>
+                </>
+              ) : null}
             </g>
           );
         })}

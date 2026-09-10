@@ -13,7 +13,7 @@
 import type { Query } from "./Calculate";
 
 /** Les écrans qu'une carte peut ouvrir directement. */
-export type Destination = "calculate" | "general";
+export type Destination = "calculate" | "compare" | "general";
 
 interface Entry {
   title: string;
@@ -40,6 +40,11 @@ const ENTRIES: readonly Entry[] = [
     title: "Vérifier",
     question: "Ma tolérance convient-elle ?",
     query: { input: "Ø20 H7/g6", clearance: "5..50" },
+  },
+  {
+    title: "Comparer",
+    question: "Laquelle de ces solutions choisir ?",
+    opens: "compare",
   },
   {
     title: "Tolérances générales",

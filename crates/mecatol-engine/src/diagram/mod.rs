@@ -87,6 +87,9 @@ impl Default for DiagramOptions {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Band {
     pub label: String,
+    /// L'ajustement auquel cette zone appartient, quand le diagramme en compare
+    /// plusieurs. Absent lorsqu'il n'y en a qu'un : le titre suffit alors.
+    pub group: Option<String>,
     pub feature: Feature,
     pub x: f64,
     pub width: f64,
@@ -205,59 +208,94 @@ fn micrometres(value: Length) -> f64 {
     value.nanometres() as f64 / mecatol_core::NM_PER_UM as f64
 }
 
-/// Construit le diagramme d'un ajustement.
-pub fn fit_diagram(fit: &Fit, options: &DiagramOptions) -> Diagram {
+/// L'echelle verticale commune a un ensemble d'ajustements.
+///
+/// Extraite du trace parce qu'elle doit etre **partagee** : comparer des
+/// ajustements dessines a des echelles differentes n'apprendrait rien. C'est
+/// l'echelle unique qui rend les positions comparables d'un coup d'oeil.
+fn shared_scale(fits: &[Fit], options: &DiagramOptions) -> (f64, f64) {
     let usable_height = (options.height - 2.0 * options.margin_y).max(1.0);
 
-    // L'etendue verticale couvre les deux zones et la ligne zero, qui doit
-    // toujours rester visible meme si aucune zone ne la traverse.
-    let highest = fit
-        .hole
-        .deviations
-        .upper()
-        .max(fit.shaft.deviations.upper())
-        .max(Length::ZERO);
-    let lowest = fit
-        .hole
-        .deviations
-        .lower()
-        .min(fit.shaft.deviations.lower())
-        .min(Length::ZERO);
+    // L'etendue couvre toutes les zones et la ligne zero, qui doit rester
+    // visible meme si aucune zone ne la traverse.
+    let mut highest = Length::ZERO;
+    let mut lowest = Length::ZERO;
+    for fit in fits {
+        highest = highest
+            .max(fit.hole.deviations.upper())
+            .max(fit.shaft.deviations.upper());
+        lowest = lowest
+            .min(fit.hole.deviations.lower())
+            .min(fit.shaft.deviations.lower());
+    }
 
     let span_um = (micrometres(highest) - micrometres(lowest)).max(f64::MIN_POSITIVE);
+    let nominal = fits
+        .first()
+        .map(|fit| micrometres(fit.hole.nominal))
+        .unwrap_or(1.0);
 
     let pixels_per_micrometre = match options.mode {
         DiagramMode::Deviations => usable_height / span_um,
-        // A l'echelle de la piece : la hauteur utile represente le diametre nominal.
-        DiagramMode::TrueToScale => usable_height / micrometres(fit.hole.nominal),
+        // A l'echelle de la piece : la hauteur utile represente le nominal.
+        DiagramMode::TrueToScale => usable_height / nominal,
     };
-
     let zero_line_y = options.margin_y + micrometres(highest) * pixels_per_micrometre;
+    (pixels_per_micrometre, zero_line_y)
+}
+
+/// Positionne une zone de tolerance.
+fn band_of(
+    tolerance: &mecatol_core::FeatureTolerance,
+    group: Option<String>,
+    x: f64,
+    width: f64,
+    zero_line_y: f64,
+    ppum: f64,
+) -> Band {
+    let upper = tolerance.deviations.upper();
+    let lower = tolerance.deviations.lower();
+    Band {
+        label: tolerance.class.to_string(),
+        group,
+        feature: tolerance.feature,
+        x,
+        width,
+        top: zero_line_y - micrometres(upper) * ppum,
+        bottom: zero_line_y - micrometres(lower) * ppum,
+        upper_deviation: upper,
+        lower_deviation: lower,
+        upper_label: um_signed(upper),
+        lower_label: um_signed(lower),
+        it_label: format!("{} = {}", tolerance.class.grade.name(), um(tolerance.it)),
+    }
+}
+
+/// Construit le diagramme d'un ajustement.
+pub fn fit_diagram(fit: &Fit, options: &DiagramOptions) -> Diagram {
+    let fits = [fit.clone()];
+    let (pixels_per_micrometre, zero_line_y) = shared_scale(&fits, options);
 
     let gap = (options.width - 2.0 * options.margin_x - 2.0 * options.band_width).max(0.0);
     let hole_x = options.margin_x;
     let shaft_x = options.margin_x + options.band_width + gap;
 
-    let band = |tolerance: &mecatol_core::FeatureTolerance, x: f64| -> Band {
-        let upper = tolerance.deviations.upper();
-        let lower = tolerance.deviations.lower();
-        Band {
-            label: tolerance.class.to_string(),
-            feature: tolerance.feature,
-            x,
-            width: options.band_width,
-            top: zero_line_y - micrometres(upper) * pixels_per_micrometre,
-            bottom: zero_line_y - micrometres(lower) * pixels_per_micrometre,
-            upper_deviation: upper,
-            lower_deviation: lower,
-            upper_label: um_signed(upper),
-            lower_label: um_signed(lower),
-            it_label: format!("{} = {}", tolerance.class.grade.name(), um(tolerance.it)),
-        }
-    };
-
-    let hole_band = band(&fit.hole, hole_x);
-    let shaft_band = band(&fit.shaft, shaft_x);
+    let hole_band = band_of(
+        &fit.hole,
+        None,
+        hole_x,
+        options.band_width,
+        zero_line_y,
+        pixels_per_micrometre,
+    );
+    let shaft_band = band_of(
+        &fit.shaft,
+        None,
+        shaft_x,
+        options.band_width,
+        zero_line_y,
+        pixels_per_micrometre,
+    );
 
     let marker = |kind: ClearanceKind, hole_y: f64, shaft_y: f64, value: Length| ClearanceMarker {
         kind,
@@ -319,6 +357,93 @@ pub fn fit_diagram(fit: &Fit, options: &DiagramOptions) -> Diagram {
     }
 }
 
+/// Construit le diagramme comparant plusieurs ajustements.
+///
+/// Tous partagent **une seule echelle verticale**. C'est la condition pour que
+/// la comparaison veuille dire quelque chose : deux zones dessinees a des
+/// echelles differentes ne se comparent pas, elles se juxtaposent.
+///
+/// Les cotes de jeu ne sont pas tracees. Avec quatre ajustements, huit lignes de
+/// cote rendraient le dessin illisible, et les valeurs se lisent mieux dans le
+/// tableau qui l'accompagne. Le dessin sert a voir les **positions relatives**.
+pub fn comparison_diagram(fits: &[Fit], options: &DiagramOptions) -> Diagram {
+    if fits.is_empty() {
+        return Diagram {
+            width: options.width,
+            height: options.height,
+            mode: options.mode,
+            zero_line_y: options.height / 2.0,
+            pixels_per_micrometre: 1.0,
+            bands: Vec::new(),
+            clearances: Vec::new(),
+            axis_ticks: Vec::new(),
+            scale_note: "Aucun ajustement à comparer.".to_string(),
+            title: "Comparaison".to_string(),
+        };
+    }
+
+    let (pixels_per_micrometre, zero_line_y) = shared_scale(fits, options);
+
+    let usable = (options.width - 2.0 * options.margin_x).max(1.0);
+    let group_width = usable / fits.len() as f64;
+    // Deux zones par groupe, un peu d'air entre elles, et une respiration entre
+    // groupes pour que l'appartenance reste lisible.
+    let band_width = group_width * 0.36;
+    let inner_gap = group_width * 0.08;
+
+    let mut bands = Vec::with_capacity(fits.len() * 2);
+    let mut remarkable = vec![Length::ZERO];
+
+    for (index, fit) in fits.iter().enumerate() {
+        let designation = fit.designation();
+        let group_start = options.margin_x
+            + group_width * index as f64
+            + (group_width - 2.0 * band_width - inner_gap) / 2.0;
+
+        bands.push(band_of(
+            &fit.hole,
+            Some(designation.clone()),
+            group_start,
+            band_width,
+            zero_line_y,
+            pixels_per_micrometre,
+        ));
+        bands.push(band_of(
+            &fit.shaft,
+            Some(designation),
+            group_start + band_width + inner_gap,
+            band_width,
+            zero_line_y,
+            pixels_per_micrometre,
+        ));
+
+        remarkable.extend([
+            fit.hole.deviations.upper(),
+            fit.hole.deviations.lower(),
+            fit.shaft.deviations.upper(),
+            fit.shaft.deviations.lower(),
+        ]);
+    }
+
+    let nominal = fits[0].hole.nominal;
+    Diagram {
+        width: options.width,
+        height: options.height,
+        mode: options.mode,
+        zero_line_y,
+        pixels_per_micrometre,
+        bands,
+        clearances: Vec::new(),
+        axis_ticks: ticks(&remarkable, zero_line_y, pixels_per_micrometre),
+        scale_note: scale_note(nominal, pixels_per_micrometre, options.mode),
+        title: format!(
+            "Ø{} — {} ajustements comparés",
+            trim(nominal.to_decimal_string(Unit::Millimetre, 3)),
+            fits.len()
+        ),
+    }
+}
+
 /// Graduations, une par ecart remarquable, dedoublonnees.
 fn ticks(deviations: &[Length], zero_line_y: f64, ppum: f64) -> Vec<AxisTick> {
     let mut unique: Vec<Length> = deviations.to_vec();
@@ -356,8 +481,8 @@ fn scale_note(nominal: Length, ppum: f64, mode: DiagramMode) -> String {
             format!(
                 "Écarts amplifiés pour la lisibilité : 1 µm = {:.1} px. À cette échelle, \
                  le diamètre nominal de {} mesurerait environ {:.1} m. Le dessin n'est donc \
-                 pas à l'échelle de la pièce ; les deux zones sont en revanche au même \
-                 rapport l'une que l'autre.",
+                 pas à l'échelle de la pièce ; les zones sont en revanche toutes au même \
+                 rapport entre elles.",
                 ppum,
                 trim(nominal.to_decimal_string(Unit::Millimetre, 3)) + " mm",
                 nominal_metres
@@ -637,6 +762,106 @@ mod tests {
         let b = fit_diagram(&fit_of("10", "H7", "h6"), &DiagramOptions::default());
         assert_ne!(a.bands, b.bands);
         assert_ne!(a.clearances, b.clearances);
+    }
+
+    /// La promesse du comparatif : une seule échelle. Sans elle, deux zones
+    /// dessinées côte à côte ne se comparent pas, elles se juxtaposent.
+    #[test]
+    fn tous_les_ajustements_compares_partagent_une_seule_echelle() {
+        let fits = [
+            fit_of("20", "H7", "g6"),
+            fit_of("20", "H7", "h6"),
+            fit_of("20", "H7", "k6"),
+            fit_of("20", "H7", "p6"),
+        ];
+        let d = comparison_diagram(&fits, &DiagramOptions::default());
+
+        assert_eq!(d.bands.len(), 8, "deux zones par ajustement");
+
+        // Chaque bord, reconverti, redonne l'ecart dont il est issu — avec le
+        // meme facteur pour tous.
+        for band in &d.bands {
+            assert!(close(
+                d.deviation_at(band.top),
+                micrometres(band.upper_deviation)
+            ));
+            assert!(close(
+                d.deviation_at(band.bottom),
+                micrometres(band.lower_deviation)
+            ));
+        }
+
+        // Le meme H7 apparait quatre fois : il doit occuper exactement la meme
+        // hauteur a chaque fois.
+        let holes: Vec<f64> = d
+            .bands
+            .iter()
+            .filter(|b| b.feature == Feature::Hole)
+            .map(|b| b.height())
+            .collect();
+        assert_eq!(holes.len(), 4);
+        for height in &holes {
+            assert!(
+                close(*height, holes[0]),
+                "H7 dessiné à des hauteurs différentes"
+            );
+        }
+    }
+
+    #[test]
+    fn chaque_zone_comparee_sait_a_quel_ajustement_elle_appartient() {
+        let fits = [fit_of("20", "H7", "g6"), fit_of("20", "H7", "p6")];
+        let d = comparison_diagram(&fits, &DiagramOptions::default());
+
+        let groups: Vec<&str> = d.bands.iter().filter_map(|b| b.group.as_deref()).collect();
+        assert_eq!(groups, vec!["H7/g6", "H7/g6", "H7/p6", "H7/p6"]);
+    }
+
+    #[test]
+    fn les_zones_comparees_ne_se_chevauchent_pas() {
+        let fits = [
+            fit_of("20", "H7", "g6"),
+            fit_of("20", "H7", "h6"),
+            fit_of("20", "H7", "k6"),
+        ];
+        let options = DiagramOptions::default();
+        let d = comparison_diagram(&fits, &options);
+
+        for pair in d.bands.windows(2) {
+            assert!(
+                pair[0].x + pair[0].width <= pair[1].x + EPS,
+                "{} et {} se chevauchent",
+                pair[0].label,
+                pair[1].label
+            );
+        }
+        let last = d.bands.last().unwrap();
+        assert!(last.x + last.width <= options.width - options.margin_x + EPS);
+    }
+
+    #[test]
+    fn le_comparatif_ne_trace_pas_de_cotes_de_jeu() {
+        // Huit lignes de cote sur quatre ajustements rendraient le dessin
+        // illisible : les valeurs se lisent dans le tableau qui l'accompagne.
+        let fits = [fit_of("20", "H7", "g6"), fit_of("20", "H7", "p6")];
+        let d = comparison_diagram(&fits, &DiagramOptions::default());
+        assert!(d.clearances.is_empty());
+        // L'annonce d'echelle reste obligatoire.
+        assert!(!d.scale_note.is_empty());
+        assert!(d.title.contains("2 ajustements"));
+    }
+
+    #[test]
+    fn un_comparatif_vide_ne_panique_pas() {
+        let d = comparison_diagram(&[], &DiagramOptions::default());
+        assert!(d.bands.is_empty());
+        assert!(d.scale_note.contains("Aucun"));
+    }
+
+    #[test]
+    fn un_ajustement_seul_ne_porte_pas_de_groupe() {
+        let d = fit_diagram(&fit_of("10", "H7", "g6"), &DiagramOptions::default());
+        assert!(d.bands.iter().all(|b| b.group.is_none()));
     }
 
     #[test]

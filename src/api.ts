@@ -13,6 +13,7 @@ import type {
   ClassComparison,
   Diagram,
   EngineInfo,
+  FitComparison,
   MeasureKind,
   Report,
 } from "./types";
@@ -74,6 +75,21 @@ export function analyse(
   trueToScale?: boolean,
 ): Promise<Report> {
   return call<Report>("analyse", { input, clearance, trueToScale });
+}
+
+/**
+ * Compare plusieurs ajustements sur une même dimension.
+ *
+ * `input` s'écrit « Ø20 H7/g6, H7/h6, H7/k6, H7/p6 » : la virgule sépare les
+ * ajustements, la barre sépare l'alésage de l'arbre. L'ordre de saisie est
+ * conservé jusqu'à l'affichage.
+ */
+export function compare(
+  input: string,
+  clearance?: string,
+  trueToScale?: boolean,
+): Promise<FitComparison> {
+  return call<FitComparison>("compare", { input, clearance, trueToScale });
 }
 
 /** Redessine un ajustement dans l'autre mode d'échelle, sans tout recalculer. */

@@ -17,12 +17,14 @@ import featureFixture from "./fixtures/feature-report.json";
 import searchFixture from "./fixtures/search-report.json";
 import engineFixture from "./fixtures/engine-info.json";
 import generalFixture from "./fixtures/general-tolerances.json";
+import comparisonFixture from "./fixtures/fit-comparison.json";
 
 import {
   NM_PER_UM,
   type ClassComparison,
   type EngineInfo,
   type FeatureReport,
+  type FitComparison,
   type FitReport,
   type SearchReport,
 } from "./types";
@@ -33,6 +35,7 @@ const feature = featureFixture as FeatureReport;
 const search = searchFixture as SearchReport;
 const engine = engineFixture as EngineInfo;
 const general = generalFixture as ClassComparison;
+const comparison = comparisonFixture as FitComparison;
 
 describe("échantillons du moteur", () => {
   it("décrit un ajustement Ø10 H7/g6 exact", () => {
@@ -82,6 +85,35 @@ describe("échantillons du moteur", () => {
     // Ce scénario n'a pas de solution exacte : le diagnostic doit l'expliquer.
     expect(search.diagnosis).not.toBeNull();
     expect(search.requirement.min_clearance).toBe(10 * NM_PER_UM);
+  });
+
+  it("décrit un comparatif d'ajustements", () => {
+    expect(comparison.entries).toHaveLength(4);
+    // L'ordre de saisie est conservé jusque dans l'échantillon.
+    expect(comparison.entries.map((entry) => entry.designation)).toEqual([
+      "H7/g6",
+      "H7/h6",
+      "H7/k6",
+      "H7/p6",
+    ]);
+
+    // Une échelle unique : deux zones par ajustement, un seul facteur.
+    expect(comparison.diagram.bands).toHaveLength(8);
+    expect(comparison.diagram.pixels_per_micrometre).toBeGreaterThan(0);
+
+    // Chaque zone sait à quel ajustement elle appartient.
+    for (const band of comparison.diagram.bands) {
+      expect(band.group).not.toBeNull();
+    }
+
+    // Le comparatif ne trace pas de cotes de jeu : elles sont dans le tableau.
+    expect(comparison.diagram.clearances).toHaveLength(0);
+
+    // L'exigence fournie donne un verdict par ligne.
+    expect(comparison.requirement).not.toBeNull();
+    for (const entry of comparison.entries) {
+      expect(entry.verification).not.toBeNull();
+    }
   });
 
   it("décrit les tolérances générales des quatre classes", () => {

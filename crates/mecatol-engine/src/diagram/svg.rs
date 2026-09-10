@@ -72,8 +72,14 @@ pub fn to_svg(diagram: &Diagram) -> String {
         y = round(diagram.zero_line_y)
     );
 
+    // Au-dela d'une paire, l'espace par zone se reduit : les etiquettes d'ecarts
+    // se chevaucheraient. Le dessin porte alors les positions, le tableau qui
+    // l'accompagne porte les valeurs. Meme regle que dans le rendu de
+    // l'interface : les deux tracent le meme `Diagram`, ils doivent le tracer
+    // de la meme facon.
+    let dense = diagram.bands.len() > 2;
     for band in &diagram.bands {
-        render_band(&mut svg, band);
+        render_band(&mut svg, band, dense, diagram.height);
     }
 
     // Les deux cotes de jeu occupent le vide entre les bandes, a des abscisses
@@ -116,7 +122,7 @@ pub fn to_svg(diagram: &Diagram) -> String {
     svg
 }
 
-fn render_band(svg: &mut String, band: &Band) {
+fn render_band(svg: &mut String, band: &Band, dense: bool, diagram_height: f64) {
     let (colour, fill) = match band.feature {
         Feature::Hole => (HOLE_COLOUR, "url(#hole-hatch)"),
         Feature::Shaft => (SHAFT_COLOUR, "url(#shaft-hatch)"),
@@ -137,11 +143,28 @@ fn render_band(svg: &mut String, band: &Band) {
     let centre = band.x + band.width / 2.0;
     let _ = write!(
         svg,
-        r#"<text x="{x}" y="{y}" fill="{colour}" text-anchor="middle" font-weight="700" font-size="13">{label}</text>"#,
+        r#"<text x="{x}" y="{y}" fill="{colour}" text-anchor="middle" font-weight="700" font-size="{size}">{label}</text>"#,
         x = round(centre),
-        y = round(band.top - 22.0),
+        y = round(band.top - if dense { 8.0 } else { 22.0 }),
+        size = if dense { 11 } else { 13 },
         label = escape(&band.label)
     );
+
+    if dense {
+        // Le nom de l'ajustement ne s'ecrit qu'une fois par couple, sous
+        // l'alesage, a la limite des deux zones.
+        if let (Feature::Hole, Some(group)) = (band.feature, band.group.as_deref()) {
+            let _ = write!(
+                svg,
+                r#"<text x="{x}" y="{y}" fill="{MUTED}" text-anchor="middle" font-weight="600" font-size="11">{label}</text>"#,
+                x = round(band.x + band.width),
+                y = round(diagram_height - 6.0),
+                label = escape(group)
+            );
+        }
+        return;
+    }
+
     let _ = write!(
         svg,
         r#"<text x="{x}" y="{y}" fill="{MUTED}" text-anchor="middle" font-size="10">{label}</text>"#,

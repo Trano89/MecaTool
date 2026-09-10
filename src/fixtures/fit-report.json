@@ -174,6 +174,7 @@
     "bands": [
       {
         "label": "H7",
+        "group": null,
         "feature": "hole",
         "x": 56.0,
         "width": 130.0,
@@ -187,6 +188,7 @@
       },
       {
         "label": "g6",
+        "group": null,
         "feature": "shaft",
         "x": 374.0,
         "width": 130.0,
@@ -243,7 +245,7 @@
         "is_zero": false
       }
     ],
-    "scale_note": "Écarts amplifiés pour la lisibilité : 1 µm = 8.7 px. À cette échelle, le diamètre nominal de 10 mm mesurerait environ 23.0 m. Le dessin n'est donc pas à l'échelle de la pièce ; les deux zones sont en revanche au même rapport l'une que l'autre.",
+    "scale_note": "Écarts amplifiés pour la lisibilité : 1 µm = 8.7 px. À cette échelle, le diamètre nominal de 10 mm mesurerait environ 23.0 m. Le dessin n'est donc pas à l'échelle de la pièce ; les zones sont en revanche toutes au même rapport entre elles.",
     "title": "Ø10 H7/g6"
   },
   "classification": "🟢 AJUSTEMENT AVEC JEU",

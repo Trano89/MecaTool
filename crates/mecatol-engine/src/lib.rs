@@ -22,6 +22,7 @@
 #![forbid(unsafe_code)]
 #![warn(missing_debug_implementations)]
 
+pub mod compare;
 pub mod diagram;
 pub mod error;
 pub mod format;
@@ -31,7 +32,8 @@ pub mod parser;
 pub mod requirement;
 pub mod search;
 
-pub use diagram::{fit_diagram, to_svg, Diagram, DiagramMode, DiagramOptions};
+pub use compare::{compare_fits, ComparedFit, FitComparison};
+pub use diagram::{comparison_diagram, fit_diagram, to_svg, Diagram, DiagramMode, DiagramOptions};
 pub use error::{EngineError, Result};
 pub use iso2768::{ClassComparison, ClassRow, GeneralAnalysis, Iso2768Engine};
 pub use iso286::{FeatureAnalysis, FitAnalysis, Iso286Engine};

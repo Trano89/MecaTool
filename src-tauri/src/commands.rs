@@ -10,12 +10,13 @@
 //! jour ou un champ change de nom.
 
 use mecatol_core::{Conclusion, DeviationLetter, Length, Provenance, Unit};
+use mecatol_engine::compare::{compare_fits, FitComparison};
 use mecatol_engine::diagram::{fit_diagram, Diagram, DiagramMode, DiagramOptions};
 use mecatol_engine::iso2768::{ClassComparison, Iso2768Engine};
 use mecatol_engine::iso286::{
     classification_conclusion, FeatureAnalysis, FitAnalysis, Iso286Engine,
 };
-use mecatol_engine::parser::{parse, parse_clearance_window, ParsedInput};
+use mecatol_engine::parser::{parse, parse_clearance_window, parse_comparison, ParsedInput};
 use mecatol_engine::requirement::{verify_clearance, ClearanceRequirement, Verification};
 use mecatol_engine::search::{find_fits, SearchOptions, SearchResult};
 use mecatol_engine::EngineError;
@@ -146,6 +147,48 @@ pub fn general_tolerances(kind: String, nominal_mm: String) -> Result<ClassCompa
 
     let engine = Iso2768Engine::new()?;
     Ok(engine.across_classes(kind, nominal))
+}
+
+/// Compare plusieurs ajustements sur une meme dimension.
+///
+/// `input` s'ecrit `"Ø20 H7/g6, H7/h6, H7/k6, H7/p6"` : la virgule separe les
+/// ajustements, la barre separe l'alesage de l'arbre.
+#[tauri::command]
+pub fn compare(
+    input: String,
+    clearance: Option<String>,
+    true_to_scale: Option<bool>,
+) -> Result<FitComparison, AppError> {
+    let request = parse_comparison(&input)?;
+
+    let requirement = match clearance
+        .as_deref()
+        .map(str::trim)
+        .filter(|text| !text.is_empty())
+    {
+        Some(text) => {
+            let (min, max) = parse_clearance_window(text)?;
+            Some(ClearanceRequirement::new(request.nominal, min, max)?)
+        }
+        None => None,
+    };
+
+    let options = DiagramOptions {
+        mode: if true_to_scale.unwrap_or(false) {
+            DiagramMode::TrueToScale
+        } else {
+            DiagramMode::Deviations
+        },
+        ..DiagramOptions::default()
+    };
+
+    Ok(compare_fits(
+        &engine()?,
+        request.nominal,
+        &request.pairs,
+        requirement.as_ref(),
+        &options,
+    )?)
 }
 
 /// Analyse une entree utilisateur, avec ou sans exigence de jeu.
@@ -384,6 +427,37 @@ mod tests {
     }
 
     #[test]
+    fn un_comparatif_rend_les_ajustements_dans_lordre_de_saisie() {
+        let comparison = compare("Ø20 H7/g6, H7/h6, H7/k6, H7/p6".into(), None, None).unwrap();
+        assert_eq!(
+            comparison
+                .entries
+                .iter()
+                .map(|e| e.designation.as_str())
+                .collect::<Vec<_>>(),
+            vec!["H7/g6", "H7/h6", "H7/k6", "H7/p6"]
+        );
+        // Deux zones par ajustement, sur une échelle unique.
+        assert_eq!(comparison.diagram.bands.len(), 8);
+    }
+
+    #[test]
+    fn un_comparatif_avec_exigence_porte_un_verdict_par_ligne() {
+        let comparison = compare("Ø20 H7/g6, H7/p6".into(), Some("5..50".into()), None).unwrap();
+        assert!(comparison.entries.iter().all(|e| e.verification.is_some()));
+        assert_eq!(
+            comparison.entries[0].verification.as_ref().unwrap().verdict,
+            mecatol_core::Verdict::Compatible
+        );
+    }
+
+    #[test]
+    fn un_comparatif_illisible_donne_une_piste_daction() {
+        let error = compare("Ø20 H7".into(), None, None).unwrap_err();
+        assert!(error.hint.unwrap().contains("deux éléments"));
+    }
+
+    #[test]
     fn les_tolerances_generales_rendent_les_quatre_classes() {
         let comparison = general_tolerances("linear".into(), "50".into()).unwrap();
         assert_eq!(comparison.rows.len(), 4);
@@ -450,5 +524,18 @@ mod tests {
             serde_json::to_string_pretty(&general_tolerances("linear".into(), "2".into()).unwrap())
                 .expect("sérialisation");
         std::fs::write(dir.join("general-tolerances.json"), general + "\n").expect("écriture");
+
+        // Les quatre ajustements du cahier des charges, avec une exigence : cet
+        // échantillon couvre à la fois le comparatif et les verdicts.
+        let comparison = serde_json::to_string_pretty(
+            &compare(
+                "Ø20 H7/g6, H7/h6, H7/k6, H7/p6".into(),
+                Some("5..50".into()),
+                None,
+            )
+            .unwrap(),
+        )
+        .expect("sérialisation");
+        std::fs::write(dir.join("fit-comparison.json"), comparison + "\n").expect("écriture");
     }
 }

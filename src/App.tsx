@@ -13,10 +13,11 @@ import { engineInfo, isDesktop } from "./api";
 import type { EngineInfo } from "./types";
 import { THEME_LABEL, useTheme, type Theme } from "./useTheme";
 import { Calculate, type Query } from "./views/Calculate";
+import { Compare } from "./views/Compare";
 import { GeneralTolerances } from "./views/GeneralTolerances";
 import { Home } from "./views/Home";
 
-type Screen = "home" | "calculate" | "general";
+type Screen = "home" | "calculate" | "compare" | "general";
 
 const THEMES: readonly Theme[] = ["light", "dark", "system"];
 
@@ -64,6 +65,14 @@ export function App() {
             onClick={() => setScreen("calculate")}
           >
             Calculer
+          </button>
+          <button
+            type="button"
+            className="tab"
+            aria-current={screen === "compare" ? "page" : undefined}
+            onClick={() => setScreen("compare")}
+          >
+            Comparer
           </button>
           <button
             type="button"
@@ -132,6 +141,7 @@ export function App() {
           {screen === "calculate" ? (
             <Calculate query={query} onQueryChange={setQuery} />
           ) : null}
+          {screen === "compare" ? <Compare /> : null}
           {screen === "general" ? <GeneralTolerances /> : null}
         </div>
       </main>

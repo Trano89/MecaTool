@@ -34,7 +34,7 @@ BESOIN → CALCUL → COMPARAISON → VALIDATION → EXPLICATION → VISUALISATI
 | Application Tauri + React (accueil, calcul, recherche) | ✅ |
 | Thème clair / sombre / système | ✅ |
 | Tolérances générales ISO 2768-1 | ✅ vérifiées, 3 tables |
-| Comparateur de solutions | ⏳ |
+| Comparateur de solutions | ✅ |
 | Historique et export PDF | ⏳ |
 | Tolérances géométriques (v0.3) | ⏳ |
 
@@ -182,9 +182,9 @@ Chacun de ces refus est couvert par un test.
 ## Développement
 
 ```bash
-cargo test --workspace        # 195 tests : moteur
-cd src-tauri && cargo test    #  13 tests : frontiere Tauri + echantillons
-npm test                      #  28 tests : interface
+cargo test --workspace        # 219 tests : moteur
+cd src-tauri && cargo test    #  16 tests : frontiere Tauri + echantillons
+npm test                      #  38 tests : interface
 cargo clippy --workspace --all-targets
 cargo fmt --all
 ```

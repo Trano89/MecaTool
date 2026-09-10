@@ -13,9 +13,10 @@
 use std::process::ExitCode;
 
 use mecatol_core::{Feature, FeatureTolerance, Length, ReasoningStep, Unit};
+use mecatol_engine::compare::{compare_fits, nominal_label};
 use mecatol_engine::diagram::{fit_diagram, to_svg, DiagramMode, DiagramOptions};
 use mecatol_engine::iso286::{classification_conclusion, FitAnalysis, Iso286Engine};
-use mecatol_engine::parser::{parse, parse_clearance_window, ParsedInput};
+use mecatol_engine::parser::{parse, parse_clearance_window, parse_comparison, ParsedInput};
 use mecatol_engine::requirement::{verify_clearance, ClearanceRequirement};
 use mecatol_engine::search::{find_fits, SearchOptions, SearchResult};
 
@@ -100,6 +101,13 @@ impl Output {
 fn run(input: &str, window: Option<&str>, output: &Output) -> Result<(), String> {
     let expert = output.expert;
     let engine = Iso286Engine::new().map_err(|e| e.to_string())?;
+
+    // La virgule ne peut vouloir dire qu'une chose : plusieurs ajustements à
+    // comparer. Aucune désignation ISO 286 n'en contient.
+    if input.contains(',') {
+        return run_comparison(&engine, input, window, output);
+    }
+
     let parsed = parse(input).map_err(|e| e.to_string())?;
     let unit = parsed.unit();
 
@@ -172,6 +180,84 @@ fn run(input: &str, window: Option<&str>, output: &Output) -> Result<(), String>
             report_search(&result, &requirement, nominal, unit);
         }
     }
+    Ok(())
+}
+
+fn run_comparison(
+    engine: &Iso286Engine,
+    input: &str,
+    window: Option<&str>,
+    output: &Output,
+) -> Result<(), String> {
+    let request = parse_comparison(input).map_err(|e| e.to_string())?;
+
+    let requirement = match window {
+        Some(text) => {
+            let (min, max) = parse_clearance_window(text).map_err(|e| e.to_string())?;
+            Some(ClearanceRequirement::new(request.nominal, min, max).map_err(|e| e.to_string())?)
+        }
+        None => None,
+    };
+
+    let options = DiagramOptions {
+        mode: output.diagram_mode(),
+        // Un comparatif tient mal dans la largeur d'un ajustement seul.
+        width: 900.0,
+        ..DiagramOptions::default()
+    };
+
+    let comparison = compare_fits(
+        engine,
+        request.nominal,
+        &request.pairs,
+        requirement.as_ref(),
+        &options,
+    )
+    .map_err(|e| e.to_string())?;
+
+    title(&format!(
+        "Comparaison {} — {} ajustements",
+        nominal_label(request.nominal),
+        comparison.entries.len()
+    ));
+
+    section("VALEURS");
+    let has_verdict = requirement.is_some();
+    println!(
+        "  {:<10} {:>10} {:>10} {:>11}  Type",
+        "Ajustement", "Jeu min", "Jeu max", "Dispersion"
+    );
+    println!("  {}", "-".repeat(if has_verdict { 76 } else { 58 }));
+    for entry in &comparison.entries {
+        print!(
+            "  {:<10} {:>10} {:>10} {:>11}  {}",
+            entry.designation,
+            plain_um(entry.fit.min_clearance),
+            plain_um(entry.fit.max_clearance),
+            plain_um(entry.span),
+            entry.classification
+        );
+        match &entry.verification {
+            Some(verification) => println!("  {}", verification.conclusion.headline()),
+            None => println!(),
+        }
+    }
+
+    section("CE QUE LE COMPARATIF MONTRE");
+    println!("  {}", comparison.summary);
+    println!();
+    println!("  L'ordre est celui de votre saisie : Mecatol ne reclasse pas.");
+
+    if let Some(path) = &output.svg_path {
+        std::fs::write(path, to_svg(&comparison.diagram))
+            .map_err(|e| format!("écriture de {path} impossible : {e}"))?;
+        section("GRAPHIQUE");
+        row("Fichier écrit", path);
+        println!("  {}", comparison.diagram.scale_note);
+        println!();
+    }
+
+    standards_block(&comparison.provenance);
     Ok(())
 }
 
@@ -517,6 +603,10 @@ VÉRIFIER — est-ce que cet ajustement convient ?
 TROUVER — quels ajustements répondent à mon besoin ?
   mecatol \"Ø20\" --jeu 10..30
   mecatol \"Ø20\" --jeu 5..
+
+COMPARER — laquelle de ces solutions choisir ?
+  mecatol \"Ø20 H7/g6, H7/h6, H7/k6, H7/p6\"
+  mecatol \"Ø20 H7/g6, H7/k6\" --jeu 5..50 --svg comparatif.svg
 
 Ce binaire est un outil de vérification du moteur, pas le produit fini.
 "

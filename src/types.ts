@@ -119,6 +119,12 @@ export type ClearanceKind = "minimum" | "maximum";
 
 export interface Band {
   label: string;
+  /**
+   * L'ajustement auquel cette zone appartient, dans un comparatif.
+   *
+   * Nul lorsque le diagramme n'en montre qu'un : le titre suffit alors.
+   */
+  group: string | null;
   feature: Feature;
   x: number;
   width: number;
@@ -241,6 +247,31 @@ export interface SearchReport {
 }
 
 export type Report = FitReport | FeatureReport | SearchReport;
+
+/* ---------- Comparaison d'ajustements ---------- */
+
+export interface ComparedFit {
+  fit: Fit;
+  designation: string;
+  /** Type d'ajustement, pastille comprise. */
+  classification: string;
+  /** `IT(alésage) + IT(arbre)` : la dispersion à tenir en fabrication. */
+  span: Nanometres;
+  /** Présent seulement si une exigence de jeu a été fournie. */
+  verification: Verification | null;
+}
+
+export interface FitComparison {
+  nominal: Nanometres;
+  /** Dans l'ordre de la saisie — l'interface ne reclasse pas. */
+  entries: ComparedFit[];
+  /** Toutes les zones sur une échelle unique. */
+  diagram: Diagram;
+  requirement: ClearanceRequirement | null;
+  provenance: Provenance;
+  /** Ce que le comparatif fait ressortir, en une phrase. */
+  summary: string;
+}
 
 /* ---------- Tolérances générales (ISO 2768-1) ---------- */
 
