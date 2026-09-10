@@ -22,6 +22,7 @@
 #![forbid(unsafe_code)]
 #![warn(missing_debug_implementations)]
 
+pub mod diagram;
 pub mod error;
 pub mod format;
 pub mod iso286;
@@ -29,6 +30,7 @@ pub mod parser;
 pub mod requirement;
 pub mod search;
 
+pub use diagram::{fit_diagram, to_svg, Diagram, DiagramMode, DiagramOptions};
 pub use error::{EngineError, Result};
 pub use iso286::{FeatureAnalysis, FitAnalysis, Iso286Engine};
 pub use parser::{parse, ParsedInput};

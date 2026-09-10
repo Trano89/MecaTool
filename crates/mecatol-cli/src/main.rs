@@ -13,6 +13,7 @@
 use std::process::ExitCode;
 
 use mecatol_core::{Feature, FeatureTolerance, Length, ReasoningStep, Unit};
+use mecatol_engine::diagram::{fit_diagram, to_svg, DiagramMode, DiagramOptions};
 use mecatol_engine::iso286::{classification_conclusion, FitAnalysis, Iso286Engine};
 use mecatol_engine::parser::{parse, parse_clearance_window, ParsedInput};
 use mecatol_engine::requirement::{verify_clearance, ClearanceRequirement};
@@ -25,16 +26,26 @@ fn main() -> ExitCode {
 
     let mut expert = false;
     let mut window: Option<String> = None;
+    let mut svg_path: Option<String> = None;
+    let mut true_to_scale = false;
     let mut parts: Vec<String> = Vec::new();
 
     let mut args = std::env::args().skip(1);
     while let Some(arg) = args.next() {
         match arg.as_str() {
             "--expert" | "-x" => expert = true,
+            "--fidele" => true_to_scale = true,
             "--jeu" | "-j" => match args.next() {
                 Some(value) => window = Some(value),
                 None => {
                     eprintln!("\nErreur : --jeu attend une fenêtre, par ex. --jeu 10..30\n");
+                    return ExitCode::FAILURE;
+                }
+            },
+            "--svg" => match args.next() {
+                Some(value) => svg_path = Some(value),
+                None => {
+                    eprintln!("\nErreur : --svg attend un chemin de fichier\n");
                     return ExitCode::FAILURE;
                 }
             },
@@ -55,7 +66,12 @@ fn main() -> ExitCode {
         return ExitCode::FAILURE;
     }
 
-    match run(&parts.join(" "), window.as_deref(), expert) {
+    let output = Output {
+        expert,
+        svg_path,
+        true_to_scale,
+    };
+    match run(&parts.join(" "), window.as_deref(), &output) {
         Ok(()) => ExitCode::SUCCESS,
         Err(message) => {
             eprintln!("\nErreur : {message}\n");
@@ -64,7 +80,25 @@ fn main() -> ExitCode {
     }
 }
 
-fn run(input: &str, window: Option<&str>, expert: bool) -> Result<(), String> {
+/// Ce que l'utilisateur a demandé en sortie.
+struct Output {
+    expert: bool,
+    svg_path: Option<String>,
+    true_to_scale: bool,
+}
+
+impl Output {
+    fn diagram_mode(&self) -> DiagramMode {
+        if self.true_to_scale {
+            DiagramMode::TrueToScale
+        } else {
+            DiagramMode::Deviations
+        }
+    }
+}
+
+fn run(input: &str, window: Option<&str>, output: &Output) -> Result<(), String> {
+    let expert = output.expert;
     let engine = Iso286Engine::new().map_err(|e| e.to_string())?;
     let parsed = parse(input).map_err(|e| e.to_string())?;
     let unit = parsed.unit();
@@ -89,6 +123,26 @@ fn run(input: &str, window: Option<&str>, expert: bool) -> Result<(), String> {
                 .fit(nominal, hole, shaft)
                 .map_err(|e| e.to_string())?;
             report_fit(&analysis, nominal, unit, expert, requirement.as_ref());
+
+            if let Some(path) = &output.svg_path {
+                let diagram = fit_diagram(
+                    &analysis.fit,
+                    &DiagramOptions {
+                        mode: output.diagram_mode(),
+                        ..DiagramOptions::default()
+                    },
+                );
+                std::fs::write(path, to_svg(&diagram))
+                    .map_err(|e| format!("écriture de {path} impossible : {e}"))?;
+                section("GRAPHIQUE");
+                row("Fichier écrit", path);
+                row(
+                    "Échelle verticale",
+                    &format!("1 µm = {:.1} px", diagram.pixels_per_micrometre),
+                );
+                println!("  {}", diagram.scale_note);
+                println!();
+            }
         }
 
         ParsedInput::Feature { nominal, class, .. } => {
@@ -445,6 +499,8 @@ USAGE
 OPTIONS
   -j, --jeu MIN..MAX   fenêtre de jeu voulue, en µm sauf unité précisée
   -x, --expert         affiche le détail du calcul, formules comprises
+      --svg FICHIER    écrit le graphique des zones de tolérance
+      --fidele         graphique à l'échelle réelle de la pièce
   -h, --help           affiche cette aide
   -V, --version        affiche la version
 

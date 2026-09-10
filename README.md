@@ -29,7 +29,7 @@ BESOIN → CALCUL → COMPARAISON → VALIDATION → EXPLICATION → VISUALISATI
 | Recherche de solutions à partir d'un besoin | ✅ |
 | CLI de vérification | ✅ |
 | Comparateur de solutions | ⏳ |
-| Graphique des zones de tolérance | ⏳ |
+| Graphique des zones de tolérance + export SVG | ✅ |
 | Interface Tauri + React | ⏳ |
 
 ## Essayer
@@ -157,7 +157,7 @@ Chacun de ces refus est couvert par un test.
 ## Développement
 
 ```bash
-cargo test --workspace      # 141 tests
+cargo test --workspace      # 164 tests
 cargo clippy --workspace --all-targets
 cargo fmt --all
 ```
@@ -166,6 +166,8 @@ Prérequis : Rust stable, Node.js LTS, et sous Windows les Build Tools C++.
 
 ## Documentation
 
+- [docs/visualization.md](docs/visualization.md) — pourquoi la géométrie du graphique
+  est calculée en Rust, et ce que les tests en garantissent.
 - [docs/standards.md](docs/standards.md) — données normatives et protocole de
   vérification. **À lire en premier.**
 
