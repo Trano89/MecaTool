@@ -25,6 +25,7 @@
 pub mod diagram;
 pub mod error;
 pub mod format;
+pub mod iso2768;
 pub mod iso286;
 pub mod parser;
 pub mod requirement;
@@ -32,6 +33,7 @@ pub mod search;
 
 pub use diagram::{fit_diagram, to_svg, Diagram, DiagramMode, DiagramOptions};
 pub use error::{EngineError, Result};
+pub use iso2768::{ClassComparison, ClassRow, GeneralAnalysis, Iso2768Engine};
 pub use iso286::{FeatureAnalysis, FitAnalysis, Iso286Engine};
 pub use parser::{parse, ParsedInput};
 pub use requirement::{verify_clearance, ClearanceRequirement, Margins, Verification};

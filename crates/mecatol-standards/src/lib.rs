@@ -30,8 +30,12 @@
 #![warn(missing_debug_implementations)]
 
 pub mod error;
+pub mod iso2768;
 pub mod iso286;
 pub mod value;
 
 pub use error::{Result, StandardsError};
+pub use iso2768::{
+    GeneralClass, GeneralDeviation, GeneralLookup, GeneralRange, GeneralToleranceTable, MeasureKind,
+};
 pub use iso286::{DeviationSide, ItGradeTable, ItValue, ShaftDeviation, ShaftDeviationTable};

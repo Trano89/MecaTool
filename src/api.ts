@@ -8,7 +8,14 @@
 
 import { invoke } from "@tauri-apps/api/core";
 
-import type { AppError, Diagram, EngineInfo, Report } from "./types";
+import type {
+  AppError,
+  ClassComparison,
+  Diagram,
+  EngineInfo,
+  MeasureKind,
+  Report,
+} from "./types";
 
 /** Vrai lorsque l'application tourne dans la fenêtre Tauri. */
 export function isDesktop(): boolean {
@@ -77,4 +84,21 @@ export function rescaleDiagram(input: string, trueToScale: boolean): Promise<Dia
 /** État du moteur et de ses données, lu une fois au démarrage. */
 export function engineInfo(): Promise<EngineInfo> {
   return call<EngineInfo>("engine_info", {});
+}
+
+/**
+ * Les tolérances générales d'une cote, pour les quatre classes à la fois.
+ *
+ * Le comparatif est rendu d'un bloc plutôt que classe par classe : on choisit
+ * une classe en voyant ce que les autres donneraient, pas en les interrogeant
+ * une par une.
+ *
+ * Pour une cote angulaire, `nominalMm` est la **longueur du côté le plus court**
+ * de l'angle — c'est ce que la norme prend en entrée.
+ */
+export function generalTolerances(
+  kind: MeasureKind,
+  nominalMm: string,
+): Promise<ClassComparison> {
+  return call<ClassComparison>("general_tolerances", { kind, nominalMm });
 }

@@ -5,7 +5,33 @@ projet adopte le [versionnage sémantique](https://semver.org/lang/fr/).
 
 ## [Non publié]
 
-### Ajouté
+### Ajouté — tolérances générales (ISO 2768-1)
+
+- **Type `Angle` exact**, en millisecondes d'arc entières. Le choix n'est pas
+  cosmétique : `0°20′` vaut un tiers de degré, inexprimable en degrés décimaux,
+  mais exact en secondes d'arc. Sans lui, les tolérances angulaires générales
+  seraient fausses dès la première valeur.
+- Les **trois tables** de l'ISO 2768-1 : dimensions linéaires, arêtes abattues,
+  dimensions angulaires, pour les quatre classes f, m, c, v.
+- Écran dédié montrant **les quatre classes ensemble**. Choisir une classe
+  suppose de voir ce que les autres donneraient ; afficher `m` seule répondrait
+  à la mauvaise question.
+- Les combinaisons que la norme ne définit pas — classe `f` au-delà de 2000 mm,
+  classe `v` en dessous de 3 mm — restent visibles **avec leur raison**, plutôt
+  que d'être masquées ou prises pour des zéros.
+
+Trois particularités de cette norme, portées par le code plutôt que subies :
+
+| Particularité | Conséquence |
+|---|---|
+| Borne basse du premier échelon **incluse** (« de 0,5 à 3 ») | Type d'échelon distinct de celui de l'ISO 286 |
+| Échelons **ouverts** (« au-delà de 6 ») | Borne haute optionnelle, validée comme dernière seulement |
+| Tolérances angulaires **décroissantes** avec la taille | Monotonie inversée dans la validation de cette table |
+
+En dessous de 0,5 mm, la norme renvoie à une cotation individuelle : Mecatol
+refuse de conclure et le dit, en citant la norme.
+
+### Ajouté — version 0.1
 
 **Socle**
 

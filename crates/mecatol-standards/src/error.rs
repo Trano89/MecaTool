@@ -28,6 +28,22 @@ pub enum StandardsError {
     #[error("la lettre d'ecart fondamental {letter} ne figure pas dans {dataset}")]
     LetterUnavailable { dataset: String, letter: String },
 
+    #[error("classe de tolérance générale inconnue : {given:?} (attendu f, m, c ou v)")]
+    UnknownGeneralClass { given: String },
+
+    #[error(
+        "la cote nominale {nominal} est inférieure à {minimum} : l'ISO 2768-1 impose \
+         d'indiquer les écarts limites directement à côté de la cote nominale"
+    )]
+    BelowGeneralMinimum { nominal: String, minimum: String },
+
+    #[error("l'ISO 2768-1 ne définit pas la classe {class} pour une {kind} de l'échelon {range}")]
+    GeneralNotDefined {
+        class: String,
+        kind: String,
+        range: String,
+    },
+
     #[error("{grade} ne s'applique pas ici : {reason}")]
     GradeNotApplicable { grade: String, reason: String },
 

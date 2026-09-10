@@ -21,7 +21,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             commands::analyse,
             commands::rescale_diagram,
-            commands::engine_info
+            commands::engine_info,
+            commands::general_tolerances
         ])
         .run(tauri::generate_context!())
         .expect("le lancement de Mecatol a échoué");

@@ -242,6 +242,53 @@ export interface SearchReport {
 
 export type Report = FitReport | FeatureReport | SearchReport;
 
+/* ---------- Tolérances générales (ISO 2768-1) ---------- */
+
+/**
+ * Un angle, en **millisecondes d'arc entières**.
+ *
+ * `0°20′` vaut un tiers de degré : inexprimable en degrés décimaux, exact ici
+ * (`1 200 000`). Les libellés prêts à afficher voyagent à côté, déjà formatés
+ * par le moteur — l'interface n'a jamais à convertir un angle.
+ */
+export type Milliarcseconds = number;
+
+export type GeneralClass = "fine" | "medium" | "coarse" | "very_coarse";
+
+export type MeasureKind = "linear" | "broken_edge" | "angular";
+
+export type GeneralDeviation =
+  | { kind: "linear"; magnitude: Nanometres }
+  | { kind: "angular"; magnitude: Milliarcseconds };
+
+export interface ClassRow {
+  class: GeneralClass;
+  /** Symbole porté sur le dessin : `f`, `m`, `c`, `v`. */
+  symbol: string;
+  name: string;
+  designation: string;
+  /** Absent lorsque la norme ne définit rien pour cette combinaison. */
+  deviation: GeneralDeviation | null;
+  deviation_label: string | null;
+  limits: LimitsOfSize | null;
+  /** Pourquoi la norme ne définit rien. Présent si et seulement si `deviation` est nul. */
+  unavailable: string | null;
+}
+
+export interface ClassComparison {
+  kind: MeasureKind;
+  nominal: Nanometres;
+  /** Une entrée par classe, du plus fin au plus grossier. */
+  rows: ClassRow[];
+  provenance: Provenance;
+}
+
+export const MEASURE_KIND_LABEL: Record<MeasureKind, string> = {
+  linear: "Dimension linéaire",
+  broken_edge: "Arête abattue",
+  angular: "Dimension angulaire",
+};
+
 export interface EngineInfo {
   app_version: string;
   available_letters: string[];

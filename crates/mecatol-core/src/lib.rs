@@ -21,6 +21,7 @@
 #![forbid(unsafe_code)]
 #![warn(missing_debug_implementations)]
 
+pub mod angle;
 pub mod conclusion;
 pub mod fit;
 pub mod iso_class;
@@ -28,6 +29,7 @@ pub mod length;
 pub mod standard;
 pub mod tolerance;
 
+pub use angle::{Angle, AngleError, MAS_PER_ARCMINUTE, MAS_PER_ARCSECOND, MAS_PER_DEGREE};
 pub use conclusion::{Conclusion, ReasoningStep, Verdict};
 pub use fit::{Fit, FitKind};
 pub use iso_class::{ClassError, DeviationLetter, Feature, Grade, ToleranceClass, ALL_LETTERS};

@@ -114,8 +114,7 @@ impl Margins {
     }
 
     pub fn respects_all(&self) -> bool {
-        self.lower.map_or(true, |m| !m.is_negative())
-            && self.upper.map_or(true, |m| !m.is_negative())
+        self.lower.is_none_or(|m| !m.is_negative()) && self.upper.is_none_or(|m| !m.is_negative())
     }
 }
 
@@ -199,10 +198,10 @@ pub fn verify_clearance(fit: &Fit, requirement: &ClearanceRequirement) -> Result
     // Les deux plages se rencontrent-elles, ne serait-ce qu'en partie ?
     let overlaps = requirement
         .min_clearance
-        .map_or(true, |m| fit.max_clearance >= m)
+        .is_none_or(|m| fit.max_clearance >= m)
         && requirement
             .max_clearance
-            .map_or(true, |m| fit.min_clearance <= m);
+            .is_none_or(|m| fit.min_clearance <= m);
 
     let (verdict, detail) = if respects_all {
         (

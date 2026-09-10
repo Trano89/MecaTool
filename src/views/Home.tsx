@@ -12,10 +12,16 @@
 
 import type { Query } from "./Calculate";
 
+/** Les écrans qu'une carte peut ouvrir directement. */
+export type Destination = "calculate" | "general";
+
 interface Entry {
   title: string;
   question: string;
+  /** Ouvre l'écran de calcul avec cette saisie pré-remplie. */
   query?: Query;
+  /** Ouvre un autre écran, sans saisie à pré-remplir. */
+  opens?: Destination;
   later?: string;
 }
 
@@ -38,7 +44,7 @@ const ENTRIES: readonly Entry[] = [
   {
     title: "Tolérances générales",
     question: "Que valent les cotes non tolérancées ?",
-    later: "version 0.2",
+    opens: "general",
   },
   {
     title: "Géométrie",
@@ -59,9 +65,10 @@ const ENTRIES: readonly Entry[] = [
 
 interface Props {
   onStart: (query: Query) => void;
+  onOpen: (destination: Destination) => void;
 }
 
-export function Home({ onStart }: Props) {
+export function Home({ onStart, onOpen }: Props) {
   return (
     <div className="stack">
       <div>
@@ -77,8 +84,11 @@ export function Home({ onStart }: Props) {
             key={entry.title}
             type="button"
             className="entry-card"
-            disabled={!entry.query}
-            onClick={() => entry.query && onStart(entry.query)}
+            disabled={!entry.query && !entry.opens}
+            onClick={() => {
+              if (entry.query) onStart(entry.query);
+              else if (entry.opens) onOpen(entry.opens);
+            }}
           >
             <h3>{entry.title}</h3>
             <p>{entry.question}</p>

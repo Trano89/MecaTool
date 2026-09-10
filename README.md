@@ -10,11 +10,11 @@ qui permet de **comprendre et de choisir** une tolérance mécanique :
 BESOIN → CALCUL → COMPARAISON → VALIDATION → EXPLICATION → VISUALISATION
 ```
 
-> ✅ **Données normatives vérifiées.** Les 364 valeurs ISO 286 embarquées ont été
-> confrontées case par case à l'ISO 286-2:2010, par un script rejouable —
-> aucun écart. La couverture reste partielle : 10 lettres sur 28, jusqu'à 500 mm.
-> Le moteur refuse explicitement ce qu'il n'a pas, plutôt que de l'approximer.
-> Voir [docs/standards.md](docs/standards.md).
+> ✅ **Données normatives vérifiées.** Les 364 valeurs ISO 286 ont été confrontées
+> case par case à l'ISO 286-2:2010 par un script rejouable ; les trois tables de
+> l'ISO 2768-1 ont été recoupées entre deux traductions indépendantes du même
+> document. Aucun écart. La couverture reste partielle et le moteur refuse
+> explicitement ce qu'il n'a pas. Voir [docs/standards.md](docs/standards.md).
 
 ## État d'avancement
 
@@ -33,8 +33,10 @@ BESOIN → CALCUL → COMPARAISON → VALIDATION → EXPLICATION → VISUALISATI
 | Graphique des zones de tolérance + export SVG | ✅ |
 | Application Tauri + React (accueil, calcul, recherche) | ✅ |
 | Thème clair / sombre / système | ✅ |
+| Tolérances générales ISO 2768-1 | ✅ vérifiées, 3 tables |
 | Comparateur de solutions | ⏳ |
 | Historique et export PDF | ⏳ |
+| Tolérances géométriques (v0.3) | ⏳ |
 
 ## Lancer l'application
 
@@ -146,10 +148,15 @@ exactement le même code.
 
 | Crate | Rôle |
 |---|---|
-| `mecatol-core` | `Length` (nanomètres entiers), `ToleranceClass`, `Fit`, `Provenance` |
-| `mecatol-standards` | chargement et validation des tables ISO, règle de dérivation des alésages |
+| `mecatol-core` | `Length` et `Angle` (entiers exacts), `ToleranceClass`, `Fit`, `Provenance` |
+| `mecatol-standards` | chargement et validation des tables ISO 286 et ISO 2768 |
 | `mecatol-engine` | calcul des tolérances et ajustements, parser, explications |
 | `mecatol-cli` | banc d'essai du moteur, pour confronter les résultats à un manuel |
+
+Toute grandeur est un entier : les longueurs en **nanomètres**, les angles en
+**millisecondes d'arc**. Le second choix compte autant que le premier —
+`0°20′` vaut un tiers de degré, inexprimable en degrés décimaux, mais exact en
+secondes d'arc. Les tolérances angulaires générales tombent donc juste.
 
 ## Les sept principes
 
@@ -175,9 +182,9 @@ Chacun de ces refus est couvert par un test.
 ## Développement
 
 ```bash
-cargo test --workspace        # 164 tests : moteur
-cd src-tauri && cargo test    #  10 tests : frontiere Tauri + echantillons
-npm test                      #  20 tests : interface
+cargo test --workspace        # 195 tests : moteur
+cd src-tauri && cargo test    #  13 tests : frontiere Tauri + echantillons
+npm test                      #  28 tests : interface
 cargo clippy --workspace --all-targets
 cargo fmt --all
 ```

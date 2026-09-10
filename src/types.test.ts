@@ -16,9 +16,11 @@ import fitFixture from "./fixtures/fit-report.json";
 import featureFixture from "./fixtures/feature-report.json";
 import searchFixture from "./fixtures/search-report.json";
 import engineFixture from "./fixtures/engine-info.json";
+import generalFixture from "./fixtures/general-tolerances.json";
 
 import {
   NM_PER_UM,
+  type ClassComparison,
   type EngineInfo,
   type FeatureReport,
   type FitReport,
@@ -30,6 +32,7 @@ const fit = fitFixture as FitReport;
 const feature = featureFixture as FeatureReport;
 const search = searchFixture as SearchReport;
 const engine = engineFixture as EngineInfo;
+const general = generalFixture as ClassComparison;
 
 describe("échantillons du moteur", () => {
   it("décrit un ajustement Ø10 H7/g6 exact", () => {
@@ -79,6 +82,26 @@ describe("échantillons du moteur", () => {
     // Ce scénario n'a pas de solution exacte : le diagnostic doit l'expliquer.
     expect(search.diagnosis).not.toBeNull();
     expect(search.requirement.min_clearance).toBe(10 * NM_PER_UM);
+  });
+
+  it("décrit les tolérances générales des quatre classes", () => {
+    expect(general.kind).toBe("linear");
+    expect(general.nominal).toBe(2 * 1_000_000);
+    expect(general.rows).toHaveLength(4);
+
+    // Les classes vont du plus fin au plus grossier.
+    expect(general.rows.map((row) => row.symbol)).toEqual(["f", "m", "c", "v"]);
+
+    // Une classe est soit définie, soit expliquée — jamais ni l'un ni l'autre.
+    for (const row of general.rows) {
+      expect(row.deviation === null).toBe(row.unavailable !== null);
+      expect(row.deviation === null).toBe(row.deviation_label === null);
+    }
+
+    // À 2 mm, la norme ne définit pas la classe v.
+    const veryCoarse = general.rows.find((row) => row.symbol === "v");
+    expect(veryCoarse?.deviation).toBeNull();
+    expect(veryCoarse?.unavailable).toMatch(/ne définit pas/);
   });
 
   it("décrit l'état de vérification de ses données", () => {

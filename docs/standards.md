@@ -94,6 +94,7 @@ calcul le sont. Une seule source douteuse contamine le résultat entier.
 |---|---|---|---|
 | Degrés IT01..IT18, Ø0..500 mm | ✅ vérifié | 13 échelons × 20 degrés = **260 valeurs** | ISO 286-2:2010, tableau 1 |
 | Écarts fondamentaux arbres    | ✅ vérifié | 10 lettres : d, e, f, g, h, js, k, m, n, p | ISO 286-2:2010, tableaux 18 à 26 |
+| Tolérances générales ISO 2768-1 | ✅ vérifié | 3 tables × 4 classes | DIN ISO 2768-1:1991-06, tableaux 1 à 3 |
 
 **Vérifié ne veut pas dire complet.** Les valeurs présentes ont été confrontées à
 la source ; il en manque encore beaucoup (voir ci-dessous).
@@ -122,6 +123,34 @@ Deux lettres échappent à l'automatisation, et le script le dit :
   constante. Le tableau 24 le confirme par lecture directe : la ligne des écarts
   inférieurs vaut `0` partout, sauf sous les quatre colonnes IT4 à IT7 où elle
   porte la valeur tabulée. C'est exactement le modèle implémenté.
+
+### ISO 2768-1 : deux rendus indépendants du même document
+
+Les trois tables ont été saisies depuis la traduction **française** (couche
+texte du PDF), puis recoupées cellule par cellule avec la traduction
+**allemande** (page 3, un scan sans couche texte, rendu en image et relu).
+
+Les deux chemins n'ont rien en commun : l'un passe par l'extraction de texte,
+l'autre par la lecture d'une image. Une erreur de transcription devrait se
+produire à l'identique dans les deux pour passer inaperçue. Les deux rendus
+concordent sur chaque cellule.
+
+Trois particularités de cette norme, toutes portées par le code :
+
+- **La borne basse du premier échelon est incluse.** L'ISO 286 écrit
+  « au-dessus de 6 jusqu'à 10 » ; l'ISO 2768 écrit « de 0,5 à 3 ». Une cote de
+  0,5 mm appartient donc bien au premier échelon.
+- **Deux cases sont vides** dans le tableau 1 : la classe `f` au-delà de
+  2000 mm, la classe `v` en dessous de 3 mm. Ce ne sont pas des zéros — la norme
+  ne définit rien. Mecatol refuse ces combinaisons et le dit.
+- **Les tolérances angulaires se resserrent quand la pièce grandit**, à
+  l'inverse des linéaires : elles dépendent de la longueur du côté le plus court
+  de l'angle, et le même écart linéaire rapporté à un bras plus long donne un
+  angle plus petit. La validation des tables applique donc une monotonie inverse
+  sur cette table.
+
+Les tolérances générales **géométriques** (forme et position) relèvent de
+l'ISO 2768-2, qui n'est pas couverte.
 
 ### Ce qui reste à saisir
 

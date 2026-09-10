@@ -9,8 +9,9 @@
 //! Rust. Renommer a la volee ferait diverger silencieusement les deux cotes le
 //! jour ou un champ change de nom.
 
-use mecatol_core::{Conclusion, DeviationLetter, Provenance, Unit};
+use mecatol_core::{Conclusion, DeviationLetter, Length, Provenance, Unit};
 use mecatol_engine::diagram::{fit_diagram, Diagram, DiagramMode, DiagramOptions};
+use mecatol_engine::iso2768::{ClassComparison, Iso2768Engine};
 use mecatol_engine::iso286::{
     classification_conclusion, FeatureAnalysis, FitAnalysis, Iso286Engine,
 };
@@ -18,6 +19,7 @@ use mecatol_engine::parser::{parse, parse_clearance_window, ParsedInput};
 use mecatol_engine::requirement::{verify_clearance, ClearanceRequirement, Verification};
 use mecatol_engine::search::{find_fits, SearchOptions, SearchResult};
 use mecatol_engine::EngineError;
+use mecatol_standards::iso2768::MeasureKind;
 use serde::{Deserialize, Serialize};
 
 /// Une erreur telle que l'interface doit la presenter.
@@ -116,6 +118,34 @@ pub struct EngineInfo {
 
 fn engine() -> Result<Iso286Engine, AppError> {
     Iso286Engine::new().map_err(AppError::from)
+}
+
+/// Les tolerances generales d'une cote, classe par classe.
+///
+/// `kind` vaut `linear`, `broken_edge` ou `angular` ; `nominal_mm` est la cote,
+/// ou pour une cote angulaire la longueur du cote le plus court de l'angle.
+#[tauri::command]
+pub fn general_tolerances(kind: String, nominal_mm: String) -> Result<ClassComparison, AppError> {
+    let kind = match kind.as_str() {
+        "linear" => MeasureKind::Linear,
+        "broken_edge" => MeasureKind::BrokenEdge,
+        "angular" => MeasureKind::Angular,
+        other => {
+            return Err(AppError {
+                message: format!("Type de cote inconnu : « {other} »."),
+                hint: Some("Attendu « linear », « broken_edge » ou « angular ».".to_string()),
+            })
+        }
+    };
+
+    let nominal =
+        Length::parse(nominal_mm.trim(), Unit::Millimetre).map_err(|source| AppError {
+            message: format!("Dimension illisible : « {nominal_mm} »."),
+            hint: Some(source.to_string()),
+        })?;
+
+    let engine = Iso2768Engine::new()?;
+    Ok(engine.across_classes(kind, nominal))
 }
 
 /// Analyse une entree utilisateur, avec ou sans exigence de jeu.
@@ -353,6 +383,32 @@ mod tests {
         );
     }
 
+    #[test]
+    fn les_tolerances_generales_rendent_les_quatre_classes() {
+        let comparison = general_tolerances("linear".into(), "50".into()).unwrap();
+        assert_eq!(comparison.rows.len(), 4);
+        assert_eq!(comparison.rows[1].symbol, "m");
+        assert_eq!(
+            comparison.rows[1].deviation_label.as_deref(),
+            Some("± 0.3 mm")
+        );
+    }
+
+    #[test]
+    fn une_cote_angulaire_utilise_la_bonne_table() {
+        let comparison = general_tolerances("angular".into(), "30".into()).unwrap();
+        assert_eq!(
+            comparison.rows[3].deviation_label.as_deref(),
+            Some("\u{b1} 2\u{b0}")
+        );
+    }
+
+    #[test]
+    fn un_type_de_cote_inconnu_donne_une_piste_daction() {
+        let error = general_tolerances("surface".into(), "50".into()).unwrap_err();
+        assert!(error.hint.unwrap().contains("linear"));
+    }
+
     /// Ecrit un echantillon de chaque rapport, que TypeScript relit pour valider
     /// ses propres types. Un champ renomme cote Rust fait echouer `tsc`.
     #[test]
@@ -387,5 +443,12 @@ mod tests {
 
         let info = serde_json::to_string_pretty(&engine_info().unwrap()).expect("sérialisation");
         std::fs::write(dir.join("engine-info.json"), info + "\n").expect("écriture");
+
+        // Une cote de 2 mm : la classe v n'y est pas définie, ce qui met dans
+        // l'échantillon le cas d'une classe indisponible avec sa raison.
+        let general =
+            serde_json::to_string_pretty(&general_tolerances("linear".into(), "2".into()).unwrap())
+                .expect("sérialisation");
+        std::fs::write(dir.join("general-tolerances.json"), general + "\n").expect("écriture");
     }
 }

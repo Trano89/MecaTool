@@ -1,10 +1,10 @@
 /**
  * L'ossature de l'application.
  *
- * Deux écrans en version 0.1 : l'accueil et le calcul. Le bandeau d'état des
- * données normatives est permanent et non masquable — tant que les tables n'ont
- * pas été confrontées à une source primaire, aucun écran ne doit laisser croire
- * le contraire.
+ * Trois écrans : l'accueil, le calcul d'ajustement, et les tolérances
+ * générales. Le bandeau sur l'état des données normatives est permanent et non
+ * masquable — aucun écran ne doit laisser croire qu'une table est vérifiée
+ * quand elle ne l'est pas.
  */
 
 import { useEffect, useState } from "react";
@@ -13,9 +13,10 @@ import { engineInfo, isDesktop } from "./api";
 import type { EngineInfo } from "./types";
 import { THEME_LABEL, useTheme, type Theme } from "./useTheme";
 import { Calculate, type Query } from "./views/Calculate";
+import { GeneralTolerances } from "./views/GeneralTolerances";
 import { Home } from "./views/Home";
 
-type Screen = "home" | "calculate";
+type Screen = "home" | "calculate" | "general";
 
 const THEMES: readonly Theme[] = ["light", "dark", "system"];
 
@@ -63,6 +64,14 @@ export function App() {
             onClick={() => setScreen("calculate")}
           >
             Calculer
+          </button>
+          <button
+            type="button"
+            className="tab"
+            aria-current={screen === "general" ? "page" : undefined}
+            onClick={() => setScreen("general")}
+          >
+            Tolérances générales
           </button>
         </nav>
 
@@ -119,11 +128,11 @@ export function App() {
             </div>
           ) : null}
 
-          {screen === "home" ? (
-            <Home onStart={start} />
-          ) : (
+          {screen === "home" ? <Home onStart={start} onOpen={setScreen} /> : null}
+          {screen === "calculate" ? (
             <Calculate query={query} onQueryChange={setQuery} />
-          )}
+          ) : null}
+          {screen === "general" ? <GeneralTolerances /> : null}
         </div>
       </main>
     </div>

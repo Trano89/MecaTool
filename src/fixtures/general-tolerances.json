@@ -1,0 +1,89 @@
+{
+  "kind": "linear",
+  "nominal": 2000000,
+  "rows": [
+    {
+      "class": "fine",
+      "symbol": "f",
+      "name": "fin",
+      "designation": "2 ± 0.05 mm",
+      "deviation": {
+        "kind": "linear",
+        "magnitude": 50000
+      },
+      "deviation_label": "± 0.05 mm",
+      "limits": {
+        "min": 1950000,
+        "max": 2050000
+      },
+      "unavailable": null
+    },
+    {
+      "class": "medium",
+      "symbol": "m",
+      "name": "moyen",
+      "designation": "2 ± 0.1 mm",
+      "deviation": {
+        "kind": "linear",
+        "magnitude": 100000
+      },
+      "deviation_label": "± 0.1 mm",
+      "limits": {
+        "min": 1900000,
+        "max": 2100000
+      },
+      "unavailable": null
+    },
+    {
+      "class": "coarse",
+      "symbol": "c",
+      "name": "grossier",
+      "designation": "2 ± 0.2 mm",
+      "deviation": {
+        "kind": "linear",
+        "magnitude": 200000
+      },
+      "deviation_label": "± 0.2 mm",
+      "limits": {
+        "min": 1800000,
+        "max": 2200000
+      },
+      "unavailable": null
+    },
+    {
+      "class": "very_coarse",
+      "symbol": "v",
+      "name": "très grossier",
+      "designation": "ISO 2768-v",
+      "deviation": null,
+      "deviation_label": null,
+      "limits": null,
+      "unavailable": "l'ISO 2768-1 ne définit pas la classe v pour une dimension linéaire de l'échelon de 0.5 à 3"
+    }
+  ],
+  "provenance": {
+    "references": [
+      {
+        "id": "ISO 2768-1",
+        "edition": "1989",
+        "title": "Tolérances générales — Partie 1 : Tolérances pour dimensions linéaires et angulaires non affectées de tolérances individuelles",
+        "scope": "tolérances générales linéaires et angulaires",
+        "source": "DIN ISO 2768-1:1991-06, adoption allemande de l'ISO 2768-1:1989. Traductions française et allemande du même document.",
+        "verification": {
+          "state": "verified",
+          "against": "DIN ISO 2768-1:1991-06, tableaux 1 à 3 — saisis depuis la traduction française (couche texte) puis recoupés case par case avec la traduction allemande (page 3, rendue en image depuis le scan). Deux rendus indépendants du même document, concordants sur chaque cellule.",
+          "on": "2026-09-10"
+        },
+        "notes": [
+          "Les écarts limites linéaires sont exprimés en millimètres, les écarts angulaires en degrés et minutes d'arc.",
+          "Le premier échelon part de 0,5 mm INCLUS, à la différence des échelons de l'ISO 286 dont la borne basse est exclue. Pour les cotes nominales inférieures à 0,5 mm, la norme impose d'indiquer les écarts limites directement à côté de la cote nominale : Mecatol refuse donc de conclure sous cette valeur.",
+          "Les tolérances angulaires s'appliquent selon la longueur du côté le plus court de l'angle considéré, et non selon la valeur de l'angle lui-même.",
+          "Les tolérances angulaires ne couvrent que la direction générale des lignes ou des lignes d'une surface, pas leurs écarts de forme.",
+          "Deux cases sont vides dans le tableau 1 : la classe f au-delà de 2000 mm, et la classe v en dessous de 3 mm. Ce ne sont pas des zéros : la norme ne définit rien. Mecatol refuse ces combinaisons.",
+          "Les tolérances générales géométriques (forme et position) relèvent de l'ISO 2768-2, qui n'est pas couverte ici.",
+          "Indication sur un dessin : « ISO 2768 » suivi de la classe, par exemple « ISO 2768-m »."
+        ]
+      }
+    ]
+  }
+}
