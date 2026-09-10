@@ -609,14 +609,42 @@ mod tests {
         assert!(message.contains('s'), "message peu clair : {message}");
     }
 
+    /// Le resultat doit refleter l'etat reel des donnees, quel qu'il soit.
+    ///
+    /// Les avertissements ne sont pas un texte decoratif : ils apparaissent si
+    /// et seulement si une source n'est pas verifiee. Le test verifie donc
+    /// l'equivalence, pas un etat particulier — il reste juste le jour ou une
+    /// nouvelle table non verifiee est ajoutee.
     #[test]
-    fn le_resultat_porte_ses_avertissements_de_non_verification() {
+    fn les_avertissements_suivent_exactement_letat_des_sources() {
         let f = engine().fit(mm("10"), class("H7"), class("g6")).unwrap();
-        // Tant que les tables ne sont pas verifiees, le resultat doit le dire.
-        assert!(!f.provenance.is_fully_verified());
+        assert!(
+            !f.provenance.references.is_empty(),
+            "resultat sans provenance"
+        );
+
+        let verified = f.provenance.is_fully_verified();
         let warnings = f.warnings();
-        assert!(!warnings.is_empty());
-        assert!(warnings.iter().all(|w| w.contains("non vérifiée")));
+        assert_eq!(
+            verified,
+            warnings.is_empty(),
+            "provenance verifiee = {verified}, mais {} avertissement(s)",
+            warnings.len()
+        );
+
+        // Chaque source verifiee doit dire contre quoi et a quelle date.
+        for reference in &f.provenance.references {
+            if let mecatol_core::VerificationStatus::Verified { against, on } =
+                &reference.verification
+            {
+                assert!(
+                    !against.is_empty(),
+                    "{} : source du controle vide",
+                    reference.id
+                );
+                assert!(!on.is_empty(), "{} : date du controle vide", reference.id);
+            }
+        }
     }
 
     #[test]

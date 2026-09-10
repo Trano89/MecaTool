@@ -10,9 +10,11 @@ qui permet de **comprendre et de choisir** une tolérance mécanique :
 BESOIN → CALCUL → COMPARAISON → VALIDATION → EXPLICATION → VISUALISATION
 ```
 
-> ⚠️ **Version 0.1 en construction.** Les données normatives embarquées sont
-> saisies mais **pas encore vérifiées** contre une source primaire. Mecatol le
-> signale à chaque résultat. Voir [docs/standards.md](docs/standards.md).
+> ✅ **Données normatives vérifiées.** Les 364 valeurs ISO 286 embarquées ont été
+> confrontées case par case à l'ISO 286-2:2010, par un script rejouable —
+> aucun écart. La couverture reste partielle : 10 lettres sur 28, jusqu'à 500 mm.
+> Le moteur refuse explicitement ce qu'il n'a pas, plutôt que de l'approximer.
+> Voir [docs/standards.md](docs/standards.md).
 
 ## État d'avancement
 
@@ -21,8 +23,8 @@ BESOIN → CALCUL → COMPARAISON → VALIDATION → EXPLICATION → VISUALISATI
 | Arithmétique exacte (nanomètres entiers) | ✅ |
 | Types du domaine et invariants | ✅ |
 | Traçabilité normative | ✅ |
-| Données ISO 286 — degrés IT | ⚠️ saisies, non vérifiées |
-| Données ISO 286 — écarts fondamentaux | ⚠️ saisies, non vérifiées, 10 lettres sur 28 |
+| Données ISO 286 — degrés IT | ✅ vérifiées, 260 valeurs |
+| Données ISO 286 — écarts fondamentaux | ✅ vérifiées, 10 lettres sur 28 |
 | Moteur : tolérances et ajustements | ✅ |
 | Parser d'entrées (`Ø10 H7/g6`) | ✅ |
 | Vérification d'une exigence fonctionnelle | ✅ |

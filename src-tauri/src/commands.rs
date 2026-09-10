@@ -338,13 +338,19 @@ mod tests {
     }
 
     #[test]
-    fn letat_du_moteur_annonce_les_donnees_non_verifiees() {
+    fn letat_du_moteur_decrit_ses_donnees_a_linterface() {
         let info = engine_info().unwrap();
         assert_eq!(info.available_letters.len(), 10);
         assert_eq!(info.max_nominal_mm, "500");
-        // Tant que les tables ne sont pas vérifiées, l'interface doit le savoir.
-        assert!(!info.warnings.is_empty());
-        assert!(!info.provenance.is_fully_verified());
+        assert!(!info.provenance.references.is_empty());
+
+        // L'interface affiche un bandeau si et seulement si une source n'est pas
+        // vérifiée : les deux doivent donc rester d'accord.
+        assert_eq!(
+            info.provenance.is_fully_verified(),
+            info.warnings.is_empty(),
+            "l'état de vérification et les avertissements divergent"
+        );
     }
 
     /// Ecrit un echantillon de chaque rapport, que TypeScript relit pour valider

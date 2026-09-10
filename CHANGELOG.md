@@ -44,12 +44,24 @@ projet adopte le [versionnage sémantique](https://semver.org/lang/fr/).
 - Bandeau permanent sur l'état de vérification des données normatives.
 - Outil de vérification en ligne de commande (`mecatol-cli`).
 
+**Vérification des données**
+
+- Les 364 valeurs ISO 286 embarquées ont été confrontées à l'ISO 286-2:2010 :
+  260 degrés de tolérance (tableau 1) et 104 écarts fondamentaux d'arbres
+  (tableaux 18 à 26). **Aucun écart.**
+- `scripts/verify-iso286-tables.py` rejoue la comparaison depuis le PDF de la
+  norme. Une vérification qui ne se rejoue pas n'en est pas une.
+- `k` et `js` échappent à l'automatisation, pour des raisons nommées dans le
+  script : `k` varie avec le degré, `js` relève d'une règle et non d'une table.
+  Les deux sont contrôlés autrement, et le script le dit.
+
 ### Notes
 
-Les tables normatives embarquées sont marquées `unverified` : elles ont été
-saisies mais pas encore confrontées à une source primaire. L'application le
-signale à chaque résultat. Voir [docs/standards.md](docs/standards.md).
+**Vérifié ne veut pas dire complet.** Les lettres a, b, c et r à zc restent
+absentes : elles emploient des échelons de dimensions nominales plus fins que
+les 13 échelons standards, et les saisir sur ces derniers produirait des valeurs
+fausses d'apparence correcte. La couverture s'arrête à 500 mm là où la norme va
+jusqu'à 3 150 mm.
 
-Les lettres a, b, c et r à zc sont volontairement absentes : elles emploient des
-échelons de dimensions nominales plus fins que les 13 échelons standards, et les
-saisir sur ces derniers produirait des valeurs fausses d'apparence correcte.
+Le moteur refuse explicitement tout ce qui manque, et chaque refus est couvert
+par un test. Voir [docs/standards.md](docs/standards.md).

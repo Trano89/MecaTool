@@ -276,10 +276,11 @@
           "edition": "2010",
           "title": "Spécification géométrique des produits (GPS) — Système de codification ISO pour les tolérances sur les tailles linéaires — Partie 1 : Base des tolérances, écarts et ajustements",
           "scope": "degrés de tolérance normalisés IT",
-          "source": "Valeurs saisies de mémoire par l'assistant, en attente de confrontation à une source primaire. NE PAS présenter comme valeurs ISO tant que verification = verified.",
+          "source": "ISO 286-2:2010, tableau 1 « Values of standard tolerance grades for nominal sizes up to 3 150 mm », qui reproduit le tableau de l'ISO 286-1:2010.",
           "verification": {
-            "state": "unverified",
-            "pending": "À confronter case par case au tableau des degrés de tolérance normalisés (ISO 286-1:2010 tableau 1, ou tables VSM équivalentes) fournies par l'utilisateur."
+            "state": "verified",
+            "against": "ISO 286-2:2010(E), tableau 1, page 5 — les 260 cases (20 degrés × 13 échelons) comparées automatiquement par scripts/verify-iso286-tables.py",
+            "on": "2026-09-10"
           },
           "notes": [
             "Toutes les valeurs sont exprimées en micromètres.",
@@ -295,10 +296,11 @@
           "edition": "2010",
           "title": "Spécification géométrique des produits (GPS) — Système de codification ISO pour les tolérances sur les tailles linéaires — Partie 1 : Base des tolérances, écarts et ajustements",
           "scope": "écarts fondamentaux des arbres",
-          "source": "Valeurs saisies de mémoire par l'assistant, en attente de confrontation à une source primaire. NE PAS présenter comme valeurs ISO tant que verification = verified.",
+          "source": "ISO 286-2:2010, tableaux 18 à 26, « Limit deviations for shafts ». L'écart fondamental est celui qui ne varie pas avec le degré : l'écart supérieur pour d, e, f, g, h ; l'écart inférieur pour k, m, n, p.",
           "verification": {
-            "state": "unverified",
-            "pending": "À confronter case par case au tableau des écarts fondamentaux des arbres (ISO 286-1:2010, ou tables VSM équivalentes) fournies par l'utilisateur."
+            "state": "verified",
+            "against": "ISO 286-2:2010(E), tableaux 18 à 26 — 104 cases (8 lettres × 13 échelons) comparées automatiquement par scripts/verify-iso286-tables.py ; k confronté au tableau 24 par lecture directe (écart nul hors des degrés IT4 à IT7, ce que la ligne des écarts inférieurs confirme colonne par colonne) ; js relève de la règle ± IT/2, vérifiée par les tests du moteur et non tabulée comme écart fondamental",
+            "on": "2026-09-10"
           },
           "notes": [
             "Toutes les valeurs sont exprimées en micromètres, et désignent l'écart fondamental : celui des deux écarts que la lettre fixe.",

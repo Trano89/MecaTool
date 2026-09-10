@@ -306,12 +306,30 @@ mod tests {
         assert_eq!(t.max_nominal(), Length::from_millimetres(500));
     }
 
+    /// Une table declaree verifiee doit citer precisement contre quoi.
+    ///
+    /// « Verifie » sans source nommee ne vaut pas mieux que « non verifie » :
+    /// personne ne pourrait refaire le controle.
     #[test]
-    fn la_table_est_annoncee_non_verifiee() {
-        // Tant que l'utilisateur n'a pas confronte les valeurs a une source
-        // primaire, le moteur doit le dire plutot que de laisser croire a une
-        // valeur ISO etablie.
-        assert!(!table().standard().verification.is_verified());
+    fn la_table_cite_la_source_qui_la_verifie() {
+        let standard = table().standard();
+        match &standard.verification {
+            mecatol_core::VerificationStatus::Verified { against, on } => {
+                assert!(
+                    against.contains("ISO 286-2"),
+                    "source imprecise : {against}"
+                );
+                assert!(
+                    against.contains("tableau 1"),
+                    "tableau non cite : {against}"
+                );
+                assert!(on.starts_with("20"), "date de controle absente : {on}");
+            }
+            mecatol_core::VerificationStatus::Unverified { pending } => {
+                // Etat legitime, mais il doit dire ce qu'il reste a faire.
+                assert!(!pending.is_empty(), "non verifie sans marche a suivre");
+            }
+        }
     }
 
     #[test]

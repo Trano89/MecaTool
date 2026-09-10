@@ -90,10 +90,48 @@ calcul le sont. Une seule source douteuse contamine le résultat entier.
 
 ## État actuel
 
-| Jeu de données                    | État          | Couverture |
-|-----------------------------------|---------------|------------|
-| Degrés IT01..IT18, Ø0..500 mm     | ⚠ non vérifié | 13 échelons × 20 degrés = 260 valeurs |
-| Écarts fondamentaux arbres        | ⚠ non vérifié | 10 lettres : d, e, f, g, h, js, k, m, n, p |
+| Jeu de données                | État | Couverture | Vérifié contre |
+|---|---|---|---|
+| Degrés IT01..IT18, Ø0..500 mm | ✅ vérifié | 13 échelons × 20 degrés = **260 valeurs** | ISO 286-2:2010, tableau 1 |
+| Écarts fondamentaux arbres    | ✅ vérifié | 10 lettres : d, e, f, g, h, js, k, m, n, p | ISO 286-2:2010, tableaux 18 à 26 |
+
+**Vérifié ne veut pas dire complet.** Les valeurs présentes ont été confrontées à
+la source ; il en manque encore beaucoup (voir ci-dessous).
+
+### Comment la vérification a été faite
+
+```bash
+pip install pypdf
+python scripts/verify-iso286-tables.py chemin/vers/ISO_286-2.pdf
+```
+
+```
+Tableau 1, degrés de tolérance  : 260 cases comparées — aucun écart.
+Tableaux 18 à 26, écarts arbres : 104 cases comparées — aucun écart.
+```
+
+Le script lit la couche texte du PDF de la norme et compare case par case. Il
+n'écrit rien : corriger une donnée et déclarer une source vérifiée reste une
+décision humaine.
+
+Deux lettres échappent à l'automatisation, et le script le dit :
+
+- **`js`** n'est pas tabulé comme un écart fondamental — c'est la règle
+  « ± IT/2 », couverte par les tests du moteur ;
+- **`k`** a un écart qui dépend du degré, donc sa ligne n'est pas une plage
+  constante. Le tableau 24 le confirme par lecture directe : la ligne des écarts
+  inférieurs vaut `0` partout, sauf sous les quatre colonnes IT4 à IT7 où elle
+  porte la valeur tabulée. C'est exactement le modèle implémenté.
+
+### Ce qui reste à saisir
+
+| Manque | Pourquoi ce n'est pas un oubli |
+|---|---|
+| Lettres a, b, c et r à zc | Échelons de dimensions plus fins que les 13 standards (30..40 et 40..50, 50..65 et 65..80…). Les saisir sur les échelons standards produirait des valeurs fausses d'apparence correcte. |
+| Dimensions au-delà de 500 mm | La norme va jusqu'à 3 150 mm. Les échelons existent dans le tableau 1 ; ils n'ont pas encore été saisis ni vérifiés. |
+| Écarts des alésages | Dérivés par la règle du delta plutôt que tabulés. Les tableaux 2 à 16 de l'ISO 286-2 permettraient un contrôle indépendant de cette dérivation — contrôle qui reste à écrire. |
+
+Le moteur refuse explicitement tout ce qui manque, plutôt que de l'approximer.
 
 ### Lettres volontairement absentes
 
@@ -140,18 +178,24 @@ chargement au lieu d'être silencieusement arrondie.
 
 Pour faire passer un jeu de `unverified` à `verified` :
 
-1. Ouvrir le fichier JSON concerné. Le format est fait pour être lu à côté d'un
-   scan : une ligne par degré ou par lettre, 13 valeurs dans l'ordre des
-   échelons, alignées.
-2. Comparer case par case avec la source primaire.
-3. Corriger les écarts constatés dans le JSON.
-4. Lancer `cargo test` : les contrôles automatiques doivent tous passer.
-5. Remplacer le bloc `verification` par l'état `verified`, en citant précisément
-   la source : norme ou recueil, édition, tableau, page.
-6. Committer le fichier de données **seul**, avec en message la source utilisée.
+1. **Automatiser la comparaison** si la source est exploitable par machine.
+   `scripts/verify-iso286-tables.py` sert de modèle : il lit le PDF de la norme
+   et compare case par case. Une vérification faite à l'œil ne se rejoue pas et
+   personne ne peut la contrôler.
+2. Corriger les écarts constatés dans le JSON.
+3. Lancer `cargo test` : les contrôles automatiques doivent tous passer.
+4. Remplacer le bloc `verification` par l'état `verified`, en citant précisément
+   la source — norme, édition, tableau, page — **et le moyen du contrôle**.
+   « Vérifié » sans référence ne vaut pas mieux que « non vérifié » : un test
+   l'exige désormais.
+5. Committer le fichier de données **seul**, avec en message la source utilisée.
 
-Le point 6 compte : l'historique Git devient la trace de qui a vérifié quoi,
+Le point 5 compte : l'historique Git devient la trace de qui a vérifié quoi,
 contre quelle source et à quelle date.
+
+Ce qui échappe à l'automatisation doit être **nommé**, avec l'observation qui
+fonde le contrôle manuel — comme pour `k` ci-dessus. Un point non vérifiable
+automatiquement et passé sous silence est un point non vérifié.
 
 ## Règle de dérivation des alésages
 

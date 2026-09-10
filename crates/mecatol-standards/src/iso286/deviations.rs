@@ -443,7 +443,10 @@ mod tests {
         let t = table();
         assert_eq!(t.ranges().len(), 13);
         assert_eq!(t.letters().count(), 10);
-        assert!(!t.standard().verification.is_verified());
+        assert!(
+            t.standard().verification.is_verified(),
+            "les valeurs ont ete confrontees a l'ISO 286-2 : voir scripts/verify-iso286-tables.py"
+        );
     }
 
     #[test]

@@ -659,11 +659,20 @@ mod tests {
     }
 
     #[test]
-    fn les_resultats_portent_les_avertissements_de_non_verification() {
+    fn les_resultats_portent_la_provenance_de_leurs_donnees() {
         let e = engine();
         let req = requirement("20", 10, 30);
         let result = find_fits(&e, &req, &SearchOptions::default()).unwrap();
-        assert!(!result.provenance.is_fully_verified());
-        assert!(!result.provenance.warnings_fr().is_empty());
+
+        assert!(
+            !result.provenance.references.is_empty(),
+            "recherche sans provenance"
+        );
+        // Les avertissements apparaissent si et seulement si une source n'est
+        // pas verifiee.
+        assert_eq!(
+            result.provenance.is_fully_verified(),
+            result.provenance.warnings_fr().is_empty()
+        );
     }
 }

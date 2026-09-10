@@ -81,16 +81,25 @@ describe("échantillons du moteur", () => {
     expect(search.requirement.min_clearance).toBe(10 * NM_PER_UM);
   });
 
-  it("annonce des données normatives non vérifiées", () => {
-    // Tant que les tables ne sont pas confrontées à une source primaire,
-    // l'interface doit pouvoir le signaler en permanence.
-    expect(engine.warnings.length).toBeGreaterThan(0);
+  it("décrit l'état de vérification de ses données", () => {
     expect(engine.available_letters).toContain("g");
     expect(engine.max_nominal_mm).toBe("500");
+    expect(engine.provenance.references.length).toBeGreaterThan(0);
 
     const unverified = engine.provenance.references.filter(
       (reference) => reference.verification.state === "unverified",
     );
-    expect(unverified.length).toBe(engine.provenance.references.length);
+
+    // Le bandeau apparaît si et seulement si une source n'est pas vérifiée.
+    expect(engine.warnings.length > 0).toBe(unverified.length > 0);
+
+    // Une source déclarée vérifiée doit dire contre quoi : « vérifié » sans
+    // référence ne vaudrait pas mieux que « non vérifié ».
+    for (const reference of engine.provenance.references) {
+      if (reference.verification.state === "verified") {
+        expect(reference.verification.against).toMatch(/ISO/);
+        expect(reference.verification.on).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      }
+    }
   });
 });
