@@ -1,0 +1,36 @@
+# Ce crate est volontairement hors de l'espace de travail racine.
+#
+# `cargo test --workspace` doit rester rapide et sans dependance systeme : la
+# compilation de Tauri exige un moteur de rendu web, indisponible sur un
+# runner d'integration continue minimal. Le moteur de calcul se teste donc
+# seul, et l'application se construit separement.
+[workspace]
+
+[package]
+name = "mecatol-app"
+description = "Application de bureau Mecatol"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.77"
+license = "MIT OR Apache-2.0"
+authors = ["Mecatol contributors"]
+
+[lib]
+name = "mecatol_app_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+mecatol-core = { path = "../crates/mecatol-core" }
+mecatol-engine = { path = "../crates/mecatol-engine" }
+mecatol-standards = { path = "../crates/mecatol-standards" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tauri = { version = "2", features = [] }
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true

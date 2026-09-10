@@ -6,6 +6,10 @@ members = [
     "crates/mecatol-engine",
     "crates/mecatol-cli",
 ]
+exclude = [
+    # Voir src-tauri/Cargo.toml : garde les tests du moteur rapides et portables.
+    "src-tauri",
+]
 
 [workspace.package]
 version = "0.1.0"

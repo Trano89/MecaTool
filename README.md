@@ -28,11 +28,27 @@ BESOIN → CALCUL → COMPARAISON → VALIDATION → EXPLICATION → VISUALISATI
 | Vérification d'une exigence fonctionnelle | ✅ |
 | Recherche de solutions à partir d'un besoin | ✅ |
 | CLI de vérification | ✅ |
-| Comparateur de solutions | ⏳ |
 | Graphique des zones de tolérance + export SVG | ✅ |
-| Interface Tauri + React | ⏳ |
+| Application Tauri + React (accueil, calcul, recherche) | ✅ |
+| Thème clair / sombre / système | ✅ |
+| Comparateur de solutions | ⏳ |
+| Historique et export PDF | ⏳ |
 
-## Essayer
+## Lancer l'application
+
+```bash
+npm install
+npm run app
+```
+
+L'écran d'accueil pose une question — « Que voulez-vous calculer ? » — et chaque
+carte pré-remplit la saisie correspondante. Un seul champ de désignation suffit
+ensuite : c'est la saisie qui détermine si Mecatol calcule, vérifie ou cherche.
+
+## Essayer sans l'interface
+
+Le moteur se pilote aussi en ligne de commande, ce qui reste le moyen le plus
+direct de confronter un résultat à une table de manuel.
 
 **Calculer** — que va donner cet ajustement ?
 
@@ -157,7 +173,9 @@ Chacun de ces refus est couvert par un test.
 ## Développement
 
 ```bash
-cargo test --workspace      # 164 tests
+cargo test --workspace        # 164 tests : moteur
+cd src-tauri && cargo test    #  10 tests : frontiere Tauri + echantillons
+npm test                      #  20 tests : interface
 cargo clippy --workspace --all-targets
 cargo fmt --all
 ```
@@ -166,6 +184,8 @@ Prérequis : Rust stable, Node.js LTS, et sous Windows les Build Tools C++.
 
 ## Documentation
 
+- [docs/architecture.md](docs/architecture.md) — les couches, la frontière Tauri,
+  et comment la dérive de types est empêchée.
 - [docs/visualization.md](docs/visualization.md) — pourquoi la géométrie du graphique
   est calculée en Rust, et ce que les tests en garantissent.
 - [docs/standards.md](docs/standards.md) — données normatives et protocole de

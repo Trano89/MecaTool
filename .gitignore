@@ -11,3 +11,5 @@ src-tauri/target
 .env
 .env.*
 !.env.example
+src-tauri/gen
+src-tauri/icon-source.png

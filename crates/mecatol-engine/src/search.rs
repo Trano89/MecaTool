@@ -20,6 +20,8 @@
 //! recherche infructueuse doit se lire « aucune solution dans ce perimetre », et
 //! jamais « aucune solution n'existe ».
 
+use serde::{Deserialize, Serialize};
+
 use mecatol_core::{DeviationLetter, Fit, Grade, Length, Provenance, ToleranceClass, Verdict};
 
 use crate::error::Result;
@@ -27,7 +29,7 @@ use crate::iso286::Iso286Engine;
 use crate::requirement::{verify_clearance, ClearanceRequirement, Verification};
 
 /// Lequel des deux elements sert de reference.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum Basis {
     /// Systeme de l'alesage normal : l'alesage est un `H`.
     Hole,
@@ -45,7 +47,7 @@ impl Basis {
 }
 
 /// Perimetre de la recherche.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SearchOptions {
     pub bases: Vec<Basis>,
     /// Degre le plus fin explore, par son numero usuel.
@@ -98,7 +100,7 @@ impl SearchOptions {
 }
 
 /// Une solution retenue par la recherche.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Solution {
     pub fit: Fit,
     pub verification: Verification,
@@ -141,7 +143,7 @@ fn midpoint(a: Length, b: Length) -> Length {
 }
 
 /// Le resultat d'une recherche, avec son perimetre.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SearchResult {
     /// Solutions retenues, classees de la plus recommandable a la moins.
     pub solutions: Vec<Solution>,

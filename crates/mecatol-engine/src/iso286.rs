@@ -4,6 +4,8 @@
 //! `mecatol-standards` lui fournit, en appliquant les regles de composition de
 //! la norme et en gardant la trace de chaque etape.
 
+use serde::{Deserialize, Serialize};
+
 use mecatol_core::{
     Conclusion, DeviationLetter, Deviations, Feature, FeatureTolerance, Fit, Grade, Length,
     Provenance, ReasoningStep, SizeRange, ToleranceClass, Unit, Verdict,
@@ -15,7 +17,7 @@ use crate::error::{EngineError, Result};
 use crate::format::{um, um_signed};
 
 /// Le resultat du tolerancement d'un element, avec sa justification.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct FeatureAnalysis {
     pub tolerance: FeatureTolerance,
     /// Le detail du calcul, destine au mode expert.
@@ -24,7 +26,7 @@ pub struct FeatureAnalysis {
 }
 
 /// Le resultat d'un ajustement, avec sa justification.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct FitAnalysis {
     pub fit: Fit,
     pub hole_steps: Vec<ReasoningStep>,

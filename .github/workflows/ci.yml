@@ -10,8 +10,8 @@ env:
   RUSTFLAGS: -D warnings
 
 jobs:
-  rust:
-    name: Rust ${{ matrix.os }}
+  moteur:
+    name: Moteur ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -30,7 +30,7 @@ jobs:
       - name: Tests
         run: cargo test --workspace
 
-  data:
+  donnees:
     name: Validation des donnees normatives
     runs-on: ubuntu-latest
     steps:
@@ -38,8 +38,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       # Les tables sont validees au chargement : echelons contigus, monotonie,
-      # signes, recoupements croises entre tables. Ce job les fait tourner seuls
-      # pour qu'une erreur de donnee soit immediatement identifiable.
+      # signes, recoupements croises entre tables saisies separement.
       - name: Invariants des tables
         run: cargo test -p mecatol-standards -- --nocapture
       - name: JSON bien forme
@@ -48,3 +47,33 @@ jobs:
             python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$f" || exit 1
             echo "ok $f"
           done
+
+  interface:
+    name: Interface
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Dependances systeme de Tauri
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+      - run: npm ci
+      # Les echantillons servent de contrat entre Rust et TypeScript : ils sont
+      # regeneres ici, puis `tsc` verifie que les types les decrivent toujours.
+      - name: Regenerer les echantillons
+        working-directory: src-tauri
+        run: cargo test exporte_les_echantillons_pour_typescript
+      - name: Les echantillons n'ont pas derive
+        run: git diff --exit-code src/fixtures
+      - name: Types
+        run: npx tsc --noEmit
+      - name: Tests
+        run: npm test
+      - name: Build
+        run: npx vite build

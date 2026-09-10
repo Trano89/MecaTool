@@ -23,6 +23,8 @@
 //! Le verdict porte donc sur **tous** les assemblages possibles, pas sur un cas
 //! moyen. C'est la seule lecture qui ait un sens en fabrication.
 
+use serde::{Deserialize, Serialize};
+
 use mecatol_core::{Conclusion, Fit, Length, ReasoningStep, Verdict};
 
 use crate::error::{EngineError, Result};
@@ -36,7 +38,7 @@ use crate::format::um;
 ///
 /// Un serrage s'exprime comme un jeu negatif, conformement a la convention du
 /// moteur : « serrage d'au moins 5 µm » se note `max_clearance = -5 µm`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ClearanceRequirement {
     pub nominal: Length,
     pub min_clearance: Option<Length>,
@@ -92,7 +94,7 @@ impl ClearanceRequirement {
 /// De combien la solution respecte, ou viole, chaque borne de l'exigence.
 ///
 /// Positif = marge disponible. Negatif = depassement. `None` = borne non exigee.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct Margins {
     /// `jeu minimal calcule - jeu minimal demande`.
     pub lower: Option<Length>,
@@ -118,7 +120,7 @@ impl Margins {
 }
 
 /// Le resultat complet d'une verification.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Verification {
     pub verdict: Verdict,
     pub margins: Margins,
