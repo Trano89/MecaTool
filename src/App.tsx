@@ -1,10 +1,10 @@
 /**
  * L'ossature de l'application.
  *
- * Trois écrans : l'accueil, le calcul d'ajustement, et les tolérances
- * générales. Le bandeau sur l'état des données normatives est permanent et non
- * masquable — aucun écran ne doit laisser croire qu'une table est vérifiée
- * quand elle ne l'est pas.
+ * Cinq écrans : l'accueil, le calcul d'ajustement, la comparaison, les
+ * tolérances générales et les chaînes de cotes. Le bandeau sur l'état des
+ * données normatives est permanent et non masquable — aucun écran ne doit
+ * laisser croire qu'une table est vérifiée quand elle ne l'est pas.
  */
 
 import { useEffect, useState } from "react";
@@ -13,11 +13,12 @@ import { engineInfo, isDesktop } from "./api";
 import type { EngineInfo } from "./types";
 import { THEME_LABEL, useTheme, type Theme } from "./useTheme";
 import { Calculate, type Query } from "./views/Calculate";
+import { Chain } from "./views/Chain";
 import { Compare } from "./views/Compare";
 import { GeneralTolerances } from "./views/GeneralTolerances";
 import { Home } from "./views/Home";
 
-type Screen = "home" | "calculate" | "compare" | "general";
+type Screen = "home" | "calculate" | "compare" | "general" | "chain";
 
 const THEMES: readonly Theme[] = ["light", "dark", "system"];
 
@@ -82,6 +83,14 @@ export function App() {
           >
             Tolérances générales
           </button>
+          <button
+            type="button"
+            className="tab"
+            aria-current={screen === "chain" ? "page" : undefined}
+            onClick={() => setScreen("chain")}
+          >
+            Chaîne de cotes
+          </button>
         </nav>
 
         <div className="spacer" />
@@ -143,6 +152,7 @@ export function App() {
           ) : null}
           {screen === "compare" ? <Compare /> : null}
           {screen === "general" ? <GeneralTolerances /> : null}
+          {screen === "chain" ? <Chain /> : null}
         </div>
       </main>
     </div>

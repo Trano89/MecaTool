@@ -13,10 +13,13 @@
 use std::process::ExitCode;
 
 use mecatol_core::{Feature, FeatureTolerance, Length, ReasoningStep, Unit};
+use mecatol_engine::chain::analyse_chain;
 use mecatol_engine::compare::{compare_fits, nominal_label};
 use mecatol_engine::diagram::{fit_diagram, to_svg, DiagramMode, DiagramOptions};
 use mecatol_engine::iso286::{classification_conclusion, FitAnalysis, Iso286Engine};
-use mecatol_engine::parser::{parse, parse_clearance_window, parse_comparison, ParsedInput};
+use mecatol_engine::parser::{
+    parse, parse_chain, parse_clearance_window, parse_comparison, ParsedInput,
+};
 use mecatol_engine::requirement::{verify_clearance, ClearanceRequirement};
 use mecatol_engine::search::{find_fits, SearchOptions, SearchResult};
 
@@ -29,6 +32,7 @@ fn main() -> ExitCode {
     let mut window: Option<String> = None;
     let mut svg_path: Option<String> = None;
     let mut true_to_scale = false;
+    let mut statistical = false;
     let mut parts: Vec<String> = Vec::new();
 
     let mut args = std::env::args().skip(1);
@@ -36,6 +40,7 @@ fn main() -> ExitCode {
         match arg.as_str() {
             "--expert" | "-x" => expert = true,
             "--fidele" => true_to_scale = true,
+            "--stat" => statistical = true,
             "--jeu" | "-j" => match args.next() {
                 Some(value) => window = Some(value),
                 None => {
@@ -71,6 +76,7 @@ fn main() -> ExitCode {
         expert,
         svg_path,
         true_to_scale,
+        statistical,
     };
     match run(&parts.join(" "), window.as_deref(), &output) {
         Ok(()) => ExitCode::SUCCESS,
@@ -86,6 +92,7 @@ struct Output {
     expert: bool,
     svg_path: Option<String>,
     true_to_scale: bool,
+    statistical: bool,
 }
 
 impl Output {
@@ -102,8 +109,11 @@ fn run(input: &str, window: Option<&str>, output: &Output) -> Result<(), String>
     let expert = output.expert;
     let engine = Iso286Engine::new().map_err(|e| e.to_string())?;
 
-    // La virgule ne peut vouloir dire qu'une chose : plusieurs ajustements à
-    // comparer. Aucune désignation ISO 286 n'en contient.
+    // Ces marques ne figurent dans aucune désignation ISO 286 : leur présence
+    // dit sans ambiguïté de quelle sorte de calcul il s'agit.
+    if input.contains('\u{b1}') || input.contains('=') || input.contains("+/-") {
+        return run_chain(input, output);
+    }
     if input.contains(',') {
         return run_comparison(&engine, input, window, output);
     }
@@ -180,6 +190,82 @@ fn run(input: &str, window: Option<&str>, output: &Output) -> Result<(), String>
             report_search(&result, &requirement, nominal, unit);
         }
     }
+    Ok(())
+}
+
+fn run_chain(input: &str, output: &Output) -> Result<(), String> {
+    let links = parse_chain(input).map_err(|e| e.to_string())?;
+    let analysis = analyse_chain(&links, output.statistical).map_err(|e| e.to_string())?;
+
+    title(&format!("Chaîne de cotes — {} maillons", links.len()));
+
+    section("MAILLONS");
+    println!(
+        "  {:<6} {:<20} {:>12} {:>10}  Part",
+        "Repère", "Cote", "Tolérance", "Sens"
+    );
+    println!("  {}", "-".repeat(66));
+    for contribution in &analysis.contributions {
+        println!(
+            "  {:<6} {:<20} {:>12} {:>10}  {}",
+            contribution.link.label,
+            contribution.designation,
+            format!(
+                "{} mm",
+                trim_number(
+                    contribution
+                        .tolerance
+                        .to_decimal_string(Unit::Millimetre, 4)
+                )
+            ),
+            contribution.link.direction.label_fr(),
+            contribution.share_label
+        );
+    }
+
+    section("RÉSULTANTE");
+    row("Cote", &format!("{} mm", analysis.designation()));
+    row(
+        "Maximale",
+        &format!(
+            "{} mm",
+            analysis.limits.max().to_decimal_string(Unit::Millimetre, 3)
+        ),
+    );
+    row(
+        "Minimale",
+        &format!(
+            "{} mm",
+            analysis.limits.min().to_decimal_string(Unit::Millimetre, 3)
+        ),
+    );
+    row(
+        "Tolérance (pire des cas)",
+        &format!(
+            "{} mm",
+            analysis.tolerance.to_decimal_string(Unit::Millimetre, 3)
+        ),
+    );
+    if let Some(dominant) = &analysis.dominant {
+        row("Maillon dominant", dominant);
+    }
+
+    if let Some(estimate) = &analysis.statistical {
+        section("ESTIMATION STATISTIQUE");
+        println!("  {}", estimate.method);
+        println!("  {}", estimate.summary);
+        println!();
+        println!("  Ce que cette estimation suppose :");
+        for assumption in &estimate.assumptions {
+            println!("    — {assumption}");
+        }
+    }
+
+    if output.expert {
+        steps_block("POURQUOI ?", &analysis.steps);
+    }
+
+    println!();
     Ok(())
 }
 
@@ -585,6 +671,7 @@ USAGE
 OPTIONS
   -j, --jeu MIN..MAX   fenêtre de jeu voulue, en µm sauf unité précisée
   -x, --expert         affiche le détail du calcul, formules comprises
+      --stat           joint l'estimation statistique RSS à une chaîne de cotes
       --svg FICHIER    écrit le graphique des zones de tolérance
       --fidele         graphique à l'échelle réelle de la pièce
   -h, --help           affiche cette aide
@@ -607,6 +694,10 @@ TROUVER — quels ajustements répondent à mon besoin ?
 COMPARER — laquelle de ces solutions choisir ?
   mecatol \"Ø20 H7/g6, H7/h6, H7/k6, H7/p6\"
   mecatol \"Ø20 H7/g6, H7/k6\" --jeu 5..50 --svg comparatif.svg
+
+CHAÎNE DE COTES — quelle sera la dimension résultante ?
+  mecatol \"A = 20 ±0.1; B = 10 ±0.05; -C = 5 ±0.02\"
+  mecatol \"A = 20 ±0.1; B = 10 ±0.05\" --stat
 
 Ce binaire est un outil de vérification du moteur, pas le produit fini.
 "

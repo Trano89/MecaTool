@@ -337,9 +337,38 @@ input[type="text"] {
   border-radius: var(--radius);
 }
 
-input[type="text"]::placeholder {
+input[type="text"]::placeholder,
+textarea::placeholder {
   color: var(--ink-faint);
   font-family: var(--sans);
+}
+
+/* Une chaîne de cotes se saisit ligne par ligne : les chiffres doivent
+   s'aligner en colonne d'une ligne à l'autre. */
+textarea {
+  width: 100%;
+  font: inherit;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.6;
+  padding: 0.55rem 0.7rem;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  resize: vertical;
+}
+
+/* Figures : diagramme de zones et graphique de contribution. */
+figure.diagram {
+  margin: 0;
+}
+
+figure.diagram figcaption {
+  margin-top: 0.6rem;
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  line-height: 1.5;
 }
 
 .hint {

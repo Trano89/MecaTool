@@ -35,8 +35,14 @@ BESOIN → CALCUL → COMPARAISON → VALIDATION → EXPLICATION → VISUALISATI
 | Thème clair / sombre / système | ✅ |
 | Tolérances générales ISO 2768-1 | ✅ vérifiées, 3 tables |
 | Comparateur de solutions | ✅ |
+| Chaînes de cotes : pire des cas et RSS | ✅ |
 | Historique et export PDF | ⏳ |
-| Tolérances géométriques (v0.3) | ⏳ |
+| Tolérances géométriques (v0.3) | ⛔ ISO 1101 indisponible |
+| États de surface (v0.4) | ⛔ ISO 21920 indisponible |
+
+Les deux derniers modules sont **bloqués faute de source primaire**. Mecatol
+n'invente pas une règle normative : plutôt qu'un module GD&T aux règles
+approximatives, il n'y a pas de module GD&T.
 
 ## Lancer l'application
 
@@ -182,9 +188,9 @@ Chacun de ces refus est couvert par un test.
 ## Développement
 
 ```bash
-cargo test --workspace        # 219 tests : moteur
-cd src-tauri && cargo test    #  16 tests : frontiere Tauri + echantillons
-npm test                      #  38 tests : interface
+cargo test --workspace        # 238 tests : moteur
+cd src-tauri && cargo test    #  20 tests : frontiere Tauri + echantillons
+npm test                      #  49 tests : interface
 cargo clippy --workspace --all-targets
 cargo fmt --all
 ```

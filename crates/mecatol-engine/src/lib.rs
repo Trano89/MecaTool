@@ -22,6 +22,7 @@
 #![forbid(unsafe_code)]
 #![warn(missing_debug_implementations)]
 
+pub mod chain;
 pub mod compare;
 pub mod diagram;
 pub mod error;
@@ -32,6 +33,7 @@ pub mod parser;
 pub mod requirement;
 pub mod search;
 
+pub use chain::{analyse_chain, verify_chain, ChainAnalysis, Link, LinkDirection};
 pub use compare::{compare_fits, ComparedFit, FitComparison};
 pub use diagram::{comparison_diagram, fit_diagram, to_svg, Diagram, DiagramMode, DiagramOptions};
 pub use error::{EngineError, Result};

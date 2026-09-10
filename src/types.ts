@@ -248,6 +248,84 @@ export interface SearchReport {
 
 export type Report = FitReport | FeatureReport | SearchReport;
 
+/* ---------- Chaînes de cotes ---------- */
+
+export type LinkDirection = "increasing" | "decreasing";
+
+export interface Link {
+  /** Repère porté sur le plan : `A`, `B`, `L1`… */
+  label: string;
+  nominal: Nanometres;
+  deviations: Deviations;
+  direction: LinkDirection;
+}
+
+export interface Contribution {
+  link: Link;
+  tolerance: Nanometres;
+  /** Part de la tolérance résultante, en millièmes. Entier, donc exact. */
+  share_per_mille: number;
+  share_label: string;
+  designation: string;
+}
+
+/**
+ * L'estimation statistique, quand elle est demandée.
+ *
+ * Elle repose sur des hypothèses que la géométrie ne garantit pas. Elles
+ * voyagent avec le résultat et ne doivent jamais être affichées séparément.
+ */
+export interface StatisticalEstimate {
+  method: string;
+  tolerance: Nanometres;
+  share_of_worst_case_per_mille: number;
+  summary: string;
+  assumptions: string[];
+}
+
+export interface ChainAnalysis {
+  contributions: Contribution[];
+  nominal: Nanometres;
+  /** Limites au pire des cas. */
+  limits: LimitsOfSize;
+  /** Tolérance résultante : la somme de toutes les tolérances, quel que soit leur sens. */
+  tolerance: Nanometres;
+  deviations: Deviations;
+  statistical: StatisticalEstimate | null;
+  steps: ReasoningStep[];
+  /** Le maillon qui pèse le plus lourd. */
+  dominant: string | null;
+}
+
+export interface ContributionBar {
+  label: string;
+  designation: string;
+  direction: LinkDirection;
+  y: number;
+  height: number;
+  /** Largeur proportionnelle à la part du maillon. */
+  width: number;
+  share_label: string;
+  tolerance_label: string;
+  dominant: boolean;
+}
+
+export interface ContributionChart {
+  width: number;
+  height: number;
+  /** Abscisse où commencent les barres, après la colonne des repères. */
+  bar_origin: number;
+  bars: ContributionBar[];
+  caption: string;
+}
+
+export interface ChainReport {
+  analysis: ChainAnalysis;
+  chart: ContributionChart;
+  designation: string;
+  conclusion: Conclusion;
+}
+
 /* ---------- Comparaison d'ajustements ---------- */
 
 export interface ComparedFit {

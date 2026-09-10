@@ -13,7 +13,7 @@
 import type { Query } from "./Calculate";
 
 /** Les écrans qu'une carte peut ouvrir directement. */
-export type Destination = "calculate" | "compare" | "general";
+export type Destination = "calculate" | "compare" | "general" | "chain";
 
 interface Entry {
   title: string;
@@ -64,7 +64,7 @@ const ENTRIES: readonly Entry[] = [
   {
     title: "Chaîne de cotes",
     question: "Quelle sera la dimension résultante ?",
-    later: "version 0.5",
+    opens: "chain",
   },
 ];
 

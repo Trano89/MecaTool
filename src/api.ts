@@ -10,6 +10,7 @@ import { invoke } from "@tauri-apps/api/core";
 
 import type {
   AppError,
+  ChainReport,
   ClassComparison,
   Diagram,
   EngineInfo,
@@ -90,6 +91,34 @@ export function compare(
   trueToScale?: boolean,
 ): Promise<FitComparison> {
   return call<FitComparison>("compare", { input, clearance, trueToScale });
+}
+
+/**
+ * Calcule une chaîne de cotes.
+ *
+ * `input` liste les maillons, un par ligne : « A = 20 ±0.1 ». Un signe moins
+ * devant le repère ou le nominal marque un maillon diminuant.
+ *
+ * `statistical` doit être demandé explicitement : l'estimation RSS est une
+ * hypothèse sur la fabrication, pas une propriété de la géométrie.
+ */
+export function dimensionChain(
+  input: string,
+  // `| undefined` explicite : sous `exactOptionalPropertyTypes`, « absent » et
+  // « présent mais indéfini » ne sont pas la même chose, et l'appelant a
+  // naturellement le second.
+  options: {
+    statistical?: boolean | undefined;
+    minimumMm?: string | undefined;
+    maximumMm?: string | undefined;
+  } = {},
+): Promise<ChainReport> {
+  return call<ChainReport>("dimension_chain", {
+    input,
+    statistical: options.statistical,
+    minimumMm: options.minimumMm,
+    maximumMm: options.maximumMm,
+  });
 }
 
 /** Redessine un ajustement dans l'autre mode d'échelle, sans tout recalculer. */

@@ -10,13 +10,18 @@
 //! jour ou un champ change de nom.
 
 use mecatol_core::{Conclusion, DeviationLetter, Length, Provenance, Unit};
+use mecatol_engine::chain::{
+    analyse_chain, contribution_chart, verify_chain, ChainAnalysis, ContributionChart,
+};
 use mecatol_engine::compare::{compare_fits, FitComparison};
 use mecatol_engine::diagram::{fit_diagram, Diagram, DiagramMode, DiagramOptions};
 use mecatol_engine::iso2768::{ClassComparison, Iso2768Engine};
 use mecatol_engine::iso286::{
     classification_conclusion, FeatureAnalysis, FitAnalysis, Iso286Engine,
 };
-use mecatol_engine::parser::{parse, parse_clearance_window, parse_comparison, ParsedInput};
+use mecatol_engine::parser::{
+    parse, parse_chain, parse_clearance_window, parse_comparison, ParsedInput,
+};
 use mecatol_engine::requirement::{verify_clearance, ClearanceRequirement, Verification};
 use mecatol_engine::search::{find_fits, SearchOptions, SearchResult};
 use mecatol_engine::EngineError;
@@ -147,6 +152,57 @@ pub fn general_tolerances(kind: String, nominal_mm: String) -> Result<ClassCompa
 
     let engine = Iso2768Engine::new()?;
     Ok(engine.across_classes(kind, nominal))
+}
+
+/// Le resultat d'une chaine de cotes.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ChainReport {
+    pub analysis: ChainAnalysis,
+    pub chart: ContributionChart,
+    /// La resultante telle qu'elle s'ecrirait sur un plan.
+    pub designation: String,
+    /// Le verdict, ou le constat qu'il manque une exigence pour conclure.
+    pub conclusion: Conclusion,
+}
+
+/// Calcule une chaine de cotes.
+///
+/// `input` liste les maillons, un par ligne : `"A = 20 ±0.1"`. Un signe moins
+/// devant le repere ou le nominal marque un maillon diminuant.
+///
+/// L'estimation statistique n'est jointe que si elle est demandee : c'est une
+/// hypothese sur la fabrication, pas une propriete de la geometrie.
+#[tauri::command]
+pub fn dimension_chain(
+    input: String,
+    statistical: Option<bool>,
+    minimum_mm: Option<String>,
+    maximum_mm: Option<String>,
+) -> Result<ChainReport, AppError> {
+    let links = parse_chain(&input)?;
+    let analysis = analyse_chain(&links, statistical.unwrap_or(false))?;
+
+    let bound = |text: Option<String>, side: &str| -> Result<Option<Length>, AppError> {
+        match text.as_deref().map(str::trim).filter(|t| !t.is_empty()) {
+            Some(value) => Length::parse(value, Unit::Millimetre)
+                .map(Some)
+                .map_err(|source| AppError {
+                    message: format!("Limite {side} illisible : « {value} »."),
+                    hint: Some(source.to_string()),
+                }),
+            None => Ok(None),
+        }
+    };
+
+    let minimum = bound(minimum_mm, "minimale")?;
+    let maximum = bound(maximum_mm, "maximale")?;
+
+    Ok(ChainReport {
+        chart: contribution_chart(&analysis, 640.0),
+        designation: analysis.designation(),
+        conclusion: verify_chain(&analysis, minimum, maximum),
+        analysis,
+    })
 }
 
 /// Compare plusieurs ajustements sur une meme dimension.
@@ -427,6 +483,55 @@ mod tests {
     }
 
     #[test]
+    fn une_chaine_de_cotes_donne_sa_resultante() {
+        let report = dimension_chain(
+            "A = 20 ±0.1\nB = 10 ±0.05\n-C = 5 ±0.02".into(),
+            None,
+            None,
+            None,
+        )
+        .unwrap();
+
+        // 20 + 10 − 5 = 25, tolérance 0,1×2 + 0,05×2 + 0,02×2 = 0,34.
+        assert_eq!(report.designation, "25 ± 0.17");
+        assert_eq!(report.chart.bars.len(), 3);
+        // Sans exigence, le moteur ne se prononce pas.
+        assert_eq!(
+            report.conclusion.verdict,
+            mecatol_core::Verdict::InsufficientData
+        );
+        // L'estimation statistique n'est pas faite sans qu'on la demande.
+        assert!(report.analysis.statistical.is_none());
+    }
+
+    #[test]
+    fn une_chaine_confrontee_a_ses_limites_rend_un_verdict() {
+        let report = dimension_chain(
+            "A = 20 ±0.1\nB = 10 ±0.05".into(),
+            None,
+            Some("29.8".into()),
+            Some("30.2".into()),
+        )
+        .unwrap();
+        assert_eq!(report.conclusion.verdict, mecatol_core::Verdict::Compatible);
+    }
+
+    #[test]
+    fn lestimation_statistique_arrive_avec_ses_hypotheses() {
+        let report =
+            dimension_chain("A = 20 ±0.1\nB = 10 ±0.1".into(), Some(true), None, None).unwrap();
+        let estimate = report.analysis.statistical.expect("estimation demandée");
+        assert!(!estimate.assumptions.is_empty());
+        assert!(estimate.tolerance < report.analysis.tolerance);
+    }
+
+    #[test]
+    fn une_chaine_illisible_donne_une_piste_daction() {
+        let error = dimension_chain("A = 20".into(), None, None, None).unwrap_err();
+        assert!(error.hint.unwrap().contains("±0.1"));
+    }
+
+    #[test]
     fn un_comparatif_rend_les_ajustements_dans_lordre_de_saisie() {
         let comparison = compare("Ø20 H7/g6, H7/h6, H7/k6, H7/p6".into(), None, None).unwrap();
         assert_eq!(
@@ -537,5 +642,19 @@ mod tests {
         )
         .expect("sérialisation");
         std::fs::write(dir.join("fit-comparison.json"), comparison + "\n").expect("écriture");
+
+        // Une chaîne avec un maillon diminuant, une estimation statistique et
+        // des limites fonctionnelles : l'échantillon couvre tout le rapport.
+        let chain = serde_json::to_string_pretty(
+            &dimension_chain(
+                "A = 20 ±0.1\nB = 10 ±0.05\n-C = 5 ±0.02".into(),
+                Some(true),
+                Some("24.7".into()),
+                Some("25.3".into()),
+            )
+            .unwrap(),
+        )
+        .expect("sérialisation");
+        std::fs::write(dir.join("chain-report.json"), chain + "\n").expect("écriture");
     }
 }

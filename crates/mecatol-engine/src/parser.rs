@@ -13,7 +13,9 @@
 
 use core::str::FromStr;
 
-use mecatol_core::{Feature, Length, ToleranceClass, Unit};
+use mecatol_core::{Deviations, Feature, Length, ToleranceClass, Unit};
+
+use crate::chain::{Link, LinkDirection};
 
 use crate::error::{EngineError, Result};
 
@@ -242,6 +244,140 @@ fn parse_pair(chunk: &str, original: &str) -> Result<(ToleranceClass, ToleranceC
             second: b.to_string(),
         }),
     }
+}
+
+/// Lit une chaine de cotes, un maillon par ligne ou separes par `;`.
+///
+/// Chaque maillon s'ecrit `[REPERE =] [-]NOMINAL ECARTS`, ou les ecarts prennent
+/// l'une des deux formes usuelles :
+///
+/// ```text
+///   A = 20 ±0.1          ecart symetrique
+///   B = 10 +0.1/-0.05    ecarts dissymetriques
+///   -C = 5 ±0.02         maillon diminuant
+/// ```
+///
+/// Le signe moins de tete exprime le **sens** du maillon, pas une cote negative :
+/// une cote nominale reste toujours positive.
+///
+/// ```
+/// # use mecatol_engine::parser::parse_chain;
+/// # use mecatol_engine::chain::LinkDirection;
+/// let links = parse_chain("A = 20 ±0.1\n-B = 10 ±0.05").unwrap();
+/// assert_eq!(links.len(), 2);
+/// assert_eq!(links[0].label, "A");
+/// assert_eq!(links[1].direction, LinkDirection::Decreasing);
+/// ```
+pub fn parse_chain(input: &str) -> Result<Vec<Link>> {
+    let mut links = Vec::new();
+    for (index, raw) in input
+        .split(['\n', ';'])
+        .map(str::trim)
+        .filter(|line| !line.is_empty())
+        .enumerate()
+    {
+        links.push(parse_link(raw, index)?);
+    }
+
+    if links.is_empty() {
+        return Err(EngineError::Unparsable {
+            input: input.to_string(),
+            hint: "Une chaîne de cotes demande au moins un maillon, par exemple \
+                   « A = 20 ±0.1 »."
+                .to_string(),
+        });
+    }
+    Ok(links)
+}
+
+/// Repere par defaut d'un maillon sans nom : A, B, C, ... puis L27, L28...
+fn default_label(index: usize) -> String {
+    if index < 26 {
+        char::from(b'A' + index as u8).to_string()
+    } else {
+        format!("L{}", index + 1)
+    }
+}
+
+fn parse_link(raw: &str, index: usize) -> Result<Link> {
+    let unreadable = |detail: &str| EngineError::Unparsable {
+        input: raw.to_string(),
+        hint: format!(
+            "{detail} Un maillon s'écrit « A = 20 ±0.1 » ou « A = 20 +0.1/-0.05 ». \
+             Un signe moins devant le repère ou le nominal marque un maillon diminuant."
+        ),
+    };
+
+    // Le repere, s'il est donne, precede un signe egal.
+    let (label_part, body) = match raw.split_once('=') {
+        Some((head, tail)) => (Some(head.trim()), tail.trim()),
+        None => (None, raw),
+    };
+
+    // Le signe moins peut porter sur le repere ou sur le nominal.
+    let mut direction = LinkDirection::Increasing;
+    let mut label = label_part.map(str::to_string);
+    if let Some(name) = label.as_deref() {
+        if let Some(stripped) = name.strip_prefix('-') {
+            direction = LinkDirection::Decreasing;
+            label = Some(stripped.trim().to_string());
+        }
+    }
+
+    let body = match body.strip_prefix('-') {
+        Some(stripped) => {
+            direction = LinkDirection::Decreasing;
+            stripped.trim_start()
+        }
+        None => body,
+    };
+
+    let (number, rest) =
+        split_leading_number(body).ok_or_else(|| unreadable("Cote nominale absente."))?;
+    let nominal = Length::parse(number, Unit::Millimetre)?;
+
+    let deviations = parse_deviations(rest.trim(), raw)?;
+    let label = match label {
+        Some(name) if !name.is_empty() => name,
+        _ => default_label(index),
+    };
+
+    Link::new(label, nominal, deviations, direction)
+}
+
+/// Lit `"±0.1"`, `"+/-0.1"` ou `"+0.1/-0.05"`.
+fn parse_deviations(text: &str, raw: &str) -> Result<Deviations> {
+    let unreadable = || EngineError::Unparsable {
+        input: raw.to_string(),
+        hint: if text.is_empty() {
+            // Une cote sans écarts n'est pas un maillon : sans tolérance, elle
+            // ne contribue à rien et le dire vaut mieux que de supposer zéro.
+            "Écarts absents. Un maillon s'écrit « A = 20 ±0.1 » ou « A = 20 +0.1/-0.05 »."
+                .to_string()
+        } else {
+            format!(
+                "Écarts illisibles dans « {text} ». Un maillon s'écrit « A = 20 ±0.1 » \
+                 ou « A = 20 +0.1/-0.05 »."
+            )
+        },
+    };
+
+    let symmetric = text
+        .strip_prefix('\u{b1}')
+        .or_else(|| text.strip_prefix("+/-"))
+        .or_else(|| text.strip_prefix("+-"));
+
+    if let Some(magnitude) = symmetric {
+        let value = Length::parse(magnitude.trim(), Unit::Millimetre)?;
+        return Ok(Deviations::symmetric(value));
+    }
+
+    // Forme dissymetrique : les deux ecarts, separes par une barre.
+    let (first, second) = text.split_once('/').ok_or_else(unreadable)?;
+    let a = Length::parse(first.trim(), Unit::Millimetre)?;
+    let b = Length::parse(second.trim(), Unit::Millimetre)?;
+    // L'ordre d'ecriture est libre : c'est la valeur qui dit lequel est lequel.
+    Deviations::new(a.min(b), a.max(b)).map_err(EngineError::from)
 }
 
 /// Marques de diametre, neutralisees a la lecture.
@@ -582,6 +718,101 @@ mod tests {
         assert!(matches!(
             parse_comparison("20 H7/G6"),
             Err(EngineError::NotAFitPair { .. })
+        ));
+    }
+
+    #[test]
+    fn lecture_dune_chaine_de_cotes() {
+        let links = parse_chain("A = 20 \u{b1}0.1\nB = 10 \u{b1}0.05\nC = 5 \u{b1}0.02").unwrap();
+        assert_eq!(links.len(), 3);
+        assert_eq!(links[0].label, "A");
+        assert_eq!(links[0].nominal, Length::from_millimetres(20));
+        assert_eq!(
+            links[0].deviations.upper(),
+            Length::parse("0.1", Unit::Millimetre).unwrap()
+        );
+        assert!(links
+            .iter()
+            .all(|l| l.direction == LinkDirection::Increasing));
+    }
+
+    #[test]
+    fn le_point_virgule_separe_aussi_les_maillons() {
+        assert_eq!(
+            parse_chain("A = 20 \u{b1}0.1; B = 10 \u{b1}0.05").unwrap(),
+            parse_chain("A = 20 \u{b1}0.1\nB = 10 \u{b1}0.05").unwrap()
+        );
+    }
+
+    #[test]
+    fn le_signe_moins_marque_un_maillon_diminuant() {
+        // Devant le repère ou devant le nominal, le sens est le même.
+        for text in ["-B = 10 \u{b1}0.05", "B = -10 \u{b1}0.05"] {
+            let links = parse_chain(text).unwrap();
+            assert_eq!(links[0].direction, LinkDirection::Decreasing, "{text}");
+            // Le nominal reste positif : le signe portait le sens.
+            assert_eq!(links[0].nominal, Length::from_millimetres(10));
+        }
+    }
+
+    #[test]
+    fn un_maillon_sans_repere_en_recoit_un() {
+        let links = parse_chain("20 \u{b1}0.1\n10 \u{b1}0.05").unwrap();
+        assert_eq!(links[0].label, "A");
+        assert_eq!(links[1].label, "B");
+    }
+
+    #[test]
+    fn les_ecarts_dissymetriques_sont_lus() {
+        let links = parse_chain("A = 20 +0.1/-0.05").unwrap();
+        assert_eq!(
+            links[0].deviations.upper(),
+            Length::parse("0.1", Unit::Millimetre).unwrap()
+        );
+        assert_eq!(
+            links[0].deviations.lower(),
+            Length::parse("-0.05", Unit::Millimetre).unwrap()
+        );
+
+        // L'ordre d'écriture est libre : la valeur dit lequel est lequel.
+        assert_eq!(
+            parse_chain("A = 20 -0.05/+0.1").unwrap()[0].deviations,
+            links[0].deviations
+        );
+    }
+
+    #[test]
+    fn les_ecritures_symetriques_sont_equivalentes() {
+        let reference = parse_chain("A = 20 \u{b1}0.1").unwrap();
+        for text in ["A = 20 +/-0.1", "A = 20 +-0.1"] {
+            assert_eq!(parse_chain(text).unwrap(), reference, "{text}");
+        }
+    }
+
+    #[test]
+    fn les_lignes_vides_sont_ignorees() {
+        let links = parse_chain("\n\nA = 20 \u{b1}0.1\n\n  \nB = 10 \u{b1}0.05\n").unwrap();
+        assert_eq!(links.len(), 2);
+    }
+
+    #[test]
+    fn un_maillon_illisible_dit_comment_ecrire() {
+        for text in ["A = 20", "A = ±0.1", "bonjour"] {
+            match parse_chain(text) {
+                Err(EngineError::Unparsable { hint, .. }) => {
+                    assert!(hint.contains("20 \u{b1}0.1"), "{text} : {hint}");
+                }
+                Err(EngineError::Length(_)) => {}
+                other => panic!("{text} : une piste d'action était attendue, obtenu {other:?}"),
+            }
+        }
+    }
+
+    #[test]
+    fn une_chaine_vide_est_refusee() {
+        assert!(matches!(
+            parse_chain("   \n\n  "),
+            Err(EngineError::Unparsable { .. })
         ));
     }
 

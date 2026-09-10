@@ -18,9 +18,11 @@ import searchFixture from "./fixtures/search-report.json";
 import engineFixture from "./fixtures/engine-info.json";
 import generalFixture from "./fixtures/general-tolerances.json";
 import comparisonFixture from "./fixtures/fit-comparison.json";
+import chainFixture from "./fixtures/chain-report.json";
 
 import {
   NM_PER_UM,
+  type ChainReport,
   type ClassComparison,
   type EngineInfo,
   type FeatureReport,
@@ -36,6 +38,7 @@ const search = searchFixture as SearchReport;
 const engine = engineFixture as EngineInfo;
 const general = generalFixture as ClassComparison;
 const comparison = comparisonFixture as FitComparison;
+const chain = chainFixture as ChainReport;
 
 describe("échantillons du moteur", () => {
   it("décrit un ajustement Ø10 H7/g6 exact", () => {
@@ -85,6 +88,39 @@ describe("échantillons du moteur", () => {
     // Ce scénario n'a pas de solution exacte : le diagnostic doit l'expliquer.
     expect(search.diagnosis).not.toBeNull();
     expect(search.requirement.min_clearance).toBe(10 * NM_PER_UM);
+  });
+
+  it("décrit une chaîne de cotes", () => {
+    // 20 + 10 − 5 = 25.
+    expect(chain.analysis.nominal).toBe(25 * 1_000_000);
+    expect(chain.designation).toBe("25 ± 0.17");
+
+    // L'identité qui structure le module : la tolérance résultante vaut la
+    // somme de toutes les tolérances, quel que soit le sens des maillons.
+    const sum = chain.analysis.contributions.reduce(
+      (total, contribution) => total + contribution.tolerance,
+      0,
+    );
+    expect(chain.analysis.tolerance).toBe(sum);
+    expect(chain.analysis.limits.max - chain.analysis.limits.min).toBe(sum);
+
+    // Un maillon diminuant est bien présent dans l'échantillon.
+    const directions = chain.analysis.contributions.map((c) => c.link.direction);
+    expect(directions).toContain("decreasing");
+
+    // Le graphique porte une barre par maillon, et un seul dominant.
+    expect(chain.chart.bars).toHaveLength(chain.analysis.contributions.length);
+    expect(chain.chart.bars.filter((bar) => bar.dominant)).toHaveLength(1);
+  });
+
+  it("joint ses hypothèses à toute estimation statistique", () => {
+    const estimate = chain.analysis.statistical;
+    expect(estimate).not.toBeNull();
+    // Le RSS est plus optimiste que le pire des cas — c'est bien pour cela
+    // qu'il ne doit jamais circuler sans ses hypothèses.
+    expect(estimate!.tolerance).toBeLessThan(chain.analysis.tolerance);
+    expect(estimate!.assumptions.length).toBeGreaterThan(0);
+    expect(estimate!.assumptions.join(" ")).toMatch(/n'est vérifiée par Mecatol/);
   });
 
   it("décrit un comparatif d'ajustements", () => {

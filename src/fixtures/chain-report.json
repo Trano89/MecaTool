@@ -1,0 +1,166 @@
+{
+  "analysis": {
+    "contributions": [
+      {
+        "link": {
+          "label": "A",
+          "nominal": 20000000,
+          "deviations": {
+            "lower": -100000,
+            "upper": 100000
+          },
+          "direction": "increasing"
+        },
+        "tolerance": 200000,
+        "share_per_mille": 588,
+        "share_label": "58,8 %",
+        "designation": "20 ± 0.1"
+      },
+      {
+        "link": {
+          "label": "B",
+          "nominal": 10000000,
+          "deviations": {
+            "lower": -50000,
+            "upper": 50000
+          },
+          "direction": "increasing"
+        },
+        "tolerance": 100000,
+        "share_per_mille": 294,
+        "share_label": "29,4 %",
+        "designation": "10 ± 0.05"
+      },
+      {
+        "link": {
+          "label": "C",
+          "nominal": 5000000,
+          "deviations": {
+            "lower": -20000,
+            "upper": 20000
+          },
+          "direction": "decreasing"
+        },
+        "tolerance": 40000,
+        "share_per_mille": 118,
+        "share_label": "11,8 %",
+        "designation": "5 ± 0.02"
+      }
+    ],
+    "nominal": 25000000,
+    "limits": {
+      "min": 24830000,
+      "max": 25170000
+    },
+    "tolerance": 340000,
+    "deviations": {
+      "lower": -170000,
+      "upper": 170000
+    },
+    "statistical": {
+      "method": "Racine de la somme des carrés (RSS)",
+      "tolerance": 227156,
+      "share_of_worst_case_per_mille": 668,
+      "summary": "Estimation : 0.227 au lieu de 0.340 au pire des cas, soit 66,8 %.",
+      "assumptions": [
+        "Les cotes sont indépendantes les unes des autres.",
+        "Chaque cote est centrée sur son nominal.",
+        "Chaque cote suit une distribution normale dont la tolérance couvre ± 3 écarts-types.",
+        "Le procédé est stable et sous contrôle.",
+        "Aucune de ces hypothèses n'est vérifiée par Mecatol : sans relevé de fabrication, l'estimation reste une hypothèse."
+      ]
+    },
+    "steps": [
+      {
+        "label": "Chaîne",
+        "expression": "les maillons diminuants portent un signe moins",
+        "value": "A + B − C"
+      },
+      {
+        "label": "Cote résultante nominale",
+        "expression": "somme signée des nominaux",
+        "value": "25.000 mm"
+      },
+      {
+        "label": "Résultante maximale",
+        "expression": "max des augmentants − min des diminuants",
+        "value": "25.170 mm"
+      },
+      {
+        "label": "Résultante minimale",
+        "expression": "min des augmentants − max des diminuants",
+        "value": "24.830 mm"
+      },
+      {
+        "label": "Tolérance résultante",
+        "expression": "somme de toutes les tolérances, quel que soit leur sens",
+        "value": "0.340 mm"
+      }
+    ],
+    "dominant": "A"
+  },
+  "chart": {
+    "width": 640.0,
+    "height": 86.0,
+    "bar_origin": 92.0,
+    "bars": [
+      {
+        "label": "A",
+        "designation": "20 ± 0.1",
+        "direction": "increasing",
+        "y": 4.0,
+        "height": 16.0,
+        "width": 416.0,
+        "share_label": "58,8 %",
+        "tolerance_label": "0.2 mm",
+        "dominant": true
+      },
+      {
+        "label": "B",
+        "designation": "10 ± 0.05",
+        "direction": "increasing",
+        "y": 30.0,
+        "height": 16.0,
+        "width": 208.0,
+        "share_label": "29,4 %",
+        "tolerance_label": "0.1 mm",
+        "dominant": false
+      },
+      {
+        "label": "C",
+        "designation": "5 ± 0.02",
+        "direction": "decreasing",
+        "y": 56.0,
+        "height": 16.0,
+        "width": 83.48299319727892,
+        "share_label": "11,8 %",
+        "tolerance_label": "0.04 mm",
+        "dominant": false
+      }
+    ],
+    "caption": "Part de chaque maillon dans la tolérance résultante de 0.34 mm. Les barres sont proportionnelles entre elles, normalisées sur le maillon le plus large."
+  },
+  "designation": "25 ± 0.17",
+  "conclusion": {
+    "verdict": "compatible",
+    "detail": "La résultante (24.830 à 25.170 mm) reste entièrement dans les limites exigées. Toute pièce conforme au plan conviendra.",
+    "why": [
+      {
+        "label": "Résultante calculée",
+        "expression": "pire des cas",
+        "value": "24.830 à 25.170 mm"
+      },
+      {
+        "label": "Minimum fonctionnel",
+        "expression": "résultante minimale − minimum exigé",
+        "value": "24.830 − 24.700 = +0.13"
+      },
+      {
+        "label": "Maximum fonctionnel",
+        "expression": "maximum exigé − résultante maximale",
+        "value": "25.300 − 25.170 = +0.13"
+      }
+    ],
+    "warnings": []
+  }
+}
