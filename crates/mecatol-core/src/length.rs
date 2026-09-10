@@ -118,8 +118,9 @@ pub enum LengthError {
 ///
 /// `Length` est volontairement `Ord` : comparer deux cotes est une operation
 /// exacte sur des entiers, jamais une comparaison de flottants.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
-#[derive(Serialize, Deserialize)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default, Serialize, Deserialize,
+)]
 #[serde(transparent)]
 pub struct Length {
     nm: i64,
@@ -313,7 +314,11 @@ impl Length {
             quotient += 1;
         }
 
-        let sign = if self.nm < 0 && quotient != 0 { "-" } else { "" };
+        let sign = if self.nm < 0 && quotient != 0 {
+            "-"
+        } else {
+            ""
+        };
         if decimals == 0 {
             return format!("{sign}{quotient}");
         }

@@ -30,11 +30,7 @@ pub mod tolerance;
 
 pub use conclusion::{Conclusion, ReasoningStep, Verdict};
 pub use fit::{Fit, FitKind};
-pub use iso_class::{
-    ClassError, DeviationLetter, Feature, Grade, ToleranceClass, ALL_LETTERS,
-};
+pub use iso_class::{ClassError, DeviationLetter, Feature, Grade, ToleranceClass, ALL_LETTERS};
 pub use length::{Length, LengthError, Unit, NM_PER_INCH, NM_PER_MM, NM_PER_UM};
 pub use standard::{Provenance, StandardReference, VerificationStatus};
-pub use tolerance::{
-    Deviations, FeatureTolerance, LimitsOfSize, SizeRange, ToleranceError,
-};
+pub use tolerance::{Deviations, FeatureTolerance, LimitsOfSize, SizeRange, ToleranceError};

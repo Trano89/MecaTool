@@ -226,8 +226,23 @@ mod tests {
     #[test]
     fn les_limites_sont_exactes_en_millimetres() {
         let fit = Fit::assemble(feature("H7", 10, 0, 15), feature("g6", 10, -14, -5));
-        assert_eq!(fit.hole.limits.max().to_decimal_string(Unit::Millimetre, 3), "10.015");
-        assert_eq!(fit.shaft.limits.min().to_decimal_string(Unit::Millimetre, 3), "9.986");
-        assert_eq!(fit.shaft.limits.max().to_decimal_string(Unit::Millimetre, 3), "9.995");
+        assert_eq!(
+            fit.hole.limits.max().to_decimal_string(Unit::Millimetre, 3),
+            "10.015"
+        );
+        assert_eq!(
+            fit.shaft
+                .limits
+                .min()
+                .to_decimal_string(Unit::Millimetre, 3),
+            "9.986"
+        );
+        assert_eq!(
+            fit.shaft
+                .limits
+                .max()
+                .to_decimal_string(Unit::Millimetre, 3),
+            "9.995"
+        );
     }
 }

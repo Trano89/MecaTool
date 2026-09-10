@@ -1,0 +1,84 @@
+{
+  "dataset": "iso286-1-2010.shaft-deviations",
+  "standard": {
+    "id": "ISO 286-1",
+    "edition": "2010",
+    "title": "Spécification géométrique des produits (GPS) — Système de codification ISO pour les tolérances sur les tailles linéaires — Partie 1 : Base des tolérances, écarts et ajustements",
+    "scope": "écarts fondamentaux des arbres",
+    "source": "Valeurs saisies de mémoire par l'assistant, en attente de confrontation à une source primaire. NE PAS présenter comme valeurs ISO tant que verification = verified.",
+    "verification": {
+      "state": "unverified",
+      "pending": "À confronter case par case au tableau des écarts fondamentaux des arbres (ISO 286-1:2010, ou tables VSM équivalentes) fournies par l'utilisateur."
+    },
+    "notes": [
+      "Toutes les valeurs sont exprimées en micromètres, et désignent l'écart fondamental : celui des deux écarts que la lettre fixe.",
+      "Lettres a..h : la lettre fixe l'écart supérieur es, négatif ou nul. L'écart inférieur s'en déduit : ei = es - IT.",
+      "Lettres j..zc : la lettre fixe l'écart inférieur ei, positif ou nul. L'écart supérieur s'en déduit : es = ei + IT.",
+      "js : zone symétrique ± IT/2, calculée et non tabulée. Lorsque IT est un nombre impair de micromètres, la demi-valeur tombe sur un demi-micromètre, représenté exactement par le moteur.",
+      "COUVERTURE PARTIELLE. Ce jeu ne contient que les lettres dont les valeurs se répartissent sur les 13 échelons standards : d, e, f, g, h, js, k, m, n, p. Elles couvrent les ajustements avec jeu, incertains et à serrage léger.",
+      "LETTRES ABSENTES ET POURQUOI. Les lettres a, b, c d'une part, et r à zc d'autre part, emploient des échelons de dimensions nominales PLUS FINS que les 13 échelons standards : la plage 30..50 y est scindée en 30..40 et 40..50, la plage 50..80 en 50..65 et 65..80, etc. Les saisir sur les 13 échelons standards produirait des valeurs fausses. Elles seront ajoutées avec leurs propres échelons après vérification sur source primaire.",
+      "La lettre k ne prend sa valeur tabulée que pour les degrés IT4 à IT7 ; pour tous les autres degrés, l'écart fondamental de k est nul.",
+      "Les valeurs publiées résultent d'un arrondi vers des nombres normalisés et ne sont pas reproductibles exactement par les formules d'écart fondamental. La table fait foi."
+    ]
+  },
+  "value_unit": "micrometre",
+  "size_unit": "millimetre",
+  "size_ranges": [
+    [0, 3],
+    [3, 6],
+    [6, 10],
+    [10, 18],
+    [18, 30],
+    [30, 50],
+    [50, 80],
+    [80, 120],
+    [120, 180],
+    [180, 250],
+    [250, 315],
+    [315, 400],
+    [400, 500]
+  ],
+  "letters": {
+    "D": {
+      "side": "upper",
+      "values": [-20, -30, -40, -50, -65, -80, -100, -120, -145, -170, -190, -210, -230]
+    },
+    "E": {
+      "side": "upper",
+      "values": [-14, -20, -25, -32, -40, -50, -60, -72, -85, -100, -110, -125, -135]
+    },
+    "F": {
+      "side": "upper",
+      "values": [-6, -10, -13, -16, -20, -25, -30, -36, -43, -50, -56, -62, -68]
+    },
+    "G": {
+      "side": "upper",
+      "values": [-2, -4, -5, -6, -7, -9, -10, -12, -14, -15, -17, -18, -20]
+    },
+    "H": {
+      "side": "upper",
+      "values": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    },
+    "JS": {
+      "side": "symmetric_half_it"
+    },
+    "K": {
+      "side": "lower",
+      "values": [0, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4, 5],
+      "applies_to_grades": ["IT4", "IT5", "IT6", "IT7"],
+      "otherwise": "zero"
+    },
+    "M": {
+      "side": "lower",
+      "values": [2, 4, 6, 7, 8, 9, 11, 13, 15, 17, 20, 21, 23]
+    },
+    "N": {
+      "side": "lower",
+      "values": [4, 8, 10, 12, 15, 17, 20, 23, 27, 31, 34, 37, 40]
+    },
+    "P": {
+      "side": "lower",
+      "values": [6, 12, 15, 18, 22, 26, 32, 37, 43, 50, 56, 62, 68]
+    }
+  }
+}

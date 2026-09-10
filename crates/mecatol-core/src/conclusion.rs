@@ -199,10 +199,7 @@ mod tests {
     #[test]
     fn une_conclusion_transporte_son_raisonnement() {
         let c = Conclusion::incompatible("Le jeu minimal calcule est inferieur au besoin.")
-            .with_step(
-                ReasoningStep::new("Jeu minimal acceptable")
-                    .with_value("5 \u{b5}m"),
-            )
+            .with_step(ReasoningStep::new("Jeu minimal acceptable").with_value("5 \u{b5}m"))
             .with_step(
                 ReasoningStep::new("Jeu minimal calcule")
                     .with_expression("EI - es")
@@ -218,7 +215,7 @@ mod tests {
     #[test]
     fn les_reserves_survivent_a_un_verdict_favorable() {
         let c = Conclusion::compatible("Tout va bien.")
-            .with_warnings(["Donnee normative non verifiee.".to_string()]);
+            .with_warnings(["Donnée normative non vérifiée.".to_string()]);
         assert_eq!(c.verdict, Verdict::Compatible);
         assert_eq!(c.warnings.len(), 1);
     }

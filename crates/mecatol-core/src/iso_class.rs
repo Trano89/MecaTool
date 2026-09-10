@@ -27,7 +27,7 @@ pub enum Feature {
 impl Feature {
     pub const fn label_fr(self) -> &'static str {
         match self {
-            Feature::Hole => "alesage",
+            Feature::Hole => "alésage",
             Feature::Shaft => "arbre",
         }
     }

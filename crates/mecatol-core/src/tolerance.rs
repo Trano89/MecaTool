@@ -165,7 +165,7 @@ impl SizeRange {
     /// Libelle normatif de l'echelon, par ex. `"au-dessus de 6 jusqu'a 10"`.
     pub fn label_fr(&self) -> String {
         format!(
-            "au-dessus de {} jusqu'a {}",
+            "au-dessus de {} jusqu'à {}",
             trim_mm(self.above),
             trim_mm(self.up_to)
         )
@@ -241,7 +241,9 @@ impl FeatureTolerance {
 
     /// Designation complete, par ex. `"20 H7"`.
     pub fn designation(&self, unit: Unit) -> String {
-        let nominal = self.nominal.to_decimal_string(unit, unit.default_decimals());
+        let nominal = self
+            .nominal
+            .to_decimal_string(unit, unit.default_decimals());
         let trimmed = nominal.trim_end_matches('0').trim_end_matches('.');
         format!("{trimmed} {}", self.class)
     }
@@ -297,7 +299,7 @@ mod tests {
         assert!(range.contains(Length::from_millimetres(7)));
         assert!(!range.contains(Length::from_millimetres(6)));
         assert!(!range.contains(Length::from_millimetres(11)));
-        assert_eq!(range.label_fr(), "au-dessus de 6 jusqu'a 10");
+        assert_eq!(range.label_fr(), "au-dessus de 6 jusqu'à 10");
     }
 
     #[test]
@@ -318,11 +320,18 @@ mod tests {
         .unwrap();
 
         assert_eq!(ft.limits.min(), Length::from_millimetres(10));
-        assert_eq!(ft.limits.max(), Length::parse("10.015", Unit::Millimetre).unwrap());
+        assert_eq!(
+            ft.limits.max(),
+            Length::parse("10.015", Unit::Millimetre).unwrap()
+        );
         assert_eq!(ft.it, um(15));
         assert_eq!(ft.designation(Unit::Millimetre), "10 H7");
-        assert!(ft.limits.contains(Length::parse("10.007", Unit::Millimetre).unwrap()));
-        assert!(!ft.limits.contains(Length::parse("10.016", Unit::Millimetre).unwrap()));
+        assert!(ft
+            .limits
+            .contains(Length::parse("10.007", Unit::Millimetre).unwrap()));
+        assert!(!ft
+            .limits
+            .contains(Length::parse("10.016", Unit::Millimetre).unwrap()));
     }
 
     #[test]

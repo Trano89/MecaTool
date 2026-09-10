@@ -30,6 +30,7 @@ name = "mecatol-engine"
 version = "0.1.0"
 dependencies = [
  "mecatol-core",
+ "mecatol-standards",
  "serde",
  "serde_json",
  "thiserror",

@@ -40,9 +40,9 @@ impl VerificationStatus {
     pub fn banner_fr(&self) -> Option<String> {
         match self {
             VerificationStatus::Verified { .. } => None,
-            VerificationStatus::Unverified { pending } => Some(format!(
-                "Donnee normative non verifiee. {pending}"
-            )),
+            VerificationStatus::Unverified { pending } => {
+                Some(format!("Donnée normative non vérifiée. {pending}"))
+            }
         }
     }
 }
@@ -51,9 +51,9 @@ impl fmt::Display for VerificationStatus {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             VerificationStatus::Verified { against, on } => {
-                write!(f, "verifiee le {on} contre {against}")
+                write!(f, "vérifiée le {on} contre {against}")
             }
-            VerificationStatus::Unverified { .. } => f.write_str("non verifiee"),
+            VerificationStatus::Unverified { .. } => f.write_str("non vérifiée"),
         }
     }
 }
@@ -67,6 +67,12 @@ pub struct StandardReference {
     pub edition: String,
     /// Titre officiel.
     pub title: String,
+    /// Ce que ce jeu de donnees couvre precisement dans la norme.
+    ///
+    /// Une meme norme fournit plusieurs tables ; sans cette precision, deux
+    /// references citees cote a cote seraient indiscernables a l'affichage.
+    #[serde(default)]
+    pub scope: Option<String>,
     /// Origine des valeurs saisies dans Mecatol.
     pub source: String,
     /// Etat de verification du jeu de donnees.
@@ -80,6 +86,16 @@ impl StandardReference {
     /// Citation courte : `"ISO 286-1:2010"`.
     pub fn citation(&self) -> String {
         format!("{}:{}", self.id, self.edition)
+    }
+
+    /// Citation suivie du perimetre, quand il est connu.
+    ///
+    /// `"ISO 286-1:2010 (degres de tolerance normalises IT)"`.
+    pub fn labelled_citation(&self) -> String {
+        match &self.scope {
+            Some(scope) => format!("{} ({scope})", self.citation()),
+            None => self.citation(),
+        }
     }
 }
 
@@ -133,7 +149,7 @@ impl Provenance {
             .filter_map(|r| {
                 r.verification
                     .banner_fr()
-                    .map(|banner| format!("{} : {banner}", r.citation()))
+                    .map(|banner| format!("{} : {banner}", r.labelled_citation()))
             })
             .collect()
     }
@@ -148,6 +164,7 @@ mod tests {
             id: id.to_string(),
             edition: "2010".into(),
             title: "titre".into(),
+            scope: None,
             source: "source".into(),
             verification: VerificationStatus::Verified {
                 against: "scan".into(),
@@ -162,6 +179,7 @@ mod tests {
             id: id.to_string(),
             edition: "2010".into(),
             title: "titre".into(),
+            scope: None,
             source: "source".into(),
             verification: VerificationStatus::Unverified {
                 pending: "a confronter au scan".into(),
@@ -177,7 +195,9 @@ mod tests {
 
     #[test]
     fn une_seule_source_non_verifiee_contamine_le_resultat() {
-        let p = Provenance::new().with(verified("ISO 286-1")).with(unverified("ISO 286-2"));
+        let p = Provenance::new()
+            .with(verified("ISO 286-1"))
+            .with(unverified("ISO 286-2"));
         assert!(!p.is_fully_verified());
         assert_eq!(p.warnings_fr().len(), 1);
         assert!(p.warnings_fr()[0].contains("ISO 286-2:2010"));
@@ -185,7 +205,9 @@ mod tests {
 
     #[test]
     fn toutes_verifiees_donne_un_resultat_verifie_sans_avertissement() {
-        let p = Provenance::new().with(verified("ISO 286-1")).with(verified("ISO 286-2"));
+        let p = Provenance::new()
+            .with(verified("ISO 286-1"))
+            .with(verified("ISO 286-2"));
         assert!(p.is_fully_verified());
         assert!(p.warnings_fr().is_empty());
     }
