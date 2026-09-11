@@ -13,8 +13,12 @@ BESOIN → CALCUL → COMPARAISON → VALIDATION → EXPLICATION → VISUALISATI
 > ✅ **Données normatives vérifiées.** Les 364 valeurs ISO 286 ont été confrontées
 > case par case à l'ISO 286-2:2010 par un script rejouable ; les trois tables de
 > l'ISO 2768-1 ont été recoupées entre deux traductions indépendantes du même
-> document. Aucun écart. La couverture reste partielle et le moteur refuse
-> explicitement ce qu'il n'a pas. Voir [docs/standards.md](docs/standards.md).
+> document. Aucun écart.
+>
+> ⚠️ **Sauf l'ISO 1101**, dont les données viennent d'un recueil technique qui
+> reproduit la norme, et non de la norme. L'écran concerné le dit, dès son
+> ouverture. La couverture reste partielle et le moteur refuse explicitement ce
+> qu'il n'a pas. Voir [docs/standards.md](docs/standards.md).
 
 ## État d'avancement
 
@@ -36,13 +40,50 @@ BESOIN → CALCUL → COMPARAISON → VALIDATION → EXPLICATION → VISUALISATI
 | Tolérances générales ISO 2768-1 | ✅ vérifiées, 3 tables |
 | Comparateur de solutions | ✅ |
 | Chaînes de cotes : pire des cas et RSS | ✅ |
+| Tolérancement géométrique ISO 1101 | ⚠️ source secondaire, 17 caractéristiques |
 | Historique et export PDF | ⏳ |
-| Tolérances géométriques (v0.3) | ⛔ ISO 1101 indisponible |
 | États de surface (v0.4) | ⛔ ISO 21920 indisponible |
 
-Les deux derniers modules sont **bloqués faute de source primaire**. MecaTool
-n'invente pas une règle normative : plutôt qu'un module GD&T aux règles
-approximatives, il n'y a pas de module GD&T.
+## Le module géométrique, et ce qu'il ne fait pas
+
+L'ISO 1101 n'était pas disponible. Elle ne l'est toujours pas : ce qui a été
+obtenu, c'est un **recueil technique** qui la reproduit — le VSM « Extrait de
+normes », éditions 2022 et 2014. MecaTool ne présente donc jamais ces données
+comme lues dans l'ISO 1101, et l'écran affiche la réserve avant toute saisie.
+
+Les deux éditions ont été confrontées l'une à l'autre : mêmes familles, mêmes
+symboles, même exigence de référence spécifiée, même règle d'emboîtement. Les
+deux seuls écarts sont des évolutions connues de la norme, pas des désaccords.
+
+**Le module ne propose aucune valeur de tolérance**, et un test échoue si un
+message venait à en recommander une. L'ISO 1101 définit un vocabulaire, pas des
+chiffres : la valeur relève du concepteur. Ce que le module fait, c'est lire un
+cadre et dire ce qui cloche.
+
+```
+⟂ 0.05
+🔴 À corriger — Perpendicularité est une tolérance d'orientation : elle exige
+   au moins une référence spécifiée. Sans référence, il n'y a rien par rapport
+   à quoi mesurer l'écart.
+```
+
+```
+// 0.02 A
+⏥ 0.05
+🟠 À vérifier — ⏥ 0.05 n'ajoute rien : ∥ 0.02 A borne déjà la forme de cet
+   élément, et le fait plus serré (0.02 contre 0.05).
+```
+
+Le second constat n'est pas une trouvaille de MecaTool : il découle d'une phrase
+de la source, citée sous « Pourquoi ? ». Et il ne se déclenche qu'entre zones de
+**même nature** — une zone cylindrique ø0,02 et une zone de 0,05 entre deux
+plans ne sont pas commensurables, et comparer leurs seuls nombres conclurait de
+travers. Quand les natures diffèrent, MecaTool le dit au lieu de trancher.
+
+Les **états de surface** restent bloqués : le recueil les couvre, mais son
+édition 2022 suit l'ISO 21920 et celle de 2014 l'ISO 4287, qui ne sont pas
+interchangeables. Plutôt qu'un module mêlant deux générations de paramètres, il
+n'y a pas encore de module d'états de surface.
 
 ## Lancer l'application
 
@@ -155,7 +196,7 @@ exactement le même code.
 | Crate | Rôle |
 |---|---|
 | `mecatool-core` | `Length` et `Angle` (entiers exacts), `ToleranceClass`, `Fit`, `Provenance` |
-| `mecatool-standards` | chargement et validation des tables ISO 286 et ISO 2768 |
+| `mecatool-standards` | chargement et validation des tables ISO 286, ISO 2768 et ISO 1101 |
 | `mecatool-engine` | calcul des tolérances et ajustements, parser, explications |
 | `mecatool-cli` | banc d'essai du moteur, pour confronter les résultats à un manuel |
 
@@ -188,9 +229,9 @@ Chacun de ces refus est couvert par un test.
 ## Développement
 
 ```bash
-cargo test --workspace        # 238 tests : moteur
-cd src-tauri && cargo test    #  20 tests : frontiere Tauri + echantillons
-npm test                      #  49 tests : interface
+cargo test --workspace        # 292 tests : moteur
+cd src-tauri && cargo test    #  25 tests : frontiere Tauri + echantillons
+npm test                      #  63 tests : interface
 cargo clippy --workspace --all-targets
 cargo fmt --all
 ```

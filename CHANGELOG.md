@@ -5,6 +5,63 @@ projet adopte le [versionnage sémantique](https://semver.org/lang/fr/).
 
 ## [Non publié]
 
+### Renommé
+
+- Le projet s'appelle désormais **MecaTool**.
+
+### Ajouté — tolérancement géométrique (ISO 1101)
+
+- **Catalogue des caractéristiques géométriques** : dix-sept entrées, quatre
+  familles, vingt-deux modificateurs. Pour chacune, le symbole, l'exigence de
+  référence spécifiée, l'exigence de dimension théorique exacte, et la forme de
+  la zone que la norme lui attribue.
+- **Lecture d'un cadre de tolérance** écrit en clair — `⟂ 0.05 A`,
+  `⌖ ø0.2 (M) A B C` — et contrôle de ce que la source permet de contrôler :
+  la référence spécifiée, la cotation de la zone, l'emboîtement entre
+  spécifications posées sur un même élément.
+- Écran dédié, avec le catalogue consultable.
+
+**Aucune valeur de tolérance n'est proposée**, et deux tests échouent si un
+message venait à en recommander une, l'un dans le moteur, l'autre dans
+l'interface. L'ISO 1101 définit un vocabulaire, pas des chiffres.
+
+### Ajouté — état de vérification « source secondaire »
+
+Les données ISO 1101 viennent d'un **recueil technique** qui reproduit la norme,
+et non de la norme. Entre « confronté à la norme » et « pas encore vérifié »,
+il manquait ce cas :
+
+| État | Ce qu'il dit |
+|---|---|
+| `verified` | chaque valeur confrontée à la norme citée |
+| `secondary` | transcrite d'un recueil qui reproduit la norme |
+| `unverified` | saisie, pas encore confrontée |
+
+`secondary` **compte comme non vérifié** à l'affichage, mais avec son propre
+message. Le ranger sous `verified` reviendrait à citer une norme qu'on n'a pas
+ouverte ; sous `unverified`, à dire qu'on n'a rien fait.
+
+Deux conséquences :
+
+- **Le millésime peut rester vide.** Le recueil cite « SN EN ISO 1101 » sans
+  année, et MecaTool ne l'invente pas : la citation rend `ISO 1101`, pas
+  `ISO 1101:`.
+- **La réserve ne rejoint pas le bandeau global.** Elle s'affiche sur l'écran
+  concerné. Les autres sources sont vérifiées contre leur source primaire ;
+  un avertissement affiché partout finirait par ne plus rien vouloir dire
+  nulle part.
+
+### Corrigé
+
+- L'ISO 2768-2 était présentée comme « non couverte ». Elle a en réalité été
+  **retirée au printemps 2021** et remplacée par l'ISO 22081. La note le dit
+  désormais, et précise qu'une transposition directe des valeurs de l'une vers
+  l'autre n'est pas possible.
+- Une largeur de zone de tolérance s'affiche sans zéro superflu — `0.08`, non
+  `0.080`. Une cote garde ses trois décimales : `10.015` se lit d'un coup d'œil
+  sur un plan, une tolérance géométrique non, et les zéros ajoutés
+  suggéreraient une précision de saisie qui n'est pas celle de la source.
+
 ### Ajouté — tolérances générales (ISO 2768-1)
 
 - **Type `Angle` exact**, en millisecondes d'arc entières. Le choix n'est pas
