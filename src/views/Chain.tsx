@@ -81,11 +81,17 @@ export function Chain() {
   const [report, setReport] = useState<ChainReport | null>(null);
   const [error, setError] = useState<AppError | null>(null);
 
-  // Le composeur ecrit dans la saisie, il ne la reflete pas : remonter du texte
+  // Le composeur écrit dans la saisie, il ne la reflète pas : remonter du texte
   // vers les lignes demanderait un parseur dans l'interface.
+  //
+  // Mais il n'écrit **rien tant qu'il n'a rien à dire**. Une ligne qu'on vient
+  // d'ajouter n'a pas encore de cote nominale : sans cette garde, ouvrir le
+  // composeur et cliquer « Ajouter » effacerait la chaîne déjà saisie, au
+  // moment précis où l'utilisateur croit l'enrichir.
   const compose = (next: LinkRow[]) => {
     setRows(next);
-    setInput(composeChain(next));
+    const composed = composeChain(next);
+    if (composed !== "") setInput(composed);
   };
 
   const run = useCallback(

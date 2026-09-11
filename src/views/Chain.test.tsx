@@ -158,4 +158,20 @@ describe("écran des chaînes de cotes", () => {
 
     expect(screen.getByLabelText("Maillons, un par ligne")).toHaveValue("-C = 5 ±0.1");
   });
+
+  it("n'efface pas la chaîne déjà saisie en ajoutant un maillon vide", async () => {
+    await show();
+
+    const field = screen.getByLabelText("Maillons, un par ligne");
+    const before = (field as HTMLTextAreaElement).value;
+    expect(before).not.toBe("");
+
+    await userEvent.click(screen.getByRole("button", { name: "Composer les maillons" }));
+    await userEvent.click(screen.getByRole("button", { name: /Ajouter un maillon/ }));
+
+    // Une ligne neuve n'a pas encore de cote : le composeur n'a rien à dire, et
+    // ce qui était écrit reste. Sans cette garde, l'utilisateur perdrait sa
+    // saisie au moment où il croit l'enrichir.
+    expect(field).toHaveValue(before);
+  });
 });
