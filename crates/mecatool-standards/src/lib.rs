@@ -33,6 +33,7 @@ pub mod error;
 pub mod iso1101;
 pub mod iso2768;
 pub mod iso286;
+pub mod roulements;
 pub mod value;
 
 pub use error::{Result, StandardsError};
@@ -44,3 +45,7 @@ pub use iso2768::{
     GeneralClass, GeneralDeviation, GeneralLookup, GeneralRange, GeneralToleranceTable, MeasureKind,
 };
 pub use iso286::{DeviationSide, ItGradeTable, ItValue, ShaftDeviation, ShaftDeviationTable};
+pub use roulements::{
+    BearingFamily, BoreDesignation, DiameterRange, LoadRegime, MountingCase, MountingRow,
+    ShaftMountingTable,
+};
