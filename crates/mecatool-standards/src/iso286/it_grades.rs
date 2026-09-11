@@ -337,6 +337,13 @@ mod tests {
                     "norme reproduite imprecise : {reproduces}"
                 );
             }
+            mecatool_core::VerificationStatus::Recommended { .. } => {
+                // Etat illegitime ICI, et c'est tout l'interet de le dire : les
+                // degres IT sont une exigence normative, pas une pratique. Les
+                // ranger sous « recommande » laisserait croire qu'on peut s'en
+                // ecarter a discretion.
+                panic!("les degres IT sont normatifs, pas une recommandation");
+            }
             mecatool_core::VerificationStatus::Unverified { pending } => {
                 // Etat legitime, mais il doit dire ce qu'il reste a faire.
                 assert!(!pending.is_empty(), "non verifie sans marche a suivre");

@@ -15,15 +15,24 @@ use serde::{Deserialize, Serialize};
 /// l'utilisateur avec un avertissement visible : c'est la traduction directe de
 /// l'interdiction de faire passer une approximation pour une valeur ISO.
 ///
-/// # Pourquoi trois etats et non deux
+/// # Pourquoi quatre etats et non deux
 ///
-/// Entre « confronte a la norme » et « pas encore verifie » il existe un cas
-/// intermediaire courant : la donnee vient d'un recueil technique qui reproduit
-/// la norme, consulte avec soin, mais qui n'est pas la norme. Le confondre avec
-/// `Verified` reviendrait a citer une norme qu'on n'a pas lue ; le confondre
-/// avec `Unverified` reviendrait a dire qu'on n'a rien verifie. `Secondary`
-/// nomme exactement ce qui a ete fait, et compte comme non verifie pour
-/// l'affichage : l'utilisateur doit savoir sur quoi il s'appuie.
+/// Entre « confronte a la norme » et « pas encore verifie » il existe deux cas
+/// intermediaires, et les confondre tromperait dans un sens ou dans l'autre.
+///
+/// **`Secondary`** : la donnee vient d'un recueil technique qui reproduit la
+/// norme, consulte avec soin, mais qui n'est pas la norme. La ranger sous
+/// `Verified` reviendrait a citer une norme qu'on n'a pas ouverte ; sous
+/// `Unverified`, a dire qu'on n'a rien fait.
+///
+/// **`Recommended`** : la donnee n'est pas normative du tout. C'est une pratique
+/// recommandee — typiquement les classes de tolerance de montage publiees par
+/// les fabricants de roulements. La difference compte pour l'utilisateur : une
+/// valeur ISO s'impose, une recommandation s'ecarte si l'on sait pourquoi. Les
+/// presenter pareillement durcirait la seconde et banaliserait la premiere.
+///
+/// Les trois etats autres que `Verified` comptent comme non verifies pour
+/// l'affichage, chacun avec son propre message.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "state", rename_all = "snake_case")]
 pub enum VerificationStatus {
@@ -40,6 +49,13 @@ pub enum VerificationStatus {
         from: String,
         /// Ce que ce recueil declare reproduire, par ex. `"SN EN ISO 1101"`.
         reproduces: String,
+        /// Date de la transcription, au format `AAAA-MM-JJ`.
+        on: String,
+    },
+    /// Pratique recommandee, sans caractere normatif.
+    Recommended {
+        /// Qui la recommande, et par quel relais elle a ete lue.
+        by: String,
         /// Date de la transcription, au format `AAAA-MM-JJ`.
         on: String,
     },
@@ -61,6 +77,11 @@ impl VerificationStatus {
         matches!(self, VerificationStatus::Secondary { .. })
     }
 
+    /// Vrai si la donnee est une pratique recommandee et non une regle.
+    pub const fn is_recommended(&self) -> bool {
+        matches!(self, VerificationStatus::Recommended { .. })
+    }
+
     /// Message court destine a l'interface.
     pub fn banner_fr(&self) -> Option<String> {
         match self {
@@ -70,6 +91,11 @@ impl VerificationStatus {
             } => Some(format!(
                 "Donnée transcrite d'un recueil technique, non confrontée à la \
                  norme elle-même. Source : {from}, qui reproduit {reproduces}."
+            )),
+            VerificationStatus::Recommended { by, .. } => Some(format!(
+                "Pratique recommandée, sans caractère normatif : aucune norme ne \
+                 l'impose, et s'en écarter reste légitime si la raison en est \
+                 connue. Recommandée par {by}."
             )),
             VerificationStatus::Unverified { pending } => {
                 Some(format!("Donnée normative non vérifiée. {pending}"))
@@ -86,6 +112,9 @@ impl fmt::Display for VerificationStatus {
             }
             VerificationStatus::Secondary { from, on, .. } => {
                 write!(f, "transcrite le {on} depuis {from}")
+            }
+            VerificationStatus::Recommended { by, .. } => {
+                write!(f, "recommandée par {by}")
             }
             VerificationStatus::Unverified { .. } => f.write_str("non vérifiée"),
         }
@@ -303,6 +332,48 @@ mod tests {
 
         // Et il ne doit pas se confondre avec le message des donnees non saisies.
         assert!(!warnings[0].contains("non vérifiée"));
+    }
+
+    #[test]
+    fn une_recommandation_ne_se_presente_pas_comme_une_regle() {
+        let mut reference = secondary("Roulements");
+        reference.verification = VerificationStatus::Recommended {
+            by: "fabricants de roulements, via le VSM 2014, tableau 237/1".into(),
+            on: "2026-09-11".into(),
+        };
+        let p = Provenance::new().with(reference);
+
+        assert!(!p.is_fully_verified());
+        let banner = &p.warnings_fr()[0];
+
+        // Le message doit dire que s'en ecarter reste legitime : c'est
+        // exactement ce qui distingue une recommandation d'une exigence, et
+        // c'est ce que l'utilisateur a besoin de savoir pour decider.
+        assert!(banner.contains("sans caractère normatif"));
+        assert!(banner.contains("écarter"));
+        assert!(banner.contains("fabricants de roulements"));
+
+        // Et il ne doit pas se confondre avec les deux autres reserves.
+        assert!(!banner.contains("recueil technique"));
+        assert!(!banner.contains("non vérifiée"));
+    }
+
+    #[test]
+    fn les_quatre_etats_se_distinguent() {
+        let verified = VerificationStatus::Verified {
+            against: "ISO 286-2".into(),
+            on: "2026-09-10".into(),
+        };
+        let recommended = VerificationStatus::Recommended {
+            by: "fabricants".into(),
+            on: "2026-09-11".into(),
+        };
+        assert!(verified.is_verified() && !verified.is_secondary());
+        assert!(recommended.is_recommended() && !recommended.is_verified());
+
+        // Seul `Verified` se passe de banniere.
+        assert!(verified.banner_fr().is_none());
+        assert!(recommended.banner_fr().is_some());
     }
 
     #[test]
