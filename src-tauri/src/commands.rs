@@ -24,8 +24,10 @@ use mecatol_engine::parser::{
 };
 use mecatol_engine::requirement::{verify_clearance, ClearanceRequirement, Verification};
 use mecatol_engine::search::{find_fits, SearchOptions, SearchResult};
+use mecatol_engine::geometric::{GeometricEngine, GroupAnalysis};
 use mecatol_engine::EngineError;
 use mecatol_standards::iso2768::MeasureKind;
+use mecatol_standards::{Characteristic, FamilyDefinition, Modifier};
 use serde::{Deserialize, Serialize};
 
 /// Une erreur telle que l'interface doit la presenter.
@@ -152,6 +154,56 @@ pub fn general_tolerances(kind: String, nominal_mm: String) -> Result<ClassCompa
 
     let engine = Iso2768Engine::new()?;
     Ok(engine.across_classes(kind, nominal))
+}
+
+/// Le catalogue des caracteristiques geometriques.
+///
+/// Il est rendu tel quel, sans mise en forme, parce que le frontend ne doit
+/// porter aucune regle normative : les symboles, les familles, l'exigence de
+/// reference et la forme des zones viennent toutes du fichier de donnees.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GeometricCatalogue {
+    pub families: Vec<FamilyDefinition>,
+    pub characteristics: Vec<Characteristic>,
+    pub modifiers: Vec<Modifier>,
+    pub provenance: Provenance,
+    /// La reserve de source, a afficher des l'ouverture de l'ecran.
+    ///
+    /// Elle ne rejoint pas le bandeau global : la donnee ISO 1101 est
+    /// secondaire, mais l'ISO 286 et l'ISO 2768 ne le sont pas. Une reserve
+    /// affichee partout finirait par ne plus rien vouloir dire nulle part.
+    pub warnings: Vec<String>,
+}
+
+/// Le catalogue complet, pour consultation.
+#[tauri::command]
+pub fn geometric_catalogue() -> Result<GeometricCatalogue, AppError> {
+    let engine = GeometricEngine::new()?;
+    let table = engine.table();
+    let provenance = Provenance::new().with(table.standard().clone());
+    Ok(GeometricCatalogue {
+        families: table.families().to_vec(),
+        characteristics: table.characteristics().to_vec(),
+        modifiers: table.modifiers().to_vec(),
+        warnings: provenance.warnings_fr(),
+        provenance,
+    })
+}
+
+/// Lit et controle une ou plusieurs specifications geometriques.
+///
+/// Les specifications sont censees porter sur **le meme element** : c'est ce qui
+/// donne son sens au controle de recouvrement. Les poser sur des elements
+/// differents produirait des recouvrements imaginaires.
+#[tauri::command]
+pub fn geometric(specs: Vec<String>) -> Result<GroupAnalysis, AppError> {
+    let engine = GeometricEngine::new()?;
+    let parsed = specs
+        .iter()
+        .filter(|s| !s.trim().is_empty())
+        .map(|s| engine.parse(s))
+        .collect::<mecatol_engine::Result<Vec<_>>>()?;
+    Ok(engine.analyse_group(&parsed)?)
 }
 
 /// Le resultat d'une chaine de cotes.
@@ -656,5 +708,68 @@ mod tests {
         )
         .expect("sérialisation");
         std::fs::write(dir.join("chain-report.json"), chain + "\n").expect("écriture");
+
+        // Trois spécifications sur un même élément : une correcte, une à qui
+        // manque sa référence, et une que la première rend inopérante. Un seul
+        // échantillon couvre ainsi les trois sortes de constats.
+        let geometry = serde_json::to_string_pretty(
+            &geometric(vec![
+                "// 0.02 A".into(),
+                "⏥ 0.05".into(),
+                "⟂ 0.03".into(),
+            ])
+            .unwrap(),
+        )
+        .expect("sérialisation");
+        std::fs::write(dir.join("geometric-group.json"), geometry + "\n").expect("écriture");
+
+        let catalogue =
+            serde_json::to_string_pretty(&geometric_catalogue().unwrap()).expect("sérialisation");
+        std::fs::write(dir.join("geometric-catalogue.json"), catalogue + "\n").expect("écriture");
+    }
+
+    #[test]
+    fn le_catalogue_traverse_la_frontiere_avec_sa_reserve() {
+        let catalogue = geometric_catalogue().unwrap();
+        assert_eq!(catalogue.families.len(), 4);
+        assert!(!catalogue.characteristics.is_empty());
+        assert!(!catalogue.modifiers.is_empty());
+
+        // La donnee est secondaire : la reserve doit arriver a l'ecran des son
+        // ouverture, avant meme que l'utilisateur ait saisi quoi que ce soit.
+        assert_eq!(catalogue.warnings.len(), 1);
+        assert!(catalogue.warnings[0].contains("recueil"));
+        assert!(!catalogue.provenance.is_fully_verified());
+    }
+
+    #[test]
+    fn le_bandeau_global_ne_se_charge_pas_de_la_reserve_geometrique() {
+        // L'ISO 286 et l'ISO 2768 sont verifiees contre leur source primaire.
+        // Faire remonter la reserve ISO 1101 dans le bandeau general reviendrait
+        // a jeter un doute sur des donnees qui n'en meritent pas, et a diluer
+        // celle qui en merite un.
+        let info = engine_info().unwrap();
+        assert!(info.warnings.is_empty());
+        assert!(info.provenance.is_fully_verified());
+    }
+
+    #[test]
+    fn une_specification_illisible_rend_une_piste_daction() {
+        let err = geometric(vec!["bidule 0.1".into()]).unwrap_err();
+        assert!(err.message.contains("illisible"));
+        assert!(err.hint.is_some(), "la piste d'action manque");
+    }
+
+    #[test]
+    fn les_lignes_vides_sont_ignorees() {
+        // L'interface propose plusieurs champs : les laisser vides ne doit pas
+        // faire echouer la lecture des autres.
+        let group = geometric(vec!["⏥ 0.05".into(), "  ".into(), String::new()]).unwrap();
+        assert_eq!(group.specs.len(), 1);
+    }
+
+    #[test]
+    fn un_groupe_entierement_vide_est_refuse() {
+        assert!(geometric(vec![String::new(), "  ".into()]).is_err());
     }
 }

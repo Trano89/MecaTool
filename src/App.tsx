@@ -1,8 +1,8 @@
 /**
  * L'ossature de l'application.
  *
- * Cinq écrans : l'accueil, le calcul d'ajustement, la comparaison, les
- * tolérances générales et les chaînes de cotes. Le bandeau sur l'état des
+ * Six écrans : l'accueil, le calcul d'ajustement, la comparaison, les
+ * tolérances générales, les chaînes de cotes et le tolérancement géométrique. Le bandeau sur l'état des
  * données normatives est permanent et non masquable — aucun écran ne doit
  * laisser croire qu'une table est vérifiée quand elle ne l'est pas.
  */
@@ -16,9 +16,10 @@ import { Calculate, type Query } from "./views/Calculate";
 import { Chain } from "./views/Chain";
 import { Compare } from "./views/Compare";
 import { GeneralTolerances } from "./views/GeneralTolerances";
+import { Geometry } from "./views/Geometry";
 import { Home } from "./views/Home";
 
-type Screen = "home" | "calculate" | "compare" | "general" | "chain";
+type Screen = "home" | "calculate" | "compare" | "general" | "chain" | "geometry";
 
 const THEMES: readonly Theme[] = ["light", "dark", "system"];
 
@@ -91,6 +92,14 @@ export function App() {
           >
             Chaîne de cotes
           </button>
+          <button
+            type="button"
+            className="tab"
+            aria-current={screen === "geometry" ? "page" : undefined}
+            onClick={() => setScreen("geometry")}
+          >
+            Géométrique
+          </button>
         </nav>
 
         <div className="spacer" />
@@ -153,6 +162,7 @@ export function App() {
           {screen === "compare" ? <Compare /> : null}
           {screen === "general" ? <GeneralTolerances /> : null}
           {screen === "chain" ? <Chain /> : null}
+          {screen === "geometry" ? <Geometry /> : null}
         </div>
       </main>
     </div>

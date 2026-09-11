@@ -693,3 +693,66 @@ details.why > summary:hover {
     animation-duration: 0.01ms !important;
   }
 }
+
+/* ---------- Tolérancement géométrique ---------- */
+
+/*
+ * Un constat porte toujours sa pastille ET son libellé de gravité. La bordure
+ * colorée à gauche est un rappel, jamais le seul porteur de l'information :
+ * une liste lue sans distinction des couleurs reste entièrement compréhensible.
+ */
+.findings {
+  list-style: none;
+  margin: 0.7rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.finding {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: var(--radius);
+  border: 1px solid;
+  border-left-width: 4px;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.finding.compatible {
+  background: var(--ok-soft);
+  border-color: var(--ok);
+}
+.finding.caution {
+  background: var(--warn-soft);
+  border-color: var(--warn);
+}
+.finding.incompatible {
+  background: var(--bad-soft);
+  border-color: var(--bad);
+}
+.finding.insufficient-data {
+  background: var(--info-soft);
+  border-color: var(--info);
+}
+
+/*
+ * Les symboles de l'ISO 1101 sont rares dans les polices d'interface : plusieurs
+ * tomberaient en carré vide. Le libellé en clair figure donc toujours à côté,
+ * dans sa propre colonne, et le symbole porte aria-hidden — un lecteur d'écran
+ * n'a rien à tirer d'un glyphe que la police peut ne pas connaître.
+ */
+.symbol {
+  font-size: 1.25rem;
+  line-height: 1;
+  text-align: center;
+  font-family: "Segoe UI Symbol", "DejaVu Sans", "Noto Sans Symbols 2", sans-serif;
+}
+
+.designation {
+  font-family: "Segoe UI Symbol", "DejaVu Sans", "Noto Sans Symbols 2", monospace;
+  letter-spacing: 0.02em;
+}

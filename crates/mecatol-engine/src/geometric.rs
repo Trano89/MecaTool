@@ -315,7 +315,7 @@ impl GeometricEngine {
             _ => format!(
                 "{designation} appelle {} remarque{}.",
                 findings.len(),
-                if findings.len() > 1 { "s" } else { "" }
+                plural(findings.len())
             ),
         };
 
@@ -606,18 +606,29 @@ impl GeometricEngine {
             .chain(overlaps.iter().map(|o| o.finding.severity.verdict()))
             .fold(Verdict::Compatible, Verdict::worst);
 
-        let detail = if overlaps.is_empty() {
-            format!(
+        // Le libelle mene par le plus grave. Une reference manquante rend le
+        // dessin faux ; un recouvrement le rend seulement bavard. Annoncer le
+        // second quand le premier existe ferait passer une faute pour une
+        // remarque de style.
+        let faulty = analyses
+            .iter()
+            .filter(|a| a.findings.iter().any(|f| f.severity == Severity::Error))
+            .count();
+
+        let detail = match (faulty, overlaps.len()) {
+            (0, 0) => format!(
                 "{} spécification{} sur cet élément, sans recouvrement signalé.",
                 analyses.len(),
-                if analyses.len() > 1 { "s" } else { "" }
-            )
-        } else {
-            format!(
-                "{} recouvrement{} entre ces spécifications.",
-                overlaps.len(),
-                if overlaps.len() > 1 { "s" } else { "" }
-            )
+                plural(analyses.len())
+            ),
+            (0, n) => format!("{n} recouvrement{} entre ces spécifications.", plural(n)),
+            (f, 0) => format!("{f} spécification{} fautive{}.", plural(f), plural(f)),
+            (f, n) => format!(
+                "{f} spécification{} fautive{}, et {n} recouvrement{}.",
+                plural(f),
+                plural(f),
+                plural(n)
+            ),
         };
 
         let mut conclusion = Conclusion::new(verdict, detail);
@@ -821,6 +832,15 @@ fn read_modifier(token: &str) -> Option<String> {
     MULTI
         .contains(&token.to_ascii_uppercase().as_str())
         .then(|| token.to_ascii_uppercase())
+}
+
+/// Le « s » du pluriel, ou rien.
+fn plural(count: usize) -> &'static str {
+    if count > 1 {
+        "s"
+    } else {
+        ""
+    }
 }
 
 fn capitalise(text: &str) -> String {
@@ -1077,6 +1097,22 @@ mod tests {
             .analyse_group(&[spec("⏥ 0.01"), spec("// 0.05 A")])
             .unwrap();
         assert!(group.overlaps.is_empty());
+    }
+
+    #[test]
+    fn le_libelle_du_groupe_mene_par_le_plus_grave() {
+        let e = engine();
+        // Une reference manquante ET un recouvrement : le libelle doit nommer
+        // la faute d'abord, sans quoi elle passerait pour un detail de style.
+        let group = e
+            .analyse_group(&[spec("// 0.02 A"), spec("⏥ 0.05"), spec("⟂ 0.03")])
+            .unwrap();
+        assert_eq!(group.conclusion.verdict, Verdict::Incompatible);
+        assert!(group
+            .conclusion
+            .detail
+            .starts_with("1 spécification fautive"));
+        assert!(group.conclusion.detail.contains("recouvrement"));
     }
 
     #[test]

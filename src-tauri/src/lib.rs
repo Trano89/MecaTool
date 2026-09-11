@@ -24,7 +24,9 @@ pub fn run() {
             commands::engine_info,
             commands::general_tolerances,
             commands::compare,
-            commands::dimension_chain
+            commands::dimension_chain,
+            commands::geometric,
+            commands::geometric_catalogue
         ])
         .run(tauri::generate_context!())
         .expect("le lancement de Mecatol a échoué");

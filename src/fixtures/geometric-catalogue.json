@@ -1,0 +1,640 @@
+{
+  "families": [
+    {
+      "id": "form",
+      "name": "forme",
+      "heading": "tolérances de forme",
+      "limits": [],
+      "note": "Une tolérance de forme limite l'écart de l'élément par rapport à sa forme géométrique exacte. Elle ne se réfère à rien d'autre : aucune référence spécifiée."
+    },
+    {
+      "id": "orientation",
+      "name": "orientation",
+      "heading": "tolérances d'orientation",
+      "limits": [
+        "form"
+      ],
+      "note": "La zone de tolérance de la tolérance d'orientation limite aussi l'écart de forme de l'élément tolérancé."
+    },
+    {
+      "id": "location",
+      "name": "position",
+      "heading": "tolérances de position",
+      "limits": [
+        "form",
+        "orientation"
+      ],
+      "note": "La zone de tolérance de la tolérance de position limite aussi la tolérance de forme et la tolérance d'orientation de l'élément tolérancé."
+    },
+    {
+      "id": "runout",
+      "name": "battement",
+      "heading": "tolérances de battement",
+      "limits": [
+        "form",
+        "location"
+      ],
+      "note": "La zone de tolérance de la tolérance de battement limite par exemple la tolérance de cylindricité et la tolérance de concentricité de l'élément tolérancé."
+    }
+  ],
+  "characteristics": [
+    {
+      "id": "straightness",
+      "name": "rectitude",
+      "symbol": "⏤",
+      "aliases": [
+        "rectitude",
+        "rect",
+        "straightness",
+        "--",
+        "-"
+      ],
+      "class": "form",
+      "datum": "none",
+      "requires_ted": false,
+      "zones": [
+        {
+          "feature": "une ligne",
+          "geometry": "two_parallel_straight_lines",
+          "definition": "Une ligne quelconque extraite de la surface, parallèle au plan de projection dans lequel l'indication est donnée, doit être contenue entre deux droites parallèles distantes de t."
+        },
+        {
+          "feature": "un axe",
+          "geometry": "cylinder",
+          "definition": "L'axe du cylindre relié à l'indicateur de tolérance doit être compris dans une zone de tolérance cylindrique de diamètre øt."
+        }
+      ],
+      "page": 185
+    },
+    {
+      "id": "flatness",
+      "name": "planéité",
+      "symbol": "⏥",
+      "aliases": [
+        "planeite",
+        "planéité",
+        "plan",
+        "flatness"
+      ],
+      "class": "form",
+      "datum": "none",
+      "requires_ted": false,
+      "zones": [
+        {
+          "feature": "une surface",
+          "geometry": "two_parallel_planes",
+          "definition": "La surface doit être comprise entre deux plans parallèles distants de t."
+        }
+      ],
+      "page": 185
+    },
+    {
+      "id": "roundness",
+      "name": "circularité",
+      "symbol": "○",
+      "aliases": [
+        "circularite",
+        "circularité",
+        "circ",
+        "roundness",
+        "o"
+      ],
+      "class": "form",
+      "datum": "none",
+      "requires_ted": false,
+      "zones": [
+        {
+          "feature": "une section droite",
+          "geometry": "two_concentric_circles",
+          "definition": "La ligne circonférentielle extraite, dans toute section droite, doit être comprise entre deux cercles coplanaires concentriques ayant une différence de rayons de t."
+        }
+      ],
+      "page": 185
+    },
+    {
+      "id": "cylindricity",
+      "name": "cylindricité",
+      "symbol": "⌭",
+      "aliases": [
+        "cylindricite",
+        "cylindricité",
+        "cyl",
+        "cylindricity"
+      ],
+      "class": "form",
+      "datum": "none",
+      "requires_ted": false,
+      "zones": [
+        {
+          "feature": "une surface cylindrique",
+          "geometry": "two_coaxial_cylinders",
+          "definition": "La surface cylindrique extraite doit être comprise entre deux cylindres coaxiaux ayant une différence de rayons de t."
+        }
+      ],
+      "page": 185
+    },
+    {
+      "id": "line_profile_form",
+      "name": "profil d'une ligne",
+      "symbol": "⌒",
+      "aliases": [
+        "profil-ligne",
+        "profil de ligne",
+        "line profile"
+      ],
+      "class": "form",
+      "datum": "none",
+      "requires_ted": true,
+      "zones": [
+        {
+          "feature": "une ligne quelconque",
+          "geometry": "two_equidistant_lines",
+          "definition": "Dans chaque section parallèle au plan indiqué, la ligne de profil extraite doit être comprise entre deux lignes équidistantes, enveloppes des cercles de diamètre øt dont les centres sont situés sur une ligne ayant la forme géométrique théorique exacte."
+        }
+      ],
+      "page": 185
+    },
+    {
+      "id": "surface_profile_form",
+      "name": "profil d'une surface",
+      "symbol": "⌓",
+      "aliases": [
+        "profil-surface",
+        "profil de surface",
+        "surface profile"
+      ],
+      "class": "form",
+      "datum": "none",
+      "requires_ted": true,
+      "zones": [
+        {
+          "feature": "une surface quelconque",
+          "geometry": "two_equidistant_surfaces",
+          "definition": "La surface extraite doit être comprise entre deux surfaces équidistantes, enveloppes des sphères de diamètre øt dont les centres sont situés sur une surface ayant la forme géométrique théorique exacte."
+        }
+      ],
+      "page": 185
+    },
+    {
+      "id": "parallelism",
+      "name": "parallélisme",
+      "symbol": "∥",
+      "aliases": [
+        "parallelisme",
+        "parallélisme",
+        "par",
+        "//",
+        "parallelism"
+      ],
+      "class": "orientation",
+      "datum": "required",
+      "requires_ted": false,
+      "zones": [
+        {
+          "feature": "un axe, par rapport à un axe de référence",
+          "geometry": "cylinder",
+          "definition": "L'axe tolérancé doit être compris dans une zone cylindrique de diamètre øt parallèle à l'axe de la référence spécifiée."
+        },
+        {
+          "feature": "un axe, par rapport à un plan de référence",
+          "geometry": "two_parallel_planes",
+          "definition": "L'axe tolérancé doit être compris entre deux plans parallèles distants de t. Les plans sont parallèles au plan de la référence spécifiée."
+        },
+        {
+          "feature": "une surface, par rapport à un plan de référence",
+          "geometry": "two_parallel_planes",
+          "definition": "La surface extraite doit être comprise entre deux plans parallèles distants de t. Les plans sont parallèles au plan de la référence spécifiée."
+        }
+      ],
+      "page": 186
+    },
+    {
+      "id": "perpendicularity",
+      "name": "perpendicularité",
+      "symbol": "⟂",
+      "aliases": [
+        "perpendicularite",
+        "perpendicularité",
+        "perp",
+        "perpendicularity"
+      ],
+      "class": "orientation",
+      "datum": "required",
+      "requires_ted": false,
+      "zones": [
+        {
+          "feature": "un axe, par rapport à un plan de référence",
+          "geometry": "cylinder",
+          "definition": "L'axe du cylindre doit être compris dans une zone de tolérance cylindrique de diamètre øt perpendiculaire au plan de la référence spécifiée."
+        },
+        {
+          "feature": "une surface, par rapport à un plan de référence",
+          "geometry": "two_parallel_planes",
+          "definition": "La surface doit être comprise entre deux plans parallèles distants de t et perpendiculaires au plan de la référence spécifiée."
+        },
+        {
+          "feature": "une surface, par rapport à un axe de référence",
+          "geometry": "two_parallel_planes",
+          "definition": "La surface tolérancée doit être comprise entre deux plans parallèles distants de t. Les plans sont perpendiculaires à l'axe de la référence spécifiée."
+        }
+      ],
+      "page": 186
+    },
+    {
+      "id": "angularity",
+      "name": "inclinaison",
+      "symbol": "∠",
+      "aliases": [
+        "inclinaison",
+        "incl",
+        "angularity"
+      ],
+      "class": "orientation",
+      "datum": "required",
+      "requires_ted": true,
+      "zones": [
+        {
+          "feature": "un axe ou une surface",
+          "geometry": "two_parallel_planes",
+          "definition": "L'élément tolérancé doit être compris entre deux plans parallèles distants de t et inclinés de l'angle théorique exact indiqué par rapport au plan de la référence spécifiée."
+        }
+      ],
+      "page": 187
+    },
+    {
+      "id": "line_profile_orientation",
+      "name": "profil d'une ligne, en orientation",
+      "symbol": "⌒",
+      "aliases": [],
+      "class": "orientation",
+      "datum": "required",
+      "requires_ted": true,
+      "zones": [
+        {
+          "feature": "une ligne quelconque",
+          "geometry": "two_equidistant_lines",
+          "definition": "La zone de tolérance est limitée par deux lignes équidistantes de la forme géométrique théorique exacte, orientée par rapport à la référence spécifiée."
+        }
+      ],
+      "page": 187
+    },
+    {
+      "id": "surface_profile_orientation",
+      "name": "profil d'une surface, en orientation",
+      "symbol": "⌓",
+      "aliases": [],
+      "class": "orientation",
+      "datum": "required",
+      "requires_ted": true,
+      "zones": [
+        {
+          "feature": "une surface quelconque",
+          "geometry": "two_equidistant_surfaces",
+          "definition": "La zone de tolérance est limitée par deux surfaces équidistantes de la forme géométrique théorique exacte, orientée par rapport à la référence spécifiée."
+        }
+      ],
+      "page": 187
+    },
+    {
+      "id": "position",
+      "name": "localisation",
+      "symbol": "⌖",
+      "aliases": [
+        "localisation",
+        "loc",
+        "position",
+        "pos"
+      ],
+      "class": "location",
+      "datum": "optional",
+      "requires_ted": true,
+      "zones": [
+        {
+          "feature": "un axe",
+          "geometry": "cylinder",
+          "definition": "L'axe de chaque trou doit être compris dans une zone de tolérance cylindrique de diamètre øt, dont l'axe coïncide avec la position théorique exacte du trou considéré par rapport aux plans des références spécifiées."
+        },
+        {
+          "feature": "une surface",
+          "geometry": "two_parallel_planes",
+          "definition": "La surface doit être comprise entre deux plans parallèles distants de t et disposés symétriquement de part et d'autre de la position théorique exacte de la surface par rapport aux références spécifiées."
+        }
+      ],
+      "page": 188
+    },
+    {
+      "id": "coaxiality",
+      "name": "coaxialité",
+      "symbol": "◎",
+      "aliases": [
+        "coaxialite",
+        "coaxialité",
+        "coax",
+        "coaxiality",
+        "concentricite",
+        "concentricité"
+      ],
+      "class": "location",
+      "datum": "required",
+      "requires_ted": false,
+      "zones": [
+        {
+          "feature": "un axe",
+          "geometry": "cylinder",
+          "definition": "L'axe extrait du cylindre tolérancé doit être compris dans une zone de tolérance cylindrique de diamètre øt ayant pour axe la droite de la référence spécifiée commune."
+        }
+      ],
+      "page": 188
+    },
+    {
+      "id": "symmetry",
+      "name": "symétrie",
+      "symbol": "⌯",
+      "aliases": [
+        "symetrie",
+        "symétrie",
+        "sym",
+        "symmetry"
+      ],
+      "class": "location",
+      "datum": "required",
+      "requires_ted": false,
+      "zones": [
+        {
+          "feature": "un plan médian ou une ligne médiane",
+          "geometry": "two_parallel_planes",
+          "definition": "Le plan médian doit être compris entre deux plans parallèles distants de t et disposés symétriquement par rapport au plan médian de la référence spécifiée."
+        }
+      ],
+      "page": 188
+    },
+    {
+      "id": "line_profile_location",
+      "name": "profil d'une ligne, en position",
+      "symbol": "⌒",
+      "aliases": [],
+      "class": "location",
+      "datum": "required",
+      "requires_ted": true,
+      "zones": [
+        {
+          "feature": "une ligne quelconque",
+          "geometry": "two_equidistant_lines",
+          "definition": "La zone de tolérance est limitée par deux lignes enveloppes des cercles de diamètre øt, dont les centres sont situés sur une ligne ayant la forme géométrique théorique exacte par rapport aux références spécifiées."
+        }
+      ],
+      "page": 188
+    },
+    {
+      "id": "surface_profile_location",
+      "name": "profil d'une surface, en position",
+      "symbol": "⌓",
+      "aliases": [],
+      "class": "location",
+      "datum": "required",
+      "requires_ted": true,
+      "zones": [
+        {
+          "feature": "une surface quelconque",
+          "geometry": "two_equidistant_surfaces",
+          "definition": "La zone de tolérance est limitée par deux surfaces enveloppes des sphères de diamètre øt, dont les centres sont situés sur une surface ayant la forme géométrique théorique exacte par rapport aux références spécifiées."
+        }
+      ],
+      "page": 188
+    },
+    {
+      "id": "circular_runout",
+      "name": "battement simple",
+      "symbol": "↗",
+      "aliases": [
+        "battement",
+        "battement simple",
+        "bat",
+        "circular runout"
+      ],
+      "class": "runout",
+      "datum": "required",
+      "requires_ted": false,
+      "zones": [
+        {
+          "feature": "radial",
+          "geometry": "measured_per_section",
+          "definition": "Pendant une révolution complète autour de l'axe de la référence spécifiée, le battement radial ne doit pas dépasser t dans chaque plan de mesurage."
+        },
+        {
+          "feature": "axial",
+          "geometry": "measured_per_section",
+          "definition": "Pendant une révolution complète autour de l'axe de la référence spécifiée, le battement circulaire axial ne doit pas dépasser t à chaque point de mesurage."
+        }
+      ],
+      "page": 189
+    },
+    {
+      "id": "total_runout",
+      "name": "battement total",
+      "symbol": "⌰",
+      "aliases": [
+        "battement total",
+        "batt",
+        "total runout"
+      ],
+      "class": "runout",
+      "datum": "required",
+      "requires_ted": false,
+      "zones": [
+        {
+          "feature": "radial",
+          "geometry": "two_coaxial_cylinders",
+          "definition": "La surface du cylindre doit être comprise entre deux cylindres coaxiaux ayant une différence de rayons t, dont les axes coïncident avec la droite de la référence spécifiée commune."
+        }
+      ],
+      "page": 189
+    }
+  ],
+  "modifiers": [
+    {
+      "symbol": "SZ",
+      "name": "zones séparées",
+      "family": "combinaison de zones",
+      "defined_by": "ISO 1101",
+      "page": 176
+    },
+    {
+      "symbol": "CZ",
+      "name": "zone combinée",
+      "family": "combinaison de zones",
+      "defined_by": "ISO 1101",
+      "page": 176
+    },
+    {
+      "symbol": "UZ",
+      "name": "offset spécifié de la zone de tolérance",
+      "family": "zones inégales",
+      "defined_by": "ISO 1101",
+      "page": 176
+    },
+    {
+      "symbol": "OZ",
+      "name": "offset non spécifié de la zone de tolérance linéaire",
+      "family": "contrainte",
+      "defined_by": "ISO 1101",
+      "page": 176
+    },
+    {
+      "symbol": "VA",
+      "name": "offset non spécifié de la zone de tolérance angulaire, angle variable",
+      "family": "contrainte",
+      "defined_by": "ISO 1101",
+      "page": 176
+    },
+    {
+      "symbol": "C",
+      "name": "élément minimax (Tchebychev)",
+      "family": "élément associé",
+      "defined_by": "ISO 1101",
+      "page": 177
+    },
+    {
+      "symbol": "G",
+      "name": "élément des moindres carrés (Gaussien)",
+      "family": "élément associé",
+      "defined_by": "ISO 1101",
+      "page": 177
+    },
+    {
+      "symbol": "N",
+      "name": "élément minimal circonscrit",
+      "family": "élément associé",
+      "defined_by": "ISO 1101",
+      "page": 177
+    },
+    {
+      "symbol": "T",
+      "name": "élément tangent",
+      "family": "élément associé",
+      "defined_by": "ISO 1101",
+      "page": 177
+    },
+    {
+      "symbol": "X",
+      "name": "élément maximal inscrit",
+      "family": "élément associé",
+      "defined_by": "ISO 1101",
+      "page": 177
+    },
+    {
+      "symbol": "A",
+      "name": "élément dérivé",
+      "family": "élément tolérancé",
+      "defined_by": "ISO 1101",
+      "page": 178
+    },
+    {
+      "symbol": "P",
+      "name": "zone de tolérance projetée",
+      "family": "élément tolérancé",
+      "defined_by": "ISO 1101",
+      "page": 178
+    },
+    {
+      "symbol": "UF",
+      "name": "élément unifié",
+      "family": "élément tolérancé",
+      "defined_by": "ISO 1101",
+      "page": 180
+    },
+    {
+      "symbol": "LD",
+      "name": "diamètre intérieur",
+      "family": "élément tolérancé",
+      "defined_by": "ISO 1101",
+      "page": 180
+    },
+    {
+      "symbol": "MD",
+      "name": "diamètre extérieur",
+      "family": "élément tolérancé",
+      "defined_by": "ISO 1101",
+      "page": 180
+    },
+    {
+      "symbol": "ACS",
+      "name": "toute section droite",
+      "family": "indicateur auxiliaire",
+      "defined_by": "ISO 1101",
+      "page": 181
+    },
+    {
+      "symbol": "M",
+      "name": "exigence du maximum de matière",
+      "family": "état de matière",
+      "defined_by": "ISO 2692",
+      "page": 183
+    },
+    {
+      "symbol": "L",
+      "name": "exigence du minimum de matière",
+      "family": "état de matière",
+      "defined_by": "ISO 2692",
+      "page": 183
+    },
+    {
+      "symbol": "R",
+      "name": "exigence de réciprocité",
+      "family": "état de matière",
+      "defined_by": "ISO 2692",
+      "page": 183
+    },
+    {
+      "symbol": "F",
+      "name": "conditions à l'état libre, parties non rigides",
+      "family": "état",
+      "defined_by": "ISO 10579",
+      "page": 183
+    },
+    {
+      "symbol": "CF",
+      "name": "élément de contact",
+      "family": "référence spécifiée",
+      "defined_by": "ISO 5459",
+      "page": 184
+    },
+    {
+      "symbol": "E",
+      "name": "exigence d'enveloppe",
+      "family": "tolérance dimensionnelle",
+      "defined_by": "ISO 14405-1",
+      "page": 184
+    }
+  ],
+  "provenance": {
+    "references": [
+      {
+        "id": "ISO 1101",
+        "edition": "",
+        "title": "Spécification géométrique des produits (GPS) — Tolérancement géométrique — Tolérancement de forme, orientation, position et battement",
+        "scope": "classement, symboles, exigence de référence et forme des zones de tolérance",
+        "source": "VSM, « Extrait de normes », édition 2022, chapitre 2 « Spécification géométrique des produits », pages 174 à 189.",
+        "verification": {
+          "state": "secondary",
+          "from": "VSM « Extrait de normes » 2022, chapitre 2, pages 174 à 189, recoupé avec l'édition 2014, chapitre 2, pages 90 et 91",
+          "reproduces": "SN EN ISO 1101",
+          "on": "2026-09-11"
+        },
+        "notes": [
+          "Ce jeu de données ne vient PAS de l'ISO 1101 : il vient d'un recueil technique qui la reproduit, et qui cite lui-même sa source page 174 sous la forme « 2.8 Tolérancement géométrique (SN EN ISO 1101) ». Tout résultat qui en découle porte cette réserve.",
+          "Le recueil cite « SN EN ISO 1101 » sans millésime. Mecatol ne l'invente pas : le champ d'édition reste vide et la citation l'omet.",
+          "Le contenu relevé correspond à une édition récente de la norme : il comporte l'élément unifié UF, les indicateurs de plan d'intersection, d'orientation et de collection, les zones combinées CZ et séparées SZ, et les composants d'association C, G, N, T, X. Mecatol ne déduit pas de millésime de ces indices.",
+          "Recoupement entre deux éditions indépendantes du recueil. L'édition 2014 (§ 2.11.1.7, page 91) donne le même classement en quatre familles, les mêmes symboles, et la même exigence de référence spécifiée : aucune pour la forme, requise pour l'orientation, la position et le battement. Sa note du § 2.11.1.4 énonce le même emboîtement que celle du § 2.8.1.3.2 de 2022. Deux écarts subsistent, et ce sont des évolutions connues de la norme, non des désaccords : en 2014 les profils n'apparaissent que dans la famille forme et se nomment « forme ligne quelconque » et « forme surface quelconque » ; en 2022 ils apparaissent aussi en orientation et en position, et la localisation y admet l'absence de référence. Mecatol retient l'édition 2022, la plus récente.",
+          "Ce jeu de données ne contient AUCUNE valeur de tolérance. L'ISO 1101 définit la symbolique et la géométrie des zones, pas des valeurs : celles-ci sont choisies par le concepteur. Mecatol ne propose donc pas de valeur géométrique.",
+          "Les zones décrites sont celles des tableaux 185/1, 186/1, 188/1 et 189/1 du recueil. La phrase d'interprétation est reprise au plus près, car c'est elle qui fixe la géométrie de la zone, donc la présence ou non du préfixe « ø ».",
+          "Le tableau 189/1 subdivise le battement en radial et axial, là où la vue d'ensemble de la page 175 n'expose que « simple » et « total ». Les deux lectures s'accordent : le symbole est le même, c'est la géométrie du dessin qui distingue radial d'axial.",
+          "Mecatol ne vérifie pas l'applicabilité des modificateurs à une caractéristique donnée : les pages relevées les cataloguent sans énoncer de règle d'applicabilité complète. Les modificateurs sont donc acceptés et restitués, jamais jugés."
+        ]
+      }
+    ]
+  },
+  "warnings": [
+    "ISO 1101 (classement, symboles, exigence de référence et forme des zones de tolérance) : Donnée transcrite d'un recueil technique, non confrontée à la norme elle-même. Source : VSM « Extrait de normes » 2022, chapitre 2, pages 174 à 189, recoupé avec l'édition 2014, chapitre 2, pages 90 et 91, qui reproduit SN EN ISO 1101."
+  ]
+}

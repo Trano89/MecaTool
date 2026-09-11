@@ -149,8 +149,16 @@ Trois particularités de cette norme, toutes portées par le code :
   angle plus petit. La validation des tables applique donc une monotonie inverse
   sur cette table.
 
-Les tolérances générales **géométriques** (forme et position) relèvent de
-l'ISO 2768-2, qui n'est pas couverte.
+Les tolérances générales **géométriques** relevaient de l'ISO 2768-2, **retirée
+au printemps 2021** et remplacée par l'ISO 22081, conforme à l'ISO GPS. Mecatol
+ne couvre ni l'une ni l'autre.
+
+Ce retrait est établi par le VSM « Extrait de normes » 2022, § 2.7.3.1, page 156.
+La même page prévient qu'une transposition directe des valeurs de l'ISO 2768-2
+vers l'ISO 22081 n'est pas possible : il ne s'agit donc pas d'une table à
+recopier ailleurs, mais d'un changement d'approche. Le tableau 157/1 du recueil
+propose une correspondance, mais son propre texte la qualifie de *proposition* —
+ce n'est pas une valeur normative, et Mecatol ne la reprend pas.
 
 ### Ce qui reste à saisir
 

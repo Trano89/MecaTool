@@ -80,7 +80,7 @@
           "Les tolérances angulaires s'appliquent selon la longueur du côté le plus court de l'angle considéré, et non selon la valeur de l'angle lui-même.",
           "Les tolérances angulaires ne couvrent que la direction générale des lignes ou des lignes d'une surface, pas leurs écarts de forme.",
           "Deux cases sont vides dans le tableau 1 : la classe f au-delà de 2000 mm, et la classe v en dessous de 3 mm. Ce ne sont pas des zéros : la norme ne définit rien. Mecatol refuse ces combinaisons.",
-          "Les tolérances générales géométriques (forme et position) relèvent de l'ISO 2768-2, qui n'est pas couverte ici.",
+          "Les tolérances générales géométriques relevaient de l'ISO 2768-2, retirée au printemps 2021 et remplacée par l'ISO 22081. Mecatol ne couvre ni l'une ni l'autre. Cette information vient du VSM « Extrait de normes » 2022, § 2.7.3.1, page 156 : elle situe la présente table, elle n'en modifie aucune valeur.",
           "Indication sur un dessin : « ISO 2768 » suivi de la classe, par exemple « ISO 2768-m »."
         ]
       }

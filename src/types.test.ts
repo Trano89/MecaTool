@@ -19,6 +19,8 @@ import engineFixture from "./fixtures/engine-info.json";
 import generalFixture from "./fixtures/general-tolerances.json";
 import comparisonFixture from "./fixtures/fit-comparison.json";
 import chainFixture from "./fixtures/chain-report.json";
+import catalogueFixture from "./fixtures/geometric-catalogue.json";
+import geometryFixture from "./fixtures/geometric-group.json";
 
 import {
   NM_PER_UM,
@@ -28,6 +30,8 @@ import {
   type FeatureReport,
   type FitComparison,
   type FitReport,
+  type GeometricCatalogue,
+  type GroupAnalysis,
   type SearchReport,
 } from "./types";
 
@@ -39,6 +43,8 @@ const engine = engineFixture as EngineInfo;
 const general = generalFixture as ClassComparison;
 const comparison = comparisonFixture as FitComparison;
 const chain = chainFixture as ChainReport;
+const catalogue = catalogueFixture as GeometricCatalogue;
+const geometry = geometryFixture as GroupAnalysis;
 
 describe("échantillons du moteur", () => {
   it("décrit un ajustement Ø10 H7/g6 exact", () => {
@@ -172,17 +178,77 @@ describe("échantillons du moteur", () => {
     expect(veryCoarse?.unavailable).toMatch(/ne définit pas/);
   });
 
+  it("décrit le catalogue des caractéristiques géométriques", () => {
+    expect(catalogue.families).toHaveLength(4);
+    expect(catalogue.characteristics.length).toBeGreaterThan(0);
+
+    // Le classement de la source, porté par les données et non par l'interface :
+    // aucune tolérance de forme ne prend de référence, aucune des trois autres
+    // familles ne s'en passe.
+    for (const characteristic of catalogue.characteristics) {
+      if (characteristic.class === "form") {
+        expect(characteristic.datum).toBe("none");
+      } else {
+        expect(characteristic.datum).not.toBe("none");
+      }
+    }
+
+    // L'emboîtement va dans un seul sens.
+    const form = catalogue.families.find((f) => f.id === "form");
+    const location = catalogue.families.find((f) => f.id === "location");
+    expect(form?.limits).toEqual([]);
+    expect(location?.limits).toContain("form");
+    expect(location?.limits).toContain("orientation");
+
+    // La donnée est secondaire : la réserve doit accompagner le catalogue.
+    expect(catalogue.warnings).toHaveLength(1);
+    expect(catalogue.provenance.references[0]?.verification.state).toBe("secondary");
+
+    // Et aucune valeur de tolérance ne doit traverser : l'ISO 1101 n'en donne pas.
+    for (const characteristic of catalogue.characteristics) {
+      expect(characteristic.zones.length).toBeGreaterThan(0);
+      expect(Object.keys(characteristic)).not.toContain("value");
+    }
+  });
+
+  it("décrit le contrôle de plusieurs spécifications", () => {
+    expect(geometry.specs).toHaveLength(3);
+
+    // Une référence manque sur la troisième : le verdict du groupe doit s'en
+    // ressentir, et le libellé mener par la faute plutôt que par le recouvrement.
+    expect(geometry.conclusion.verdict).toBe("incompatible");
+    expect(geometry.conclusion.detail).toMatch(/^1 spécification fautive/);
+
+    const codes = geometry.specs.flatMap((s) => s.findings.map((f) => f.code));
+    expect(codes).toContain("datum_missing");
+
+    // Chaque recouvrement nomme les deux spécifications en cause, dans l'ordre :
+    // la bornante d'abord, la bornée ensuite.
+    expect(geometry.overlaps.length).toBeGreaterThan(0);
+    const designations = geometry.specs.map((s) => s.designation);
+    for (const overlap of geometry.overlaps) {
+      expect(designations).toContain(overlap.wider);
+      expect(designations).toContain(overlap.narrower);
+      expect(overlap.wider).not.toBe(overlap.narrower);
+    }
+
+    // La valeur reste un entier de nanomètres jusqu'au bout.
+    expect(geometry.specs[0]!.spec.value).toBe(20 * 1000);
+  });
+
   it("décrit l'état de vérification de ses données", () => {
     expect(engine.available_letters).toContain("g");
     expect(engine.max_nominal_mm).toBe("500");
     expect(engine.provenance.references.length).toBeGreaterThan(0);
 
-    const unverified = engine.provenance.references.filter(
-      (reference) => reference.verification.state === "unverified",
+    // Le bandeau apparaît si et seulement si une source n'est pas confrontée à
+    // la norme elle-même. L'équivalence porte sur « pas pleinement vérifiée »,
+    // et non sur un état précis : une source secondaire mérite le bandeau tout
+    // autant qu'une source non saisie, et pour une raison différente.
+    const reserved = engine.provenance.references.filter(
+      (reference) => reference.verification.state !== "verified",
     );
-
-    // Le bandeau apparaît si et seulement si une source n'est pas vérifiée.
-    expect(engine.warnings.length > 0).toBe(unverified.length > 0);
+    expect(engine.warnings.length > 0).toBe(reserved.length > 0);
 
     // Une source déclarée vérifiée doit dire contre quoi : « vérifié » sans
     // référence ne vaudrait pas mieux que « non vérifié ».

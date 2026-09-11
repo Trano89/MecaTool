@@ -1,7 +1,7 @@
 /**
  * Appels au moteur.
  *
- * L'interface ne connaît que ces trois fonctions. Elle n'invoque jamais Tauri
+ * L'interface ne connaît que ces fonctions. Elle n'invoque jamais Tauri
  * directement, ce qui garde en un seul endroit la traduction des erreurs et
  * permet de faire tourner les composants sous test sans Tauri.
  */
@@ -15,6 +15,8 @@ import type {
   Diagram,
   EngineInfo,
   FitComparison,
+  GeometricCatalogue,
+  GroupAnalysis,
   MeasureKind,
   Report,
 } from "./types";
@@ -146,4 +148,25 @@ export function generalTolerances(
   nominalMm: string,
 ): Promise<ClassComparison> {
   return call<ClassComparison>("general_tolerances", { kind, nominalMm });
+}
+
+/**
+ * Le catalogue des caractéristiques géométriques.
+ *
+ * Rendu d'un bloc plutôt qu'interrogé caractéristique par caractéristique : on
+ * choisit une tolérance géométrique en voyant les autres, comme on choisit une
+ * classe de tolérance générale.
+ */
+export function geometricCatalogue(): Promise<GeometricCatalogue> {
+  return call<GeometricCatalogue>("geometric_catalogue", {});
+}
+
+/**
+ * Lit et contrôle des spécifications géométriques posées sur un même élément.
+ *
+ * C'est ce « même élément » qui donne son sens au contrôle de recouvrement :
+ * une tolérance d'orientation ne borne la forme que de l'élément qu'elle vise.
+ */
+export function geometric(specs: string[]): Promise<GroupAnalysis> {
+  return call<GroupAnalysis>("geometric", { specs });
 }

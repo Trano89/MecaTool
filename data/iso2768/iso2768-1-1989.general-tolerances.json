@@ -17,35 +17,108 @@
       "Les tolérances angulaires s'appliquent selon la longueur du côté le plus court de l'angle considéré, et non selon la valeur de l'angle lui-même.",
       "Les tolérances angulaires ne couvrent que la direction générale des lignes ou des lignes d'une surface, pas leurs écarts de forme.",
       "Deux cases sont vides dans le tableau 1 : la classe f au-delà de 2000 mm, et la classe v en dessous de 3 mm. Ce ne sont pas des zéros : la norme ne définit rien. Mecatol refuse ces combinaisons.",
-      "Les tolérances générales géométriques (forme et position) relèvent de l'ISO 2768-2, qui n'est pas couverte ici.",
+      "Les tolérances générales géométriques relevaient de l'ISO 2768-2, retirée au printemps 2021 et remplacée par l'ISO 22081. Mecatol ne couvre ni l'une ni l'autre. Cette information vient du VSM « Extrait de normes » 2022, § 2.7.3.1, page 156 : elle situe la présente table, elle n'en modifie aucune valeur.",
       "Indication sur un dessin : « ISO 2768 » suivi de la classe, par exemple « ISO 2768-m »."
     ]
   },
   "classes": [
-    { "symbol": "f", "name": "fin" },
-    { "symbol": "m", "name": "moyen" },
-    { "symbol": "c", "name": "grossier" },
-    { "symbol": "v", "name": "très grossier" }
+    {
+      "symbol": "f",
+      "name": "fin"
+    },
+    {
+      "symbol": "m",
+      "name": "moyen"
+    },
+    {
+      "symbol": "c",
+      "name": "grossier"
+    },
+    {
+      "symbol": "v",
+      "name": "très grossier"
+    }
   ],
   "linear": {
     "table": "Tableau 1 — Écarts limites pour dimensions linéaires sauf pour arêtes abattues",
     "value_unit": "millimetre",
     "size_unit": "millimetre",
     "size_ranges": [
-      { "from": 0.5, "from_inclusive": true, "to": 3 },
-      { "from": 3, "to": 6 },
-      { "from": 6, "to": 30 },
-      { "from": 30, "to": 120 },
-      { "from": 120, "to": 400 },
-      { "from": 400, "to": 1000 },
-      { "from": 1000, "to": 2000 },
-      { "from": 2000, "to": 4000 }
+      {
+        "from": 0.5,
+        "from_inclusive": true,
+        "to": 3
+      },
+      {
+        "from": 3,
+        "to": 6
+      },
+      {
+        "from": 6,
+        "to": 30
+      },
+      {
+        "from": 30,
+        "to": 120
+      },
+      {
+        "from": 120,
+        "to": 400
+      },
+      {
+        "from": 400,
+        "to": 1000
+      },
+      {
+        "from": 1000,
+        "to": 2000
+      },
+      {
+        "from": 2000,
+        "to": 4000
+      }
     ],
     "deviations": {
-      "f": [0.05, 0.05, 0.1, 0.15, 0.2, 0.3, 0.5, null],
-      "m": [0.1, 0.1, 0.2, 0.3, 0.5, 0.8, 1.2, 2],
-      "c": [0.2, 0.3, 0.5, 0.8, 1.2, 2, 3, 4],
-      "v": [null, 0.5, 1, 1.5, 2.5, 4, 6, 8]
+      "f": [
+        0.05,
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.3,
+        0.5,
+        null
+      ],
+      "m": [
+        0.1,
+        0.1,
+        0.2,
+        0.3,
+        0.5,
+        0.8,
+        1.2,
+        2
+      ],
+      "c": [
+        0.2,
+        0.3,
+        0.5,
+        0.8,
+        1.2,
+        2,
+        3,
+        4
+      ],
+      "v": [
+        null,
+        0.5,
+        1,
+        1.5,
+        2.5,
+        4,
+        6,
+        8
+      ]
     }
   },
   "broken_edges": {
@@ -53,15 +126,40 @@
     "value_unit": "millimetre",
     "size_unit": "millimetre",
     "size_ranges": [
-      { "from": 0.5, "from_inclusive": true, "to": 3 },
-      { "from": 3, "to": 6 },
-      { "from": 6 }
+      {
+        "from": 0.5,
+        "from_inclusive": true,
+        "to": 3
+      },
+      {
+        "from": 3,
+        "to": 6
+      },
+      {
+        "from": 6
+      }
     ],
     "deviations": {
-      "f": [0.2, 0.5, 1],
-      "m": [0.2, 0.5, 1],
-      "c": [0.4, 1, 2],
-      "v": [0.4, 1, 2]
+      "f": [
+        0.2,
+        0.5,
+        1
+      ],
+      "m": [
+        0.2,
+        0.5,
+        1
+      ],
+      "c": [
+        0.4,
+        1,
+        2
+      ],
+      "v": [
+        0.4,
+        1,
+        2
+      ]
     }
   },
   "angular": {
@@ -70,17 +168,56 @@
     "size_unit": "millimetre",
     "size_basis": "longueur du côté le plus court de l'angle considéré",
     "size_ranges": [
-      { "from": 0, "from_inclusive": true, "to": 10 },
-      { "from": 10, "to": 50 },
-      { "from": 50, "to": 120 },
-      { "from": 120, "to": 400 },
-      { "from": 400 }
+      {
+        "from": 0,
+        "from_inclusive": true,
+        "to": 10
+      },
+      {
+        "from": 10,
+        "to": 50
+      },
+      {
+        "from": 50,
+        "to": 120
+      },
+      {
+        "from": 120,
+        "to": 400
+      },
+      {
+        "from": 400
+      }
     ],
     "deviations": {
-      "f": ["1°", "0°30'", "0°20'", "0°10'", "0°5'"],
-      "m": ["1°", "0°30'", "0°20'", "0°10'", "0°5'"],
-      "c": ["1°30'", "1°", "0°30'", "0°15'", "0°10'"],
-      "v": ["3°", "2°", "1°", "0°30'", "0°20'"]
+      "f": [
+        "1°",
+        "0°30'",
+        "0°20'",
+        "0°10'",
+        "0°5'"
+      ],
+      "m": [
+        "1°",
+        "0°30'",
+        "0°20'",
+        "0°10'",
+        "0°5'"
+      ],
+      "c": [
+        "1°30'",
+        "1°",
+        "0°30'",
+        "0°15'",
+        "0°10'"
+      ],
+      "v": [
+        "3°",
+        "2°",
+        "1°",
+        "0°30'",
+        "0°20'"
+      ]
     }
   }
 }

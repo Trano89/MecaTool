@@ -93,8 +93,17 @@ export interface Conclusion {
   warnings: string[];
 }
 
+/**
+ * Trois états, pas deux.
+ *
+ * Entre « confronté à la norme » et « pas encore vérifié » il existe un cas
+ * intermédiaire : la donnée vient d'un recueil technique qui reproduit la norme,
+ * lu avec soin, mais qui n'est pas la norme. `secondary` le nomme, et compte
+ * comme non vérifié à l'affichage.
+ */
 export type VerificationStatus =
   | { state: "verified"; against: string; on: string }
+  | { state: "secondary"; from: string; reproduces: string; on: string }
   | { state: "unverified"; pending: string };
 
 export interface StandardReference {
@@ -441,4 +450,135 @@ export const VERDICT_CLASS: Record<Verdict, string> = {
   caution: "caution",
   incompatible: "incompatible",
   insufficient_data: "insufficient-data",
+};
+
+/* ---------- Tolérancement géométrique (ISO 1101) ---------- */
+
+/** Les quatre familles de tolérances géométriques. */
+export type ToleranceFamily = "form" | "orientation" | "location" | "runout";
+
+/** Ce que la caractéristique attend en matière de référence spécifiée. */
+export type DatumRule = "none" | "required" | "optional";
+
+/** Géométrie de la zone : c'est elle qui décide de la présence du « ø ». */
+export type ZoneGeometry =
+  | "two_parallel_straight_lines"
+  | "two_parallel_planes"
+  | "two_concentric_circles"
+  | "two_coaxial_cylinders"
+  | "two_equidistant_lines"
+  | "two_equidistant_surfaces"
+  | "cylinder"
+  | "measured_per_section";
+
+export type Severity = "error" | "caution" | "note";
+
+export interface ZoneDefinition {
+  feature: string;
+  geometry: ZoneGeometry;
+  /** La phrase d'interprétation, reprise au plus près de la source. */
+  definition: string;
+}
+
+export interface Characteristic {
+  id: string;
+  name: string;
+  symbol: string;
+  aliases: string[];
+  /** Le nom du champ vient de la source : c'est bien la famille. */
+  class: ToleranceFamily;
+  datum: DatumRule;
+  requires_ted: boolean;
+  zones: ZoneDefinition[];
+  /** Page de la source où la caractéristique est définie. */
+  page: number;
+}
+
+export interface FamilyDefinition {
+  id: ToleranceFamily;
+  name: string;
+  heading: string;
+  /** Les familles que celle-ci borne aussi. */
+  limits: ToleranceFamily[];
+  /** La phrase de la source qui énonce cet emboîtement. */
+  note: string;
+}
+
+export interface Modifier {
+  symbol: string;
+  name: string;
+  family: string;
+  /** Toutes ne viennent pas de l'ISO 1101. */
+  defined_by: string;
+  page: number;
+}
+
+export interface GeometricCatalogue {
+  families: FamilyDefinition[];
+  characteristics: Characteristic[];
+  modifiers: Modifier[];
+  provenance: Provenance;
+  warnings: string[];
+}
+
+export interface GeometricSpec {
+  characteristic: string;
+  value: Nanometres;
+  diametral: boolean;
+  datums: string[];
+  modifiers: string[];
+  input: string;
+}
+
+export interface Finding {
+  code: string;
+  severity: Severity;
+  message: string;
+}
+
+export interface SpecAnalysis {
+  spec: GeometricSpec;
+  characteristic: Characteristic;
+  /** Le cadre reconstitué, normalisé. */
+  designation: string;
+  findings: Finding[];
+  conclusion: Conclusion;
+  provenance: Provenance;
+}
+
+export interface Overlap {
+  wider: string;
+  narrower: string;
+  finding: Finding;
+}
+
+export interface GroupAnalysis {
+  specs: SpecAnalysis[];
+  overlaps: Overlap[];
+  conclusion: Conclusion;
+  provenance: Provenance;
+}
+
+/**
+ * La pastille d'un constat.
+ *
+ * Comme pour les verdicts, elle accompagne toujours un libellé : la couleur
+ * seule ne doit jamais porter l'information.
+ */
+export const SEVERITY_BADGE: Record<Severity, string> = {
+  error: "🔴",
+  caution: "🟠",
+  note: "🔵",
+};
+
+export const SEVERITY_LABEL: Record<Severity, string> = {
+  error: "À corriger",
+  caution: "À vérifier",
+  note: "Pour information",
+};
+
+export const SEVERITY_CLASS: Record<Severity, string> = {
+  error: "incompatible",
+  caution: "caution",
+  note: "insufficient-data",
 };
