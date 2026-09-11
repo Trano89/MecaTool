@@ -1,14 +1,29 @@
 # MecaTool
 
-**Mechanical Tolerance Assistant** — un assistant de tolérancement mécanique,
-pas un simple calculateur.
+**L'atelier de l'ingénieur mécanicien** — un outil qui accompagne les décisions
+de conception, dont le tolérancement n'est qu'un domaine parmi d'autres.
 
 L'objectif n'est pas d'être le calculateur ISO le plus complet, mais le logiciel
-qui permet de **comprendre et de choisir** une tolérance mécanique :
+qui permet de **comprendre et de choisir** :
 
 ```
 BESOIN → CALCUL → COMPARAISON → VALIDATION → EXPLICATION → VISUALISATION
 ```
+
+Cette trajectoire n'a rien de spécifique aux tolérances. Choisir un roulement la
+suit ; choisir un cordon de soudure la suit. C'est le squelette de l'outil, pas
+celui d'un module — et c'est pourquoi MecaTool est organisé en **domaines** qui
+se passent des résultats plutôt qu'en calculateurs côte à côte.
+
+```
+« je monte un 6210, bague intérieure tournante, charge normale »
+      → règle ISO 15      : symbole d'alésage 10 → alésage 50 mm
+      → tableau fabricant : conditions d'emploi → classe k5
+      → moteur ISO 286    : Ø50 k5 → écarts réels, graphique, verdict
+```
+
+Aucune de ces trois étapes n'est neuve. Ce qui l'est, c'est leur enchaînement.
+Voir [docs/domaines.md](docs/domaines.md).
 
 > ✅ **Données normatives vérifiées.** Les 364 valeurs ISO 286 ont été confrontées
 > case par case à l'ISO 286-2:2010 par un script rejouable ; les trois tables de
@@ -20,29 +35,41 @@ BESOIN → CALCUL → COMPARAISON → VALIDATION → EXPLICATION → VISUALISATI
 > ouverture. La couverture reste partielle et le moteur refuse explicitement ce
 > qu'il n'a pas. Voir [docs/standards.md](docs/standards.md).
 
-## État d'avancement
+## Les domaines
+
+Chaque domaine dit sur quelle source il repose, et à quel titre. Cet état n'est
+pas saisi à la main : il se **déduit** de la provenance des données, de sorte
+qu'un jeu qui changerait de statut déplacerait le domaine sans que personne ait
+à y penser.
+
+| Domaine | Question | Source | État |
+|---|---|---|---|
+| Ajustements | Que donne cet ajustement, lequel choisir ? | ISO 286-1/-2 | ✅ confrontée |
+| Comparateur | Lequel convient le mieux ? | ISO 286-1/-2 | ✅ confrontée |
+| Tolérances générales | Que valent les cotes sans tolérance ? | ISO 2768-1 | ✅ confrontée |
+| Chaîne de cotes | Que donne cet empilement ? | aucune — géométrie seule | ✅ |
+| Tolérancement géométrique | Que dit ce cadre, que lui manque-t-il ? | ISO 1101 | ⚠️ recueil |
+| **Roulements** | **Quel alésage, quelle tolérance de portée ?** | **ISO 15 + fabricants** | **⚠️ recueil + recommandation** |
+| États de surface | Quelle rugosité pour ce procédé ? | ISO 21920 / ISO 4287 | ⛔ éditions incompatibles |
+| Soudure | Que dit ce symbole, quel niveau de qualité ? | ISO 2553, 4063, 6520-1, 5817 | ⏳ relevée, non transcrite |
+| Visserie | Quel filetage, quel trou de passage ? | — | ⏳ |
+| Matières | Quelle nuance, quelles propriétés ? | — | ⏳ |
+
+Un domaine sans source **reste visible**, désactivé, avec sa raison. Le masquer
+laisserait croire qu'il n'existe pas ; l'afficher sans réserve laisserait croire
+qu'il fonctionne.
+
+## Le socle
 
 | Composant | État |
 |---|---|
-| Arithmétique exacte (nanomètres entiers) | ✅ |
-| Types du domaine et invariants | ✅ |
-| Traçabilité normative | ✅ |
-| Données ISO 286 — degrés IT | ✅ vérifiées, 260 valeurs |
-| Données ISO 286 — écarts fondamentaux | ✅ vérifiées, 10 lettres sur 28 |
-| Moteur : tolérances et ajustements | ✅ |
-| Parser d'entrées (`Ø10 H7/g6`) | ✅ |
-| Vérification d'une exigence fonctionnelle | ✅ |
-| Recherche de solutions à partir d'un besoin | ✅ |
-| CLI de vérification | ✅ |
+| Arithmétique exacte (nanomètres et millisecondes d'arc entiers) | ✅ |
+| Traçabilité normative sur quatre états de source | ✅ |
+| Registre de domaines, navigation pilotée par les données | ✅ |
 | Graphique des zones de tolérance + export SVG | ✅ |
-| Application Tauri + React (accueil, calcul, recherche) | ✅ |
-| Thème clair / sombre / système | ✅ |
-| Tolérances générales ISO 2768-1 | ✅ vérifiées, 3 tables |
-| Comparateur de solutions | ✅ |
-| Chaînes de cotes : pire des cas et RSS | ✅ |
-| Tolérancement géométrique ISO 1101 | ⚠️ source secondaire, 17 caractéristiques |
+| Application Tauri + React, thème clair / sombre / système | ✅ |
+| CLI de vérification | ✅ |
 | Historique et export PDF | ⏳ |
-| États de surface (v0.4) | ⛔ ISO 21920 indisponible |
 
 ## Le module géométrique, et ce qu'il ne fait pas
 
@@ -84,6 +111,50 @@ Les **états de surface** restent bloqués : le recueil les couvre, mais son
 édition 2022 suit l'ISO 21920 et celle de 2014 l'ISO 4287, qui ne sont pas
 interchangeables. Plutôt qu'un module mêlant deux générations de paramètres, il
 n'y a pas encore de module d'états de surface.
+
+## Le module roulements, et la frontière qu'il rend visible
+
+C'est le premier domaine qui en alimente un autre. Il ne s'arrête pas à
+« classe k5 » : il poursuit jusqu'aux écarts réels en passant la main au moteur
+ISO 286. Mais les deux moitiés du résultat n'ont **pas le même statut**, et
+c'est le point.
+
+La règle du symbole d'alésage vient de l'ISO 15, et elle est énoncée en une
+phrase — donc appliquée, jamais recopiée en quatre-vingt-seize correspondances.
+Seuls les quatre codes spéciaux s'énumèrent, parce qu'ils échappent justement à
+la règle. Au-delà du symbole 96, soit 480 mm, la source ne dit rien et le moteur
+refuse de prolonger.
+
+Le choix de la classe, lui, vient d'un tableau portant la mention **« Dimensions
+du fabricant »**. Aucune norme ne l'impose : ce sont les pratiques de montage
+recommandées. D'où un quatrième état de source, à côté de « confrontée »,
+« recueil » et « non vérifiée » :
+
+```
+🟠  Pratique recommandée, sans caractère normatif : aucune norme ne l'impose,
+    et s'en écarter reste légitime si la raison en est connue.
+```
+
+La distinction compte dans les deux sens. Présenter ce tableau comme normatif
+durcirait une recommandation ; le présenter comme une donnée douteuse
+banaliserait une pratique bien établie. Le raisonnement pose les deux étapes
+côte à côte, pour que la frontière se voie :
+
+```
+Classe recommandée   k5          Pratique de montage des fabricants,
+                                 sans caractère normatif.
+Écarts de la classe  ISO 286-1   ei = +2 µm, es = +13 µm
+```
+
+Le tableau laisse des cases vides, et elles le restent. Sous charges faibles, la
+source ne recommande rien pour les roulements à rotule : MecaTool refuse de
+conclure. Combler par la classe voisine serait inventer une recommandation.
+
+Enfin, lire une désignation rend **plusieurs lectures** plutôt qu'une. La source
+dit comment un symbole se traduit en diamètre ; elle ne dit pas comment découper
+`623` en série et symbole — série 6 + symbole 23, ou série 62 + symbole 3. Les
+deux sont formellement licites, et seule la connaissance des séries existantes
+trancherait.
 
 ## Lancer l'application
 
@@ -196,8 +267,8 @@ exactement le même code.
 | Crate | Rôle |
 |---|---|
 | `mecatool-core` | `Length` et `Angle` (entiers exacts), `ToleranceClass`, `Fit`, `Provenance` |
-| `mecatool-standards` | chargement et validation des tables ISO 286, ISO 2768 et ISO 1101 |
-| `mecatool-engine` | calcul des tolérances et ajustements, parser, explications |
+| `mecatool-standards` | chargement et validation des données normatives, un module par norme |
+| `mecatool-engine` | un module par domaine, et le registre qui les déclare |
 | `mecatool-cli` | banc d'essai du moteur, pour confronter les résultats à un manuel |
 
 Toute grandeur est un entier : les longueurs en **nanomètres**, les angles en
@@ -229,8 +300,8 @@ Chacun de ces refus est couvert par un test.
 ## Développement
 
 ```bash
-cargo test --workspace        # 292 tests : moteur
-cd src-tauri && cargo test    #  25 tests : frontiere Tauri + echantillons
+cargo test --workspace        # 337 tests : moteur
+cd src-tauri && cargo test    #  29 tests : frontiere Tauri + echantillons
 npm test                      #  63 tests : interface
 cargo clippy --workspace --all-targets
 cargo fmt --all

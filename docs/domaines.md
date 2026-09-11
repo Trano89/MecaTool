@@ -124,7 +124,7 @@ recueil, ou recommandation de fabricant.
 | Tolérances générales | Que valent les cotes sans tolérance ? | ISO 2768-1 | ✅ confrontée |
 | Chaînes de cotes | Que donne cet empilement ? | — (géométrie) | ✅ sans source externe |
 | Tolérancement géométrique | Que dit ce cadre, que lui manque-t-il ? | ISO 1101 | ⚠️ recueil |
-| **Roulements** | **Quel montage, quelle tolérance ?** | **DIN 623-1, ISO 15, fabricants** | **⚠️ recueil + fabricant** |
+| **Roulements** | **Quel alésage, quelle tolérance de portée ?** | **ISO 15, fabricants** | **✅ construit** |
 | **Soudure** | **Que dit ce symbole, quel niveau de qualité ?** | **ISO 2553, 4063, 6520-1, 5817** | **⚠️ recueil** |
 | Visserie | Quel filetage, quel trou de passage ? | ISO 261, 273 | ⏳ à relever |
 | Matériaux | Quelle nuance, quelles propriétés ? | EN 10027 et suivantes | ⏳ à relever |
