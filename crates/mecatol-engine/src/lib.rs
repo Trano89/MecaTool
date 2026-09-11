@@ -27,6 +27,7 @@ pub mod compare;
 pub mod diagram;
 pub mod error;
 pub mod format;
+pub mod geometric;
 pub mod iso2768;
 pub mod iso286;
 pub mod parser;
@@ -37,6 +38,9 @@ pub use chain::{analyse_chain, verify_chain, ChainAnalysis, Link, LinkDirection}
 pub use compare::{compare_fits, ComparedFit, FitComparison};
 pub use diagram::{comparison_diagram, fit_diagram, to_svg, Diagram, DiagramMode, DiagramOptions};
 pub use error::{EngineError, Result};
+pub use geometric::{
+    Finding, GeometricEngine, GeometricSpec, GroupAnalysis, Overlap, Severity, SpecAnalysis,
+};
 pub use iso2768::{ClassComparison, ClassRow, GeneralAnalysis, Iso2768Engine};
 pub use iso286::{FeatureAnalysis, FitAnalysis, Iso286Engine};
 pub use parser::{parse, ParsedInput};

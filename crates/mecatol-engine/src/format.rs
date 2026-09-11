@@ -46,6 +46,16 @@ pub fn mm(value: Length) -> String {
     value.to_decimal_string(Unit::Millimetre, 3)
 }
 
+/// Une longueur en millimetres sans zero decimal superflu : `"0.05"`, `"0.2"`.
+///
+/// Une cote se pade — `10.015` se lit d'un coup d'oeil sur un plan. Une largeur
+/// de zone de tolerance, non : les tables normatives ecrivent `0,08` et non
+/// `0,080`, et l'ajout de zeros donnerait a croire a une precision de saisie qui
+/// n'est pas celle de la source.
+pub fn mm_trimmed(value: Length) -> String {
+    trim(value.to_decimal_string(Unit::Millimetre, 3))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -63,6 +73,17 @@ mod tests {
         assert_eq!(um_signed(Length::from_micrometres(-5)), "-5 \u{b5}m");
         // Un ecart nul n'a ni signe ni unite.
         assert_eq!(um_signed(Length::ZERO), "0");
+    }
+
+    #[test]
+    fn millimetres_sans_zero_superflu() {
+        // Une largeur de zone s'ecrit comme la source l'ecrit.
+        assert_eq!(mm_trimmed(Length::from_micrometres(80)), "0.08");
+        assert_eq!(mm_trimmed(Length::from_micrometres(200)), "0.2");
+        assert_eq!(mm_trimmed(Length::from_millimetres(2)), "2");
+        assert_eq!(mm_trimmed(Length::ZERO), "0");
+        // Alors qu'une cote garde ses decimales.
+        assert_eq!(mm(Length::from_micrometres(80)), "0.080");
     }
 
     #[test]
