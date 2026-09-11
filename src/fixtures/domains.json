@@ -1,0 +1,146 @@
+[
+  {
+    "id": "fit",
+    "name": "Ajustements",
+    "question": "Que donne cet ajustement, et lequel choisir ?",
+    "group": "dimensional",
+    "status": "ready",
+    "sources": [
+      "ISO 286-1:2010",
+      "ISO 286-1:2010"
+    ],
+    "reserve": null,
+    "unavailable": null,
+    "examples": [
+      "Ø10 H7/g6",
+      "Ø20 H7",
+      "Ø20 + jeu 10..30"
+    ]
+  },
+  {
+    "id": "compare",
+    "name": "Comparateur",
+    "question": "Lequel de ces ajustements convient le mieux ?",
+    "group": "dimensional",
+    "status": "ready",
+    "sources": [
+      "ISO 286-1:2010",
+      "ISO 286-1:2010"
+    ],
+    "reserve": null,
+    "unavailable": null,
+    "examples": [
+      "Ø20 H7/g6, H7/h6, H7/k6"
+    ]
+  },
+  {
+    "id": "general",
+    "name": "Tolérances générales",
+    "question": "Que valent les cotes qui ne portent pas de tolérance ?",
+    "group": "dimensional",
+    "status": "ready",
+    "sources": [
+      "ISO 2768-1:1989"
+    ],
+    "reserve": null,
+    "unavailable": null,
+    "examples": [
+      "ISO 2768-m",
+      "50 mm en classe moyenne"
+    ]
+  },
+  {
+    "id": "chain",
+    "name": "Chaîne de cotes",
+    "question": "Que donne cet empilement de cotes ?",
+    "group": "dimensional",
+    "status": "ready",
+    "sources": [
+      "aucune source externe : géométrie seule"
+    ],
+    "reserve": null,
+    "unavailable": null,
+    "examples": [
+      "A = 20 ±0.1 / B = 10 ±0.05 / -C = 5 ±0.02"
+    ]
+  },
+  {
+    "id": "geometry",
+    "name": "Tolérancement géométrique",
+    "question": "Que dit ce cadre de tolérance, et que lui manque-t-il ?",
+    "group": "geometry",
+    "status": "reserved",
+    "sources": [
+      "ISO 1101"
+    ],
+    "reserve": "ISO 1101 (classement, symboles, exigence de référence et forme des zones de tolérance) : Donnée transcrite d'un recueil technique, non confrontée à la norme elle-même. Source : VSM « Extrait de normes » 2022, chapitre 2, pages 174 à 189, recoupé avec l'édition 2014, chapitre 2, pages 90 et 91, qui reproduit SN EN ISO 1101.",
+    "unavailable": null,
+    "examples": [
+      "⟂ 0.05 A",
+      "perp 0.05 A",
+      "⌖ ø0.2 (M) A B C"
+    ]
+  },
+  {
+    "id": "surface",
+    "name": "États de surface",
+    "question": "Quelle rugosité pour ce procédé ?",
+    "group": "geometry",
+    "status": "blocked",
+    "sources": [],
+    "reserve": null,
+    "unavailable": "Les deux éditions du recueil disponibles ne sont pas interchangeables : celle de 2022 suit l'ISO 21920, celle de 2014 l'ISO 4287. Mêler deux générations de paramètres produirait un module faux d'une façon difficile à repérer.",
+    "examples": []
+  },
+  {
+    "id": "bearing",
+    "name": "Roulements",
+    "question": "Quel alésage, et quelle tolérance sur la portée d'arbre ?",
+    "group": "components",
+    "status": "reserved",
+    "sources": [
+      "ISO 15",
+      "Montage des roulements — portée d'arbre"
+    ],
+    "reserve": "ISO 15 (règle de correspondance entre le symbole d'alésage et le diamètre d'alésage) : Donnée transcrite d'un recueil technique, non confrontée à la norme elle-même. Source : VSM « Extrait de normes » 2014, § 4.14.2.1, page 234, qui reproduit ISO 15.",
+    "unavailable": null,
+    "examples": [
+      "6210",
+      "6203-2RS",
+      "NU2313"
+    ]
+  },
+  {
+    "id": "welding",
+    "name": "Soudure",
+    "question": "Que dit ce symbole, et quel niveau de qualité exiger ?",
+    "group": "components",
+    "status": "blocked",
+    "sources": [],
+    "reserve": null,
+    "unavailable": "Source relevée mais pas encore transcrite : symboles ISO 2553, numéros de procédés ISO 4063, irrégularités ISO 6520-1 et niveaux de qualité ISO 5817.",
+    "examples": []
+  },
+  {
+    "id": "fasteners",
+    "name": "Visserie",
+    "question": "Quel filetage, et quel trou de passage ?",
+    "group": "components",
+    "status": "blocked",
+    "sources": [],
+    "reserve": null,
+    "unavailable": "Source non encore relevée.",
+    "examples": []
+  },
+  {
+    "id": "materials",
+    "name": "Matières",
+    "question": "Quelle nuance, et quelles propriétés ?",
+    "group": "materials",
+    "status": "blocked",
+    "sources": [],
+    "reserve": null,
+    "unavailable": "Source non encore relevée.",
+    "examples": []
+  }
+]

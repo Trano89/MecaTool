@@ -26,7 +26,12 @@ pub fn run() {
             commands::compare,
             commands::dimension_chain,
             commands::geometric,
-            commands::geometric_catalogue
+            commands::geometric_catalogue,
+            commands::domains,
+            commands::bearing_catalogue,
+            commands::bearing_read,
+            commands::bearing_options,
+            commands::bearing_advise
         ])
         .run(tauri::generate_context!())
         .expect("le lancement de MecaTool a échoué");

@@ -1,0 +1,277 @@
+{
+  "families": [
+    {
+      "id": "ball_radial",
+      "name": "roulements à billes radiaux",
+      "note": null
+    },
+    {
+      "id": "needle_with_inner_ring",
+      "name": "roulements à aiguilles avec bagues intérieures",
+      "note": "Pour roulements à aiguilles sans bague intérieure, la classe de tolérance h5 est valable normalement pour arbres pleins en acier."
+    },
+    {
+      "id": "cylindrical_and_tapered_roller",
+      "name": "roulements à rouleaux cylindriques et coniques",
+      "note": null
+    },
+    {
+      "id": "spherical_roller",
+      "name": "roulements à rotule sur rouleaux",
+      "note": null
+    }
+  ],
+  "regimes": [
+    {
+      "id": "stationary_inner",
+      "name": "charge fixe sur la bague intérieure",
+      "explanation": "Le point chargé de la bague intérieure ne se déplace pas. La bague peut rester libre sur l'arbre : rien ne la fait ramper."
+    },
+    {
+      "id": "rotating_inner",
+      "name": "charge tournante sur la bague intérieure, ou direction de charge indéterminée",
+      "explanation": "Le point chargé parcourt la bague intérieure. Sans serrage, la bague ramperait sur l'arbre et userait la portée : d'où des classes de plus en plus serrées à mesure que la charge grandit."
+    }
+  ],
+  "cases": [
+    {
+      "regime": "stationary_inner",
+      "condition": "La bague intérieure doit pouvoir coulisser facilement sur l'arbre",
+      "examples": "Roues sur axe immobile (roues folles)",
+      "rows": [
+        {
+          "class": "g6",
+          "all_diameters": true,
+          "ranges": {}
+        }
+      ]
+    },
+    {
+      "regime": "stationary_inner",
+      "condition": "La bague intérieure ne doit pas nécessairement pouvoir coulisser sur l'arbre",
+      "examples": "Galets tendeurs, poulies à câbles",
+      "rows": [
+        {
+          "class": "h6",
+          "all_diameters": true,
+          "ranges": {}
+        }
+      ]
+    },
+    {
+      "regime": "rotating_inner",
+      "condition": "Charges faibles et variables",
+      "examples": "Rouleaux-transporteurs, roulements peu chargés de réducteurs",
+      "rows": [
+        {
+          "class": "js5",
+          "all_diameters": false,
+          "ranges": {
+            "needle_with_inner_ring": {
+              "from": 0,
+              "to": 50
+            }
+          }
+        },
+        {
+          "class": "js6",
+          "all_diameters": false,
+          "ranges": {
+            "ball_radial": {
+              "from": 18,
+              "to": 100
+            },
+            "cylindrical_and_tapered_roller": {
+              "from": 0,
+              "to": 40
+            }
+          }
+        },
+        {
+          "class": "k6",
+          "all_diameters": false,
+          "ranges": {
+            "ball_radial": {
+              "from": 100,
+              "to": 140
+            },
+            "cylindrical_and_tapered_roller": {
+              "from": 40,
+              "to": 100
+            }
+          }
+        }
+      ]
+    },
+    {
+      "regime": "rotating_inner",
+      "condition": "Charges normales et grandes",
+      "examples": "Mécanique générale, moteurs électriques, turbines, pompes, moteurs à combustion interne, réducteurs à engrenages, machines à bois",
+      "rows": [
+        {
+          "class": "js5",
+          "all_diameters": false,
+          "ranges": {
+            "ball_radial": {
+              "from": 0,
+              "to": 18
+            }
+          }
+        },
+        {
+          "class": "k5",
+          "all_diameters": false,
+          "ranges": {
+            "ball_radial": {
+              "from": 18,
+              "to": 100
+            },
+            "cylindrical_and_tapered_roller": {
+              "from": 0,
+              "to": 40
+            },
+            "needle_with_inner_ring": {
+              "from": 0,
+              "to": 50
+            },
+            "spherical_roller": {
+              "from": 0,
+              "to": 40
+            }
+          }
+        },
+        {
+          "class": "m5",
+          "all_diameters": false,
+          "ranges": {
+            "ball_radial": {
+              "from": 100,
+              "to": 140
+            },
+            "cylindrical_and_tapered_roller": {
+              "from": 40,
+              "to": 100
+            },
+            "needle_with_inner_ring": {
+              "from": 50,
+              "to": 150
+            },
+            "spherical_roller": {
+              "from": 40,
+              "to": 65
+            }
+          }
+        },
+        {
+          "class": "m6",
+          "all_diameters": false,
+          "ranges": {
+            "ball_radial": {
+              "from": 140,
+              "to": 200
+            },
+            "cylindrical_and_tapered_roller": {
+              "from": 100,
+              "to": 140
+            },
+            "needle_with_inner_ring": {
+              "from": 150,
+              "to": null
+            },
+            "spherical_roller": {
+              "from": 65,
+              "to": 100
+            }
+          }
+        }
+      ]
+    },
+    {
+      "regime": "rotating_inner",
+      "condition": "Très grandes charges et chocs",
+      "examples": "Boîtes d'essieux pour véhicules sur rails, moteurs de traction, laminoirs",
+      "rows": [
+        {
+          "class": "n6",
+          "all_diameters": false,
+          "ranges": {
+            "cylindrical_and_tapered_roller": {
+              "from": 50,
+              "to": 140
+            },
+            "needle_with_inner_ring": {
+              "from": 50,
+              "to": 150
+            },
+            "spherical_roller": {
+              "from": 50,
+              "to": 100
+            }
+          }
+        },
+        {
+          "class": "p6",
+          "all_diameters": false,
+          "ranges": {
+            "cylindrical_and_tapered_roller": {
+              "from": 140,
+              "to": 200
+            },
+            "spherical_roller": {
+              "from": 100,
+              "to": 140
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "provenance": {
+    "references": [
+      {
+        "id": "ISO 15",
+        "edition": "",
+        "title": "Roulements — Roulements radiaux — Dimensions d'encombrement, plan général",
+        "scope": "règle de correspondance entre le symbole d'alésage et le diamètre d'alésage",
+        "source": "VSM, « Extrait de normes », édition 2014, § 4.14.2.1, page 234.",
+        "verification": {
+          "state": "secondary",
+          "from": "VSM « Extrait de normes » 2014, § 4.14.2.1, page 234",
+          "reproduces": "ISO 15",
+          "on": "2026-09-11"
+        },
+        "notes": [
+          "La source énonce la règle en une phrase : « Le symbole d'alésage est égal au diamètre en mm jusqu'à un diamètre d'alésage d = 9 mm. Les diamètres d'alésage 10, 12, 15 et 17 mm correspondent aux symboles 00, 01, 02 et 03. De 20 à 480 mm, le symbole d'alésage est égal au 1/5 du diamètre d'alésage. »",
+          "C'est une RÈGLE et non une table : MecaTool l'applique au lieu de recopier 96 correspondances. Les quatre codes spéciaux sont la seule partie qui s'énumère, parce qu'ils échappent justement à la règle.",
+          "Le recueil cite « ISO 15 » sans millésime. MecaTool ne l'invente pas.",
+          "La règle ne dit PAS comment découper une désignation complète en série et symbole d'alésage. « 6203 » se lit série 62 + symbole 03, mais « 623 » se lit série 62 + symbole 3, et rien dans la phrase citée ne permet de trancher mécaniquement. MecaTool rend donc les lectures possibles au lieu d'en choisir une.",
+          "Au-delà du symbole 96, soit 480 mm, la source ne dit rien : MecaTool refuse de conclure plutôt que de prolonger la règle."
+        ]
+      },
+      {
+        "id": "Montage des roulements — portée d'arbre",
+        "edition": "",
+        "title": "Classes de tolérance usuelles pour la portée d'arbre d'un roulement",
+        "scope": "classe de tolérance d'arbre selon le régime de charge, le type de roulement et le diamètre",
+        "source": "VSM, « Extrait de normes », édition 2014, tableau 237/1, page 237.",
+        "verification": {
+          "state": "recommended",
+          "by": "les fabricants de roulements, relayés par le VSM « Extrait de normes » 2014, tableau 237/1, page 237",
+          "on": "2026-09-11"
+        },
+        "notes": [
+          "CE N'EST PAS UNE NORME. Le tableau 237/1 est titré « Classes de tolérance usuelles pour le montage des roulements » et porte la mention « Dimensions du fabricant ». Aucune norme n'impose ces classes : ce sont les pratiques de montage recommandées par les fabricants. S'en écarter reste légitime si la raison en est connue.",
+          "La distinction compte dans les deux sens. Présenter cette table comme normative durcirait une recommandation ; la présenter comme une simple donnée non vérifiée banaliserait une pratique bien établie.",
+          "Le critère décisif est le régime de charge de la bague intérieure. Bague chargée en un point fixe : la bague peut être montée libre. Bague dont le point chargé tourne, ou direction de charge indéterminée : la bague doit être serrée, sous peine de rampage sur l'arbre.",
+          "Ces valeurs concernent la PORTÉE D'ARBRE. Le logement relève du tableau 238/1, qui n'est pas encore relevé.",
+          "Relevé sur une seule édition du recueil. Contrairement aux caractéristiques géométriques, il n'y a pas eu de recoupement entre deux éditions : l'édition 2022 fournie ne couvre pas ce chapitre.",
+          "Les classes citées — g6, h6, js5, js6, k5, k6, m5, m6, n6, p6 — sont toutes couvertes par les écarts fondamentaux ISO 286 embarqués, ce qui permet de poursuivre le calcul jusqu'aux écarts réels."
+        ]
+      }
+    ]
+  },
+  "warnings": [
+    "ISO 15 (règle de correspondance entre le symbole d'alésage et le diamètre d'alésage) : Donnée transcrite d'un recueil technique, non confrontée à la norme elle-même. Source : VSM « Extrait de normes » 2014, § 4.14.2.1, page 234, qui reproduit ISO 15.",
+    "Montage des roulements — portée d'arbre (classe de tolérance d'arbre selon le régime de charge, le type de roulement et le diamètre) : Pratique recommandée, sans caractère normatif : aucune norme ne l'impose, et s'en écarter reste légitime si la raison en est connue. Recommandée par les fabricants de roulements, relayés par le VSM « Extrait de normes » 2014, tableau 237/1, page 237."
+  ]
+}

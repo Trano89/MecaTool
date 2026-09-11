@@ -26,6 +26,7 @@ pub mod bearing;
 pub mod chain;
 pub mod compare;
 pub mod diagram;
+pub mod domain;
 pub mod error;
 pub mod format;
 pub mod geometric;
@@ -39,6 +40,7 @@ pub use bearing::{BearingEngine, DesignationReading, MountingAdvice, MountingOpt
 pub use chain::{analyse_chain, verify_chain, ChainAnalysis, Link, LinkDirection};
 pub use compare::{compare_fits, ComparedFit, FitComparison};
 pub use diagram::{comparison_diagram, fit_diagram, to_svg, Diagram, DiagramMode, DiagramOptions};
+pub use domain::{registry, Domain, DomainGroup, DomainStatus};
 pub use error::{EngineError, Result};
 pub use geometric::{
     Finding, GeometricEngine, GeometricSpec, GroupAnalysis, Overlap, Severity, SpecAnalysis,

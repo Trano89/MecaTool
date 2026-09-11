@@ -10,11 +10,14 @@
 //! jour ou un champ change de nom.
 
 use mecatool_core::{Conclusion, DeviationLetter, Length, Provenance, Unit};
+use mecatool_engine::bearing::{BearingEngine, DesignationReading, MountingAdvice, MountingOption};
 use mecatool_engine::chain::{
     analyse_chain, contribution_chart, verify_chain, ChainAnalysis, ContributionChart,
 };
 use mecatool_engine::compare::{compare_fits, FitComparison};
 use mecatool_engine::diagram::{fit_diagram, Diagram, DiagramMode, DiagramOptions};
+use mecatool_engine::domain::Domain;
+use mecatool_engine::geometric::{GeometricEngine, GroupAnalysis};
 use mecatool_engine::iso2768::{ClassComparison, Iso2768Engine};
 use mecatool_engine::iso286::{
     classification_conclusion, FeatureAnalysis, FitAnalysis, Iso286Engine,
@@ -24,9 +27,9 @@ use mecatool_engine::parser::{
 };
 use mecatool_engine::requirement::{verify_clearance, ClearanceRequirement, Verification};
 use mecatool_engine::search::{find_fits, SearchOptions, SearchResult};
-use mecatool_engine::geometric::{GeometricEngine, GroupAnalysis};
 use mecatool_engine::EngineError;
 use mecatool_standards::iso2768::MeasureKind;
+use mecatool_standards::roulements::{BearingFamily, LoadRegime, MountingCase};
 use mecatool_standards::{Characteristic, FamilyDefinition, Modifier};
 use serde::{Deserialize, Serialize};
 
@@ -204,6 +207,79 @@ pub fn geometric(specs: Vec<String>) -> Result<GroupAnalysis, AppError> {
         .map(|s| engine.parse(s))
         .collect::<mecatool_engine::Result<Vec<_>>>()?;
     Ok(engine.analyse_group(&parsed)?)
+}
+
+/// Le registre des domaines, lu une fois au demarrage.
+///
+/// La navigation se construit a partir de cette liste, et non d'une suite
+/// d'onglets ecrite dans l'interface : ajouter un domaine ne doit toucher ni la
+/// barre laterale, ni l'accueil, ni la recherche.
+#[tauri::command]
+pub fn domains() -> Result<Vec<Domain>, AppError> {
+    Ok(mecatool_engine::domain::registry()?)
+}
+
+/// Ce qu'il faut pour peupler l'ecran des roulements avant toute saisie.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BearingCatalogue {
+    pub families: Vec<BearingFamily>,
+    pub regimes: Vec<LoadRegime>,
+    pub cases: Vec<MountingCase>,
+    pub provenance: Provenance,
+    /// La reserve de source, dont celle qui dit que le tableau n'est pas normatif.
+    pub warnings: Vec<String>,
+}
+
+#[tauri::command]
+pub fn bearing_catalogue() -> Result<BearingCatalogue, AppError> {
+    let engine = BearingEngine::new()?;
+    let provenance = engine.provenance();
+    Ok(BearingCatalogue {
+        families: engine.families().to_vec(),
+        regimes: engine.regimes().to_vec(),
+        cases: engine.cases().to_vec(),
+        warnings: provenance.warnings_fr(),
+        provenance,
+    })
+}
+
+/// Les lectures possibles d'une designation de roulement.
+///
+/// Plusieurs, parce que la source ne dit pas comment decouper une designation :
+/// c'est a l'utilisateur de reconnaitre la sienne.
+#[tauri::command]
+pub fn bearing_read(designation: String) -> Result<Vec<DesignationReading>, AppError> {
+    Ok(BearingEngine::new()?.read_designation(&designation)?)
+}
+
+/// Les cas d'emploi d'un regime, avec ce que chacun donnerait.
+#[tauri::command]
+pub fn bearing_options(
+    regime: String,
+    family: String,
+    bore_mm: String,
+) -> Result<Vec<MountingOption>, AppError> {
+    let engine = BearingEngine::new()?;
+    Ok(engine.options(&regime, &family, parse_bore(&bore_mm)?)?)
+}
+
+/// Le conseil complet : la classe, et les ecarts qui en decoulent.
+#[tauri::command]
+pub fn bearing_advise(
+    regime: String,
+    condition: String,
+    family: String,
+    bore_mm: String,
+) -> Result<MountingAdvice, AppError> {
+    let engine = BearingEngine::new()?;
+    Ok(engine.advise(&regime, &condition, &family, parse_bore(&bore_mm)?)?)
+}
+
+fn parse_bore(bore_mm: &str) -> Result<Length, AppError> {
+    Length::parse(bore_mm.trim(), Unit::Millimetre).map_err(|source| AppError {
+        message: format!("Alésage illisible : « {bore_mm} »."),
+        hint: Some(source.to_string()),
+    })
 }
 
 /// Le resultat d'une chaine de cotes.
@@ -565,7 +641,10 @@ mod tests {
             Some("30.2".into()),
         )
         .unwrap();
-        assert_eq!(report.conclusion.verdict, mecatool_core::Verdict::Compatible);
+        assert_eq!(
+            report.conclusion.verdict,
+            mecatool_core::Verdict::Compatible
+        );
     }
 
     #[test]
@@ -713,12 +792,7 @@ mod tests {
         // manque sa référence, et une que la première rend inopérante. Un seul
         // échantillon couvre ainsi les trois sortes de constats.
         let geometry = serde_json::to_string_pretty(
-            &geometric(vec![
-                "// 0.02 A".into(),
-                "⏥ 0.05".into(),
-                "⟂ 0.03".into(),
-            ])
-            .unwrap(),
+            &geometric(vec!["// 0.02 A".into(), "⏥ 0.05".into(), "⟂ 0.03".into()]).unwrap(),
         )
         .expect("sérialisation");
         std::fs::write(dir.join("geometric-group.json"), geometry + "\n").expect("écriture");
@@ -726,6 +800,77 @@ mod tests {
         let catalogue =
             serde_json::to_string_pretty(&geometric_catalogue().unwrap()).expect("sérialisation");
         std::fs::write(dir.join("geometric-catalogue.json"), catalogue + "\n").expect("écriture");
+
+        // Le registre : c'est lui qui construit la navigation, il doit donc
+        // traverser la frontière sous une forme que l'interface sait typer.
+        let registry = serde_json::to_string_pretty(&domains().unwrap()).expect("sérialisation");
+        std::fs::write(dir.join("domains.json"), registry + "\n").expect("écriture");
+
+        // Un 6210 monté sous charge normale : l'échantillon porte la classe
+        // recommandée ET les écarts qui en découlent, donc la composition
+        // entière.
+        let advice = serde_json::to_string_pretty(
+            &bearing_advise(
+                "rotating_inner".into(),
+                "Charges normales et grandes".into(),
+                "ball_radial".into(),
+                "50".into(),
+            )
+            .unwrap(),
+        )
+        .expect("sérialisation");
+        std::fs::write(dir.join("bearing-advice.json"), advice + "\n").expect("écriture");
+
+        let bearings =
+            serde_json::to_string_pretty(&bearing_catalogue().unwrap()).expect("sérialisation");
+        std::fs::write(dir.join("bearing-catalogue.json"), bearings + "\n").expect("écriture");
+    }
+
+    #[test]
+    fn le_registre_traverse_la_frontiere() {
+        let registry = domains().unwrap();
+        assert!(registry.len() >= 10);
+
+        // Un domaine bloqué doit arriver avec sa raison : la navigation
+        // l'affichera grisé, mais elle doit pouvoir dire pourquoi.
+        let bloques: Vec<_> = registry.iter().filter(|d| !d.is_available()).collect();
+        assert!(!bloques.is_empty());
+        for domain in bloques {
+            assert!(domain.unavailable.is_some(), "{}", domain.id);
+        }
+    }
+
+    #[test]
+    fn une_designation_de_roulement_se_lit() {
+        let readings = bearing_read("6210".into()).unwrap();
+        assert_eq!(readings[0].bore_code, "10");
+    }
+
+    #[test]
+    fn le_conseil_de_montage_porte_les_deux_natures_de_source() {
+        let advice = bearing_advise(
+            "rotating_inner".into(),
+            "Charges normales et grandes".into(),
+            "ball_radial".into(),
+            "50".into(),
+        )
+        .unwrap();
+        assert_eq!(advice.class, "k5");
+        // La recommandation doit se voir, sans que les écarts ISO 286 héritent
+        // d'un doute qu'ils ne méritent pas.
+        assert!(advice
+            .conclusion
+            .warnings
+            .join(" ")
+            .contains("sans caractère normatif"));
+    }
+
+    #[test]
+    fn un_alesage_illisible_rend_une_piste_daction() {
+        let err = bearing_options("rotating_inner".into(), "ball_radial".into(), "abc".into())
+            .unwrap_err();
+        assert!(err.message.contains("Alésage illisible"));
+        assert!(err.hint.is_some());
     }
 
     #[test]
