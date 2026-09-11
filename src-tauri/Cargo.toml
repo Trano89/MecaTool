@@ -17,7 +17,14 @@ authors = ["Mecatol contributors"]
 
 [lib]
 name = "mecatol_app_lib"
-crate-type = ["staticlib", "cdylib", "rlib"]
+# `rlib` seul : c'est tout ce dont `main.rs` a besoin pour lier la bibliotheque.
+#
+# Le modele Tauri ajoute `staticlib` et `cdylib`, destines aux cibles iOS et
+# Android. Sur une application de bureau, ils font produire au linker une DLL et
+# sa bibliotheque d'import que rien n'utilise — d'ou un avertissement
+# `linker_messages` et du temps de compilation perdu. A retablir le jour ou une
+# cible mobile sera ajoutee.
+crate-type = ["rlib"]
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
