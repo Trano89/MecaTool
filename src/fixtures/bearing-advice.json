@@ -160,6 +160,7 @@
           "La source énonce la règle en une phrase : « Le symbole d'alésage est égal au diamètre en mm jusqu'à un diamètre d'alésage d = 9 mm. Les diamètres d'alésage 10, 12, 15 et 17 mm correspondent aux symboles 00, 01, 02 et 03. De 20 à 480 mm, le symbole d'alésage est égal au 1/5 du diamètre d'alésage. »",
           "C'est une RÈGLE et non une table : MecaTool l'applique au lieu de recopier 96 correspondances. Les quatre codes spéciaux sont la seule partie qui s'énumère, parce qu'ils échappent justement à la règle.",
           "Le recueil cite « ISO 15 » sans millésime. MecaTool ne l'invente pas.",
+          "L'utilisateur a indiqué l'édition 1998, et c'est cohérent : le recueil consulté date de 2014, donc antérieur à la révision de 2017. Mais le recueil ne cite aucun millésime, et MecaTool ne complète pas une citation normative par déduction, si vraisemblable soit-elle. Le champ d'édition reste vide jusqu'à confrontation avec la norme elle-même.",
           "La règle ne dit PAS comment découper une désignation complète en série et symbole d'alésage. « 6203 » se lit série 62 + symbole 03, mais « 623 » se lit série 62 + symbole 3, et rien dans la phrase citée ne permet de trancher mécaniquement. MecaTool rend donc les lectures possibles au lieu d'en choisir une.",
           "Au-delà du symbole 96, soit 480 mm, la source ne dit rien : MecaTool refuse de conclure plutôt que de prolonger la règle."
         ]

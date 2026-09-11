@@ -28,6 +28,7 @@ pub fn run() {
             commands::geometric,
             commands::geometric_catalogue,
             commands::domains,
+            commands::tolerance_classes,
             commands::bearing_catalogue,
             commands::bearing_read,
             commands::bearing_options,

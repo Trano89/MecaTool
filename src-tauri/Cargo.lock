@@ -1773,7 +1773,7 @@ dependencies = [
 
 [[package]]
 name = "mecatool-app"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "mecatool-core",
  "mecatool-engine",
@@ -1786,7 +1786,7 @@ dependencies = [
 
 [[package]]
 name = "mecatool-core"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "serde",
  "thiserror 2.0.20",
@@ -1794,7 +1794,7 @@ dependencies = [
 
 [[package]]
 name = "mecatool-engine"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "mecatool-core",
  "mecatool-standards",
@@ -1805,7 +1805,7 @@ dependencies = [
 
 [[package]]
 name = "mecatool-standards"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "mecatool-core",
  "serde",

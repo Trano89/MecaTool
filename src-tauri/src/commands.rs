@@ -209,6 +209,70 @@ pub fn geometric(specs: Vec<String>) -> Result<GroupAnalysis, AppError> {
     Ok(engine.analyse_group(&parsed)?)
 }
 
+/// Une classe de tolerance proposable dans une liste de selection.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ClassOption {
+    /// La designation telle qu'elle s'ecrit sur un plan : `"H7"`, `"g6"`.
+    pub designation: String,
+    /// La lettre, dans la casse de l'element.
+    pub letter: String,
+    /// Le degre, par ex. `"IT7"`.
+    pub grade: String,
+}
+
+/// Les classes que l'interface peut proposer, alesage et arbre.
+///
+/// # Pourquoi le moteur, et non une liste ecrite dans l'interface
+///
+/// Les lettres disponibles ne sont pas une decision d'affichage : ce sont celles
+/// dont MecaTool possede les ecarts fondamentaux. Dix sur vingt-huit
+/// aujourd'hui. Une liste ecrite dans l'interface proposerait des classes que le
+/// moteur refuserait ensuite de calculer, ce qui est la pire facon de refuser.
+///
+/// Toutes les combinaisons lettre × degre sont licites : hors des degres qu'elle
+/// vise, une lettre restreinte donne simplement un ecart fondamental nul. Il n'y
+/// a donc rien a filtrer, et c'est une propriete de la norme, pas une
+/// simplification.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ClassCatalogue {
+    pub hole: Vec<ClassOption>,
+    pub shaft: Vec<ClassOption>,
+    /// Les degres seuls, du plus fin au plus large.
+    pub grades: Vec<String>,
+    pub provenance: Provenance,
+}
+
+#[tauri::command]
+pub fn tolerance_classes() -> Result<ClassCatalogue, AppError> {
+    let engine = engine()?;
+    let letters = engine.available_letters();
+
+    let options = |feature: mecatool_core::Feature| -> Vec<ClassOption> {
+        letters
+            .iter()
+            .flat_map(|letter| {
+                mecatool_core::Grade::all().map(move |grade| {
+                    let class = mecatool_core::ToleranceClass::new(feature, *letter, grade);
+                    ClassOption {
+                        designation: class.to_string(),
+                        letter: letter.as_str_for(feature).to_string(),
+                        grade: grade.name().to_string(),
+                    }
+                })
+            })
+            .collect()
+    };
+
+    Ok(ClassCatalogue {
+        hole: options(mecatool_core::Feature::Hole),
+        shaft: options(mecatool_core::Feature::Shaft),
+        grades: mecatool_core::Grade::all()
+            .map(|grade| grade.name().to_string())
+            .collect(),
+        provenance: engine.provenance(),
+    })
+}
+
 /// Le registre des domaines, lu une fois au demarrage.
 ///
 /// La navigation se construit a partir de cette liste, et non d'une suite
@@ -803,6 +867,21 @@ mod tests {
 
         // Le registre : c'est lui qui construit la navigation, il doit donc
         // traverser la frontière sous une forme que l'interface sait typer.
+        // Le catalogue de classes est volumineux (dix lettres par vingt degrés,
+        // deux fois). L'échantillon n'a besoin que de la *forme* : on garde les
+        // premières entrées de chaque liste, ce qui laisse le fichier lisible.
+        let mut classes = tolerance_classes().unwrap();
+        classes.hole.truncate(4);
+        classes.shaft.truncate(4);
+        let classes = serde_json::to_string_pretty(&classes).expect("sérialisation");
+        std::fs::write(
+            dir.join("tolerance-classes.json"),
+            classes
+                + "
+",
+        )
+        .expect("écriture");
+
         let registry = serde_json::to_string_pretty(&domains().unwrap()).expect("sérialisation");
         std::fs::write(dir.join("domains.json"), registry + "\n").expect("écriture");
 
@@ -824,6 +903,36 @@ mod tests {
         let bearings =
             serde_json::to_string_pretty(&bearing_catalogue().unwrap()).expect("sérialisation");
         std::fs::write(dir.join("bearing-catalogue.json"), bearings + "\n").expect("écriture");
+    }
+
+    #[test]
+    fn les_classes_proposables_viennent_du_moteur() {
+        let catalogue = tolerance_classes().unwrap();
+
+        // Dix lettres sur vingt-huit sont embarquees : la liste proposee doit
+        // s'y tenir. En proposer d'autres ferait offrir a l'utilisateur des
+        // classes que le moteur refuserait ensuite de calculer.
+        let letters: std::collections::BTreeSet<&str> =
+            catalogue.hole.iter().map(|c| c.letter.as_str()).collect();
+        assert_eq!(letters.len(), engine().unwrap().available_letters().len());
+        assert!(letters.contains("H"));
+        assert!(!letters.contains("A"));
+
+        // La casse porte l'element : majuscule pour l'alesage, minuscule pour
+        // l'arbre. C'est ce qui distingue H7 de h7.
+        assert!(catalogue.hole.iter().any(|c| c.designation == "H7"));
+        assert!(catalogue.shaft.iter().any(|c| c.designation == "g6"));
+        assert!(!catalogue.shaft.iter().any(|c| c.designation == "H7"));
+
+        // Toute classe proposee doit se relire : une liste de selection qui
+        // proposerait une designation illisible par le parseur serait un piege.
+        for option in catalogue.hole.iter().chain(&catalogue.shaft) {
+            mecatool_core::ToleranceClass::parse(&option.designation)
+                .unwrap_or_else(|e| panic!("{} : {e}", option.designation));
+        }
+
+        assert_eq!(catalogue.grades.len(), 20);
+        assert_eq!(catalogue.grades[0], "IT01");
     }
 
     #[test]

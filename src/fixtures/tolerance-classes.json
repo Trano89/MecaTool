@@ -1,18 +1,70 @@
 {
-  "app_version": "0.1.1",
-  "available_letters": [
-    "d",
-    "e",
-    "f",
-    "g",
-    "h",
-    "js",
-    "k",
-    "m",
-    "n",
-    "p"
+  "hole": [
+    {
+      "designation": "D01",
+      "letter": "D",
+      "grade": "IT01"
+    },
+    {
+      "designation": "D0",
+      "letter": "D",
+      "grade": "IT0"
+    },
+    {
+      "designation": "D1",
+      "letter": "D",
+      "grade": "IT1"
+    },
+    {
+      "designation": "D2",
+      "letter": "D",
+      "grade": "IT2"
+    }
   ],
-  "max_nominal_mm": "500",
+  "shaft": [
+    {
+      "designation": "d01",
+      "letter": "d",
+      "grade": "IT01"
+    },
+    {
+      "designation": "d0",
+      "letter": "d",
+      "grade": "IT0"
+    },
+    {
+      "designation": "d1",
+      "letter": "d",
+      "grade": "IT1"
+    },
+    {
+      "designation": "d2",
+      "letter": "d",
+      "grade": "IT2"
+    }
+  ],
+  "grades": [
+    "IT01",
+    "IT0",
+    "IT1",
+    "IT2",
+    "IT3",
+    "IT4",
+    "IT5",
+    "IT6",
+    "IT7",
+    "IT8",
+    "IT9",
+    "IT10",
+    "IT11",
+    "IT12",
+    "IT13",
+    "IT14",
+    "IT15",
+    "IT16",
+    "IT17",
+    "IT18"
+  ],
   "provenance": {
     "references": [
       {
@@ -58,6 +110,5 @@
         ]
       }
     ]
-  },
-  "warnings": []
+  }
 }

@@ -179,7 +179,7 @@ cargo run -p mecatool-cli -- "Ø10 H7/g6"
 ```
 
 ```
-MECATOOL 0.1.0 — Ajustement Ø10 H7/g6
+MECATOOL 0.1.1 — Ajustement Ø10 H7/g6
 ================================================================
 
 ALÉSAGE H7
