@@ -19,6 +19,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { geometric, geometricCatalogue } from "../api";
+import { nextRowId, type Row, RowList } from "../components/RowList";
+import { Select } from "../components/Select";
 import { StatusBox } from "../components/StatusBox";
 import { Why } from "../components/Why";
 import type {
@@ -140,11 +142,60 @@ function Catalogue({ catalogue }: { catalogue: GeometricCatalogue }) {
   );
 }
 
+/** Une ligne de la saisie, telle que le composeur et la liste la manipulent. */
+interface SpecRow extends Row {
+  text: string;
+}
+
+/**
+ * Découpe la saisie en lignes.
+ *
+ * Découper sur les retours à la ligne n'est **pas** lire une spécification :
+ * c'est exactement ce que `run()` fait déjà avant d'appeler le moteur. Le
+ * contenu d'une ligne reste opaque à l'interface, qui ne l'interprète jamais.
+ *
+ * L'identité d'une ligne est son rang. Chaque ligne étant une chaîne entière et
+ * contrôlée, un rang qui glisse au retrait d'une ligne ne fait pas glisser le
+ * contenu : seule la position du curseur peut sauter, ce qui est sans effet
+ * après un clic sur « Retirer ».
+ */
+function toRows(input: string): SpecRow[] {
+  return input.split("\n").map((text, index) => ({ id: `line-${index}`, text }));
+}
+
+/**
+ * Assemble une ligne à partir de ce qui a été choisi.
+ *
+ * Mise en forme de chaîne, et rien d'autre : l'ordre suit celui qu'emploie la
+ * source pour un cadre de tolérance — le symbole, la zone, puis les références.
+ * C'est le moteur qui dira si la ligne a un sens.
+ */
+function composeSpec(parts: {
+  symbol: string | null;
+  diameter: boolean;
+  value: string;
+  modifier: string | null;
+  datums: string;
+}): string {
+  const zone = `${parts.diameter ? "ø" : ""}${parts.value.trim()}`;
+  return [parts.symbol, zone, parts.modifier, parts.datums.trim()]
+    .filter((piece): piece is string => typeof piece === "string" && piece !== "")
+    .join(" ");
+}
+
 export function Geometry() {
   const [input, setInput] = useState(EXAMPLE);
   const [catalogue, setCatalogue] = useState<GeometricCatalogue | null>(null);
   const [analysis, setAnalysis] = useState<GroupAnalysis | null>(null);
   const [error, setError] = useState<AppError | null>(null);
+
+  // Le composeur. Son état n'est qu'un brouillon : il ne devient une ligne que
+  // lorsqu'on l'ajoute, et la saisie reste la seule chose que le moteur lit.
+  const [symbol, setSymbol] = useState<string | null>(null);
+  const [value, setValue] = useState("");
+  const [diameter, setDiameter] = useState(false);
+  const [modifier, setModifier] = useState<string | null>(null);
+  const [datums, setDatums] = useState("");
 
   useEffect(() => {
     geometricCatalogue()
@@ -164,6 +215,8 @@ export function Geometry() {
       catalogue?.families.find((family) => family.id === id)?.name ?? "",
     [catalogue],
   );
+
+  const draft = composeSpec({ symbol, diameter, value, modifier, datums });
 
   const run = useCallback(async (text: string) => {
     const lines = text.split("\n").filter((line) => line.trim() !== "");
@@ -238,7 +291,143 @@ export function Geometry() {
           s'écrit entouré ou entre parenthèses, <code>(M)</code>. Elles doivent porter sur le
           <strong> même élément</strong> : c'est ce qui donne son sens au contrôle de recouvrement.
         </p>
-        <button type="submit" className="btn-primary" style={{ marginTop: "var(--s-5)" }}>
+
+        {/*
+          Les mêmes lignes, une par une. C'est ici qu'on en retire une sans avoir
+          à sélectionner du texte au clavier — et c'est le même contenu : la
+          zone de saisie reste la seule chose que le moteur lit.
+        */}
+        <div style={{ marginTop: "var(--s-6)" }}>
+          <RowList<SpecRow>
+            legend="Lignes"
+            items={toRows(input)}
+            onChange={(rows) => setInput(rows.map((row) => row.text).join("\n"))}
+            create={() => ({ id: nextRowId(), text: "" })}
+            addLabel="Ajouter une ligne vide"
+            emptyNote="Aucune spécification. Composez-en une ci-dessous, ou tapez-la directement."
+            describe={(row, index) =>
+              row.text.trim() === "" ? `la ligne ${index + 1}` : `« ${row.text.trim()} »`
+            }
+            renderRow={(row, _index, update) => (
+              <div className="field grow">
+                <label htmlFor={`spec-${row.id}`} className="visually-hidden">
+                  Spécification
+                </label>
+                <input
+                  id={`spec-${row.id}`}
+                  type="text"
+                  value={row.text}
+                  autoComplete="off"
+                  spellCheck={false}
+                  onChange={(event) => update({ ...row, text: event.target.value })}
+                />
+              </div>
+            )}
+          />
+        </div>
+
+        {/*
+          Le composeur. Les symboles de l'ISO 1101 ne se tapent pas : ⏥ ⌭ ⌖ ⌰
+          n'ont aucune touche, et leur nom en clair ne s'invente pas non plus.
+          C'est l'écran où la liste apporte le plus — et ses options viennent du
+          catalogue du moteur, jamais d'une table écrite ici.
+        */}
+        <div className="composer">
+          <div className="composer-head">
+            <span className="composer-title">Composer une spécification</span>
+            <span className="faint">{draft === "" ? "—" : draft}</span>
+          </div>
+
+          <div className="composer-row">
+            <Select
+              id="spec-characteristic"
+              label="Caractéristique"
+              options={(catalogue?.characteristics ?? []).map((characteristic) => ({
+                value: characteristic.symbol,
+                label: characteristic.name,
+                hint: characteristic.symbol,
+                symbol: characteristic.symbol,
+              }))}
+              value={symbol}
+              onChange={setSymbol}
+              placeholder="perpendicularité…"
+              emptyNote="Le catalogue n'a pas été chargé. La saisie directe reste possible."
+            />
+
+            <div className="field" style={{ minWidth: "110px" }}>
+              <label htmlFor="spec-value">Valeur</label>
+              <input
+                id="spec-value"
+                type="text"
+                value={value}
+                placeholder="0.05"
+                autoComplete="off"
+                spellCheck={false}
+                onChange={(event) => setValue(event.target.value)}
+              />
+            </div>
+
+            <div className="field">
+              <span className="field-label field-spacer" aria-hidden="true" />
+              <button
+                type="button"
+                className="btn-quiet"
+                aria-pressed={diameter}
+                onClick={() => setDiameter((current) => !current)}
+              >
+                Zone ø {diameter ? "oui" : "non"}
+              </button>
+            </div>
+
+            <div className="field" style={{ minWidth: "120px" }}>
+              <label htmlFor="spec-datums">Références</label>
+              <input
+                id="spec-datums"
+                type="text"
+                value={datums}
+                placeholder="A B C"
+                autoComplete="off"
+                spellCheck={false}
+                onChange={(event) => setDatums(event.target.value)}
+              />
+            </div>
+
+            <Select
+              id="spec-modifier"
+              label="Modificateur"
+              options={(catalogue?.modifiers ?? []).map((entry) => ({
+                value: entry.symbol,
+                label: entry.symbol,
+                hint: entry.name,
+                symbol: entry.symbol,
+              }))}
+              value={modifier}
+              onChange={setModifier}
+              placeholder="aucun"
+              emptyNote="Le catalogue n'a pas été chargé."
+            />
+
+            <div className="field">
+              <span className="field-label field-spacer" aria-hidden="true" />
+              <button
+                type="button"
+                className="btn"
+                disabled={draft === ""}
+                onClick={() => {
+                  setInput((current) => (current.trim() === "" ? draft : `${current}\n${draft}`));
+                  setValue("");
+                  setDatums("");
+                  setModifier(null);
+                  setDiameter(false);
+                }}
+              >
+                Ajouter cette spécification
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" className="btn-primary" style={{ marginTop: "var(--s-6)" }}>
           Contrôler
         </button>
       </form>

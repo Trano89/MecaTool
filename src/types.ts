@@ -775,3 +775,31 @@ export function VERIFICATION_DETAIL(status: VerificationStatus): string {
       return `Reste à faire : ${status.pending}`;
   }
 }
+
+/* ---------- Catalogue des classes de tolerance ---------- */
+
+/**
+ * Une classe que l'interface a le droit de proposer.
+ *
+ * ⚠ Cette liste vient du moteur, et **ne doit jamais être écrite dans
+ * l'interface**. Les lettres disponibles ne sont pas une décision d'affichage :
+ * ce sont celles dont MecaTool possède les écarts fondamentaux — dix sur
+ * vingt-huit. Une liste rédigée ici proposerait des classes que le moteur
+ * refuserait ensuite de calculer, et l'utilisateur ne comprendrait pas pourquoi.
+ */
+export interface ClassOption {
+  /** La désignation telle qu'elle s'écrit sur un plan : `"H7"`, `"g6"`. */
+  designation: string;
+  /** La lettre, dans la casse de l'élément. */
+  letter: string;
+  /** Le degré, par ex. `"IT7"`. */
+  grade: string;
+}
+
+export interface ClassCatalogue {
+  hole: ClassOption[];
+  shaft: ClassOption[];
+  /** Les degrés seuls, du plus fin au plus large. */
+  grades: string[];
+  provenance: Provenance;
+}

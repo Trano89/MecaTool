@@ -129,4 +129,33 @@ describe("écran des chaînes de cotes", () => {
     expect(alert).toHaveTextContent("illisible");
     expect(alert).toHaveTextContent("Écarts absents");
   });
+
+  it("compose les maillons par lignes, sens compris", async () => {
+    await show();
+
+    await userEvent.click(screen.getByRole("button", { name: "Composer les maillons" }));
+    await userEvent.click(screen.getByRole("button", { name: /Ajouter un maillon/ }));
+
+    await userEvent.type(screen.getByLabelText("Repère du maillon 1"), "A");
+    await userEvent.type(screen.getByLabelText("Cote nominale du maillon 1"), "20");
+
+    // La grammaire du moteur est écrite pour l'utilisateur, pas par lui.
+    expect(screen.getByLabelText("Maillons, un par ligne")).toHaveValue("A = 20 ±0.1");
+  });
+
+  it("écrit le signe du maillon diminuant à la place de l'utilisateur", async () => {
+    await show();
+
+    await userEvent.click(screen.getByRole("button", { name: "Composer les maillons" }));
+    await userEvent.click(screen.getByRole("button", { name: /Ajouter un maillon/ }));
+    await userEvent.type(screen.getByLabelText("Repère du maillon 1"), "C");
+    await userEvent.type(screen.getByLabelText("Cote nominale du maillon 1"), "5");
+
+    // « Un signe moins devant le repère marque un maillon diminuant » est une
+    // convention qu'il fallait connaître. Deux libellés la rendent inutile.
+    await userEvent.click(screen.getByLabelText("Sens du maillon 1"));
+    await userEvent.click(within(await screen.findByRole("listbox")).getByText("Diminuant"));
+
+    expect(screen.getByLabelText("Maillons, un par ligne")).toHaveValue("-C = 5 ±0.1");
+  });
 });

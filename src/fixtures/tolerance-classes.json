@@ -1,46 +1,206 @@
 {
   "hole": [
     {
-      "designation": "D01",
+      "designation": "D6",
       "letter": "D",
-      "grade": "IT01"
+      "grade": "IT6"
     },
     {
-      "designation": "D0",
+      "designation": "D7",
       "letter": "D",
-      "grade": "IT0"
+      "grade": "IT7"
     },
     {
-      "designation": "D1",
-      "letter": "D",
-      "grade": "IT1"
+      "designation": "E6",
+      "letter": "E",
+      "grade": "IT6"
     },
     {
-      "designation": "D2",
-      "letter": "D",
-      "grade": "IT2"
+      "designation": "E7",
+      "letter": "E",
+      "grade": "IT7"
+    },
+    {
+      "designation": "F6",
+      "letter": "F",
+      "grade": "IT6"
+    },
+    {
+      "designation": "F7",
+      "letter": "F",
+      "grade": "IT7"
+    },
+    {
+      "designation": "G6",
+      "letter": "G",
+      "grade": "IT6"
+    },
+    {
+      "designation": "G7",
+      "letter": "G",
+      "grade": "IT7"
+    },
+    {
+      "designation": "H6",
+      "letter": "H",
+      "grade": "IT6"
+    },
+    {
+      "designation": "H7",
+      "letter": "H",
+      "grade": "IT7"
+    },
+    {
+      "designation": "JS6",
+      "letter": "JS",
+      "grade": "IT6"
+    },
+    {
+      "designation": "JS7",
+      "letter": "JS",
+      "grade": "IT7"
+    },
+    {
+      "designation": "K6",
+      "letter": "K",
+      "grade": "IT6"
+    },
+    {
+      "designation": "K7",
+      "letter": "K",
+      "grade": "IT7"
+    },
+    {
+      "designation": "M6",
+      "letter": "M",
+      "grade": "IT6"
+    },
+    {
+      "designation": "M7",
+      "letter": "M",
+      "grade": "IT7"
+    },
+    {
+      "designation": "N6",
+      "letter": "N",
+      "grade": "IT6"
+    },
+    {
+      "designation": "N7",
+      "letter": "N",
+      "grade": "IT7"
+    },
+    {
+      "designation": "P6",
+      "letter": "P",
+      "grade": "IT6"
+    },
+    {
+      "designation": "P7",
+      "letter": "P",
+      "grade": "IT7"
     }
   ],
   "shaft": [
     {
-      "designation": "d01",
+      "designation": "d6",
       "letter": "d",
-      "grade": "IT01"
+      "grade": "IT6"
     },
     {
-      "designation": "d0",
+      "designation": "d7",
       "letter": "d",
-      "grade": "IT0"
+      "grade": "IT7"
     },
     {
-      "designation": "d1",
-      "letter": "d",
-      "grade": "IT1"
+      "designation": "e6",
+      "letter": "e",
+      "grade": "IT6"
     },
     {
-      "designation": "d2",
-      "letter": "d",
-      "grade": "IT2"
+      "designation": "e7",
+      "letter": "e",
+      "grade": "IT7"
+    },
+    {
+      "designation": "f6",
+      "letter": "f",
+      "grade": "IT6"
+    },
+    {
+      "designation": "f7",
+      "letter": "f",
+      "grade": "IT7"
+    },
+    {
+      "designation": "g6",
+      "letter": "g",
+      "grade": "IT6"
+    },
+    {
+      "designation": "g7",
+      "letter": "g",
+      "grade": "IT7"
+    },
+    {
+      "designation": "h6",
+      "letter": "h",
+      "grade": "IT6"
+    },
+    {
+      "designation": "h7",
+      "letter": "h",
+      "grade": "IT7"
+    },
+    {
+      "designation": "js6",
+      "letter": "js",
+      "grade": "IT6"
+    },
+    {
+      "designation": "js7",
+      "letter": "js",
+      "grade": "IT7"
+    },
+    {
+      "designation": "k6",
+      "letter": "k",
+      "grade": "IT6"
+    },
+    {
+      "designation": "k7",
+      "letter": "k",
+      "grade": "IT7"
+    },
+    {
+      "designation": "m6",
+      "letter": "m",
+      "grade": "IT6"
+    },
+    {
+      "designation": "m7",
+      "letter": "m",
+      "grade": "IT7"
+    },
+    {
+      "designation": "n6",
+      "letter": "n",
+      "grade": "IT6"
+    },
+    {
+      "designation": "n7",
+      "letter": "n",
+      "grade": "IT7"
+    },
+    {
+      "designation": "p6",
+      "letter": "p",
+      "grade": "IT6"
+    },
+    {
+      "designation": "p7",
+      "letter": "p",
+      "grade": "IT7"
     }
   ],
   "grades": [

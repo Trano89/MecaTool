@@ -2195,3 +2195,274 @@ select:focus-visible {
   color: var(--ink-muted);
   margin-top: var(--s-2);
 }
+
+/* ---------------------------------------------------------------------------
+ * 15. LISTES DE SÉLECTION ET LIGNES RÉPÉTABLES
+ *
+ * Les deux motifs de saisie assistée. Le premier remplace un champ libre quand
+ * les valeurs possibles sont connues du moteur et trop nombreuses pour être
+ * tapées de mémoire ; le second remplace une zone de texte multiligne quand
+ * chaque ligne a une structure.
+ * ------------------------------------------------------------------------- */
+
+.combo {
+  position: relative;
+}
+
+/* Le champ EST la liste : on y tape pour filtrer. Le chevron dit qu'il se
+   déroule, l'aspect dit qu'il se saisit. */
+.combo-input {
+  padding-right: var(--s-8);
+}
+
+.combo-input[aria-expanded="true"] {
+  border-color: var(--accent-solid);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  border-radius: var(--r-2) var(--r-2) 0 0;
+}
+
+.combo-caret {
+  position: absolute;
+  right: var(--s-5);
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--ink-faint);
+  font-size: var(--text-xs);
+}
+
+.combo-list {
+  position: absolute;
+  z-index: 30;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: var(--s-2);
+  list-style: none;
+  max-height: 260px;
+  overflow-y: auto;
+  background: var(--surface-overlay);
+  border: var(--bw-1) solid var(--accent-solid);
+  border-top: 0;
+  border-radius: 0 0 var(--r-2) var(--r-2);
+  box-shadow: var(--shadow-2);
+}
+
+.combo-option {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-1);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  color: var(--ink);
+}
+
+.combo-option[aria-selected="true"] {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.combo-label {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Le symbole ISO est décoratif : c'est le libellé qui porte le sens, car la
+   police peut ne pas connaître le glyphe. */
+.combo-symbol {
+  flex: none;
+  width: 1.4em;
+  text-align: center;
+  font-family: var(--font-symbol);
+  font-size: var(--text-md);
+  line-height: 1;
+}
+
+.combo-hint {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
+  font-size: var(--text-xs);
+  color: var(--ink-muted);
+}
+
+/* La coche double `aria-selected` : le choix courant se reconnaît sans
+   distinguer les couleurs. */
+.combo-check {
+  flex: none;
+  color: var(--accent);
+  font-weight: var(--weight-bold);
+}
+
+.combo-empty {
+  padding: var(--s-5);
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+  text-align: center;
+}
+
+/* — Lignes répétables — */
+
+.rowlist {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+.rowlist-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-5);
+}
+
+.rowlist-head .field-label {
+  margin: 0;
+}
+
+.rowlist-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+.rowlist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-4);
+  padding: var(--s-4);
+  background: var(--surface-sunken);
+  border: var(--bw-1) solid var(--line-faint);
+  border-radius: var(--r-3);
+}
+
+/* Le numéro de ligne : c'est par lui que le moteur désigne une ligne fautive. */
+.rowlist-index {
+  flex: none;
+  display: grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  margin-top: 18px;
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-bold);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-muted);
+  background: var(--surface);
+  border: var(--bw-1) solid var(--line);
+  border-radius: var(--r-1);
+}
+
+.rowlist-fields {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--s-4);
+}
+
+.rowlist-fields > .field {
+  min-width: 0;
+}
+
+.rowlist-remove {
+  flex: none;
+  margin-top: 18px;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  color: var(--ink-faint);
+  border-color: var(--line);
+  background: var(--surface);
+  border-radius: var(--r-2);
+}
+
+.rowlist-remove:hover {
+  color: var(--bad-ink);
+  border-color: var(--bad-line);
+  background: var(--bad-soft);
+}
+
+/* Une liste vide est un état nommé, pas une panne. */
+.rowlist-empty {
+  margin: 0;
+  padding: var(--s-6);
+  text-align: center;
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+  background: var(--surface-sunken);
+  border: var(--bw-1) dashed var(--line-strong);
+  border-radius: var(--r-3);
+}
+
+.rowlist-foot {
+  display: flex;
+  align-items: center;
+  gap: var(--s-5);
+  flex-wrap: wrap;
+}
+
+.rowlist-foot .hint {
+  margin: 0;
+}
+
+/*
+ * Le composeur : les listes qui écrivent dans le champ de saisie.
+ *
+ * Il est posé SOUS le champ qu'il alimente, jamais à sa place. Celui qui sait
+ * taper « Ø10 H7/g6 » continue de le taper ; celui qui cherche déroule les
+ * listes. Le champ reste la seule chose que le moteur lit.
+ */
+.composer {
+  margin-top: var(--s-6);
+  padding-top: var(--s-5);
+  border-top: var(--bw-1) solid var(--line-faint);
+}
+
+.composer-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-5);
+  margin-bottom: var(--s-4);
+}
+
+.composer-title {
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.composer-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-4);
+  flex-wrap: wrap;
+}
+
+.composer-row > .field {
+  min-width: 130px;
+}
+
+.composer-sep {
+  align-self: center;
+  margin-top: 18px;
+  font-family: var(--font-mono);
+  font-size: var(--text-lg);
+  color: var(--ink-faint);
+}

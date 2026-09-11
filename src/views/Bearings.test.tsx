@@ -99,10 +99,19 @@ describe("écran des roulements", () => {
   it("propose les familles et les régimes du catalogue, pas une liste écrite à la main", async () => {
     await show();
 
+    // La liste est fermée au départ : on l'ouvre pour voir ce qu'elle propose.
     const families = screen.getByLabelText("Type de roulement");
+    await userEvent.click(families);
+
+    const listbox = await screen.findByRole("listbox");
     for (const family of catalogue.families) {
-      expect(within(families).getByText(family.name)).toBeInTheDocument();
+      expect(within(listbox).getByText(family.name)).toBeInTheDocument();
     }
+    // Et rien de plus : une option que le moteur n'a pas annoncée serait une
+    // famille inventée par l'interface.
+    expect(within(listbox).getAllByRole("option")).toHaveLength(
+      catalogue.families.length,
+    );
 
     // Le régime porte son explication : c'est elle qui permet de choisir, pas
     // son nom.

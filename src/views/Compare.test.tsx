@@ -10,7 +10,8 @@ import { userEvent } from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import fixture from "../fixtures/fit-comparison.json";
-import type { FitComparison } from "../types";
+import classesFixture from "../fixtures/tolerance-classes.json";
+import type { ClassCatalogue, FitComparison } from "../types";
 import { Compare } from "./Compare";
 
 vi.mock("../api", () => ({
@@ -19,10 +20,11 @@ vi.mock("../api", () => ({
   generalTolerances: vi.fn(),
   rescaleDiagram: vi.fn(),
   engineInfo: vi.fn(),
+  toleranceClasses: vi.fn(),
   isDesktop: () => true,
 }));
 
-const { compare } = await import("../api");
+const { compare, toleranceClasses } = await import("../api");
 
 async function show(comparison: FitComparison = fixture as FitComparison) {
   vi.mocked(compare).mockResolvedValue(comparison);
@@ -33,6 +35,7 @@ async function show(comparison: FitComparison = fixture as FitComparison) {
 describe("écran de comparaison", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(toleranceClasses).mockResolvedValue(classesFixture as ClassCatalogue);
   });
 
   it("compare dès l'ouverture, sans écran vide", async () => {
@@ -112,5 +115,44 @@ describe("écran de comparaison", () => {
     await waitFor(() =>
       expect(compare).toHaveBeenCalledWith("Ø50 H7/f7, H8/f7, H7/g6", undefined),
     );
+  });
+
+  it("compose une comparaison par lignes, sans rien taper", async () => {
+    await show();
+
+    // Une ligne vierge est là au départ. On choisit ses deux classes.
+    await userEvent.click(screen.getByLabelText("Alésage, ajustement 1"));
+    await userEvent.click(within(await screen.findByRole("listbox")).getByText("H7"));
+    await userEvent.click(screen.getByLabelText("Arbre, ajustement 1"));
+    await userEvent.click(within(await screen.findByRole("listbox")).getByText("g6"));
+
+    // Le composeur écrit dans la saisie : c'est elle qui reste la source de
+    // vérité, et le moteur en reste seul juge.
+    expect(screen.getByLabelText("Ajustements à comparer")).toHaveValue("Ø20 H7/g6");
+  });
+
+  it("ajoute et retire des lignes", async () => {
+    await show();
+
+    await userEvent.click(screen.getByRole("button", { name: /Ajouter un ajustement/ }));
+    expect(screen.getByLabelText("Alésage, ajustement 2")).toBeInTheDocument();
+
+    // Retirer la dernière ligne ne laisse pas un écran mort : la liste dit quoi
+    // faire, et le bouton d'ajout reste en place.
+    await userEvent.click(screen.getByRole("button", { name: /^Retirer l'ajustement 2$/ }));
+    await userEvent.click(screen.getByRole("button", { name: /^Retirer l'ajustement 1$/ }));
+    expect(screen.getByText(/Aucun ajustement composé/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Ajouter un ajustement/ })).toBeEnabled();
+  });
+
+  it("ignore une ligne incomplète plutôt que d'écrire une saisie bancale", async () => {
+    await show();
+
+    await userEvent.click(screen.getByLabelText("Alésage, ajustement 1"));
+    await userEvent.click(within(await screen.findByRole("listbox")).getByText("H7"));
+
+    // Une seule classe choisie : la dimension seule suffit, et le moteur n'a pas
+    // à recevoir « Ø20 H7/ ».
+    expect(screen.getByLabelText("Ajustements à comparer")).toHaveValue("Ø20 H7");
   });
 });

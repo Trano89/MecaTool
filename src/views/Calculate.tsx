@@ -5,13 +5,28 @@
  * détermine ce que MecaTool fait — calculer, vérifier ou chercher — et seul le
  * moteur sait la lire. Faire choisir un mode à l'utilisateur avant qu'il ait
  * tapé quoi que ce soit lui demanderait de savoir d'avance ce qu'il cherche.
+ *
+ * ## Le composeur, et pourquoi il n'a pas remplacé le champ
+ *
+ * Sous le champ, trois listes composent une désignation : le diamètre, la classe
+ * d'alésage, la classe d'arbre. Elles **écrivent dans le champ**, elles ne s'y
+ * substituent pas.
+ *
+ * C'est délibéré. Un ingénieur qui sait taper « Ø10 H7/g6 » le tape plus vite
+ * qu'il ne déroule trois listes ; celui qui ne connaît pas les classes
+ * disponibles ne peut pas les deviner — il y en a deux cents, et dix lettres
+ * seulement sur vingt-huit sont embarquées. Les deux chemins mènent au même
+ * champ, et c'est ce champ, et lui seul, que le moteur lit. Il n'existe donc
+ * jamais deux états à tenir d'accord.
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { analyse, rescaleDiagram } from "../api";
+import { CLASSES_UNAVAILABLE, classOptions, useToleranceClasses } from "../components/classes";
 import { DiagramView } from "../components/DiagramView";
 import { FeatureBlock } from "../components/FeatureBlock";
+import { Select } from "../components/Select";
 import { SolutionsTable } from "../components/SolutionsTable";
 import { StatusBox } from "../components/StatusBox";
 import { Why } from "../components/Why";
@@ -39,6 +54,22 @@ const EXAMPLES: ReadonlyArray<{ label: string; query: Query; why: string }> = [
   { label: "Ø20 H7/p6", query: { input: "Ø20 H7/p6", clearance: "" }, why: "un serrage" },
 ];
 
+/**
+ * Assemble une désignation à partir de ce qui a été choisi.
+ *
+ * Les quatre formes correspondent aux quatre choses que le moteur sait faire :
+ * un ajustement, un élément seul (alésage ou arbre), ou une dimension nue —
+ * qui déclenche la recherche de solutions. Aucune règle normative ici : c'est
+ * de la mise en forme de chaîne, et le parseur du moteur reste seul juge de ce
+ * qu'elle vaut.
+ */
+function composeDesignation(diameter: string, hole: string | null, shaft: string | null): string {
+  const size = diameter.trim();
+  if (size === "") return "";
+  const classes = [hole, shaft].filter((part): part is string => part !== null && part !== "");
+  return classes.length === 0 ? `Ø${size}` : `Ø${size} ${classes.join("/")}`;
+}
+
 export function Calculate({ query, onQueryChange }: Props) {
   const [report, setReport] = useState<Report | null>(null);
   const [error, setError] = useState<AppError | null>(null);
@@ -46,6 +77,24 @@ export function Calculate({ query, onQueryChange }: Props) {
   const [trueToScale, setTrueToScale] = useState(false);
   const [diagram, setDiagram] = useState<Diagram | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // L'état du composeur. Il ne reflète pas le champ — il l'alimente. Rien ne
+  // permettrait de faire l'inverse sans écrire un parseur dans l'interface, ce
+  // qui est exactement ce que ce projet refuse.
+  const catalogue = useToleranceClasses();
+  const [diameter, setDiameter] = useState("20");
+  const [hole, setHole] = useState<string | null>(null);
+  const [shaft, setShaft] = useState<string | null>(null);
+
+  const compose = (next: { diameter?: string; hole?: string | null; shaft?: string | null }) => {
+    const size = next.diameter ?? diameter;
+    const holeClass = next.hole === undefined ? hole : next.hole;
+    const shaftClass = next.shaft === undefined ? shaft : next.shaft;
+    if (next.diameter !== undefined) setDiameter(next.diameter);
+    if (next.hole !== undefined) setHole(next.hole);
+    if (next.shaft !== undefined) setShaft(next.shaft);
+    onQueryChange({ ...query, input: composeDesignation(size, holeClass, shaftClass) });
+  };
 
   const run = useCallback(
     async (next: Query) => {
@@ -148,6 +197,71 @@ export function Calculate({ query, onQueryChange }: Props) {
               {busy ? "Calcul…" : "Calculer"}
             </button>
           </div>
+        </div>
+
+        <div className="composer">
+          <div className="composer-head">
+            <span className="composer-title">Composer une désignation</span>
+            <span className="faint">Écrit dans le champ ci-dessus</span>
+          </div>
+
+          <div className="composer-row">
+            <div className="field" style={{ minWidth: "120px" }}>
+              {/* Le diamètre reste une saisie libre : le moteur accepte toute
+                  dimension de sa plage, et une liste de diamètres « usuels »
+                  serait une valeur normative inventée dans l'interface. */}
+              <label htmlFor="composer-diameter">Diamètre (mm)</label>
+              <input
+                id="composer-diameter"
+                type="text"
+                value={diameter}
+                placeholder="20"
+                autoComplete="off"
+                spellCheck={false}
+                onChange={(event) => compose({ diameter: event.target.value })}
+              />
+            </div>
+
+            <Select
+              id="composer-hole"
+              label="Classe d'alésage"
+              options={classOptions(catalogue?.hole)}
+              value={hole}
+              onChange={(value) => compose({ hole: value })}
+              placeholder="H7…"
+              emptyNote={CLASSES_UNAVAILABLE}
+            />
+
+            <span className="composer-sep" aria-hidden="true">
+              /
+            </span>
+
+            <Select
+              id="composer-shaft"
+              label="Classe d'arbre"
+              options={classOptions(catalogue?.shaft)}
+              value={shaft}
+              onChange={(value) => compose({ shaft: value })}
+              placeholder="g6…"
+              emptyNote={CLASSES_UNAVAILABLE}
+            />
+
+            <div className="field">
+              <span className="field-label field-spacer" aria-hidden="true" />
+              <button
+                type="button"
+                className="btn-quiet"
+                onClick={() => compose({ hole: null, shaft: null })}
+              >
+                Sans classe
+              </button>
+            </div>
+          </div>
+
+          <p className="hint">
+            Laisser les deux classes vides cherche les ajustements qui répondent à un jeu ; n'en
+            remplir qu'une calcule cet élément seul.
+          </p>
         </div>
 
         <div className="chips">

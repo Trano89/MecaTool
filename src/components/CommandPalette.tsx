@@ -15,10 +15,11 @@
  * encore », jamais « ça n'existe pas ».
  */
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { Domain } from "../types";
 import { HomeIcon, SearchIcon } from "./icons";
+import { useListboxKeys } from "./listbox";
 import { HOME, iconFor, isAvailable, matches, type Screen } from "./navigation";
 
 interface Props {
@@ -87,32 +88,26 @@ export function CommandPalette({ open, domains, onClose, onNavigate }: Props) {
     setActive(0);
   }, [query]);
 
-  if (!open) return null;
-
-  const choose = (id: Screen) => {
-    onNavigate(id);
-    onClose();
-  };
-
-  const onKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Escape") {
-      event.preventDefault();
+  const choose = useCallback(
+    (entry: Entry) => {
+      onNavigate(entry.id);
       onClose();
-      return;
-    }
-    if (reachable.length === 0) return;
-    if (event.key === "ArrowDown") {
-      event.preventDefault();
-      setActive((index) => (index + 1) % reachable.length);
-    } else if (event.key === "ArrowUp") {
-      event.preventDefault();
-      setActive((index) => (index - 1 + reachable.length) % reachable.length);
-    } else if (event.key === "Enter") {
-      event.preventDefault();
-      const picked = reachable[active] ?? reachable[0];
-      if (picked) choose(picked.id);
-    }
-  };
+    },
+    [onNavigate, onClose],
+  );
+
+  // Flèches, Entrée, Échap, Tab : la même mécanique que la liste de sélection,
+  // et le même code. Deux listes navigables au clavier dans la même application
+  // doivent se comporter à l'identique.
+  const onKeyDown = useListboxKeys({
+    items: reachable,
+    active,
+    setActive,
+    onChoose: choose,
+    onDismiss: onClose,
+  });
+
+  if (!open) return null;
 
   return (
     <div
@@ -163,7 +158,7 @@ export function CommandPalette({ open, domains, onClose, onNavigate }: Props) {
                 role="option"
                 aria-selected={index === active}
                 onMouseEnter={() => setActive(index)}
-                onClick={() => choose(entry.id)}
+                onClick={() => choose(entry)}
               >
                 <span className="nav-icon">
                   <entry.icon />

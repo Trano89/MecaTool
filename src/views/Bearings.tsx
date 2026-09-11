@@ -27,6 +27,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { bearingAdvise, bearingCatalogue, bearingOptions, bearingRead } from "../api";
+import { Select } from "../components/Select";
 import { FeatureBlock } from "../components/FeatureBlock";
 import { SourceTag, Sources } from "../components/Sources";
 import { StatusBox } from "../components/StatusBox";
@@ -258,22 +259,25 @@ export function Bearings() {
             <span className="card-title">Conditions de montage</span>
           </header>
 
-          <div className="field" style={{ maxWidth: "420px", marginBottom: "var(--s-6)" }}>
-            <label htmlFor="bearing-family">Type de roulement</label>
-            <select
+          <div style={{ maxWidth: "420px", marginBottom: "var(--s-6)" }}>
+            {/* La même liste que partout ailleurs. Quatre familles seulement, donc
+                la recherche n'y sert guère — mais une liste qui se manie autrement
+                que ses voisines coûte plus cher à l'usage que le champ de
+                recherche ne coûte à l'écran. Les noms viennent du moteur. */}
+            <Select
               id="bearing-family"
-              value={family}
-              onChange={(event) => {
-                setFamily(event.target.value);
+              label="Type de roulement"
+              options={catalogue.families.map((option) => ({
+                value: option.id,
+                label: option.name,
+              }))}
+              value={family === "" ? null : family}
+              onChange={(value) => {
+                setFamily(value);
                 setAdvice(null);
               }}
-            >
-              {catalogue.families.map((option) => (
-                <option key={option.id} value={option.id}>
-                  {option.name}
-                </option>
-              ))}
-            </select>
+              placeholder="Choisir un type…"
+            />
             {chosenFamily?.note ? <p className="hint">{chosenFamily.note}</p> : null}
           </div>
 

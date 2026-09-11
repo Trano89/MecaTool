@@ -867,12 +867,17 @@ mod tests {
 
         // Le registre : c'est lui qui construit la navigation, il doit donc
         // traverser la frontière sous une forme que l'interface sait typer.
-        // Le catalogue de classes est volumineux (dix lettres par vingt degrés,
-        // deux fois). L'échantillon n'a besoin que de la *forme* : on garde les
-        // premières entrées de chaque liste, ce qui laisse le fichier lisible.
+        // Le catalogue de classes est volumineux : dix lettres par vingt degrés,
+        // deux fois. L'échantillon n'a besoin que de la *forme*, mais tronquer
+        // en tête ne garderait qu'une seule lettre — un échantillon qui ne
+        // montrerait pas la variété qu'il est censé représenter. On retient donc
+        // deux degrés, ce qui traverse toutes les lettres.
         let mut classes = tolerance_classes().unwrap();
-        classes.hole.truncate(4);
-        classes.shaft.truncate(4);
+        let sample = |list: &mut Vec<ClassOption>| {
+            list.retain(|option| option.grade == "IT6" || option.grade == "IT7");
+        };
+        sample(&mut classes.hole);
+        sample(&mut classes.shaft);
         let classes = serde_json::to_string_pretty(&classes).expect("sérialisation");
         std::fs::write(
             dir.join("tolerance-classes.json"),

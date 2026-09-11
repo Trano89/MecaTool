@@ -15,6 +15,8 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { dimensionChain } from "../api";
+import { nextRowId, type Row, RowList } from "../components/RowList";
+import { type Option, Select } from "../components/Select";
 import { StatusBox } from "../components/StatusBox";
 import { Why } from "../components/Why";
 import { mm } from "../format";
@@ -22,13 +24,69 @@ import type { AppError, ChainReport, ContributionChart } from "../types";
 
 const DEFAULT_CHAIN = "A = 20 ±0.1\nB = 10 ±0.05\n-C = 5 ±0.02";
 
+/** Un maillon en cours de composition. */
+interface LinkRow extends Row {
+  label: string;
+  nominal: string;
+  tolerance: string;
+  decreasing: boolean;
+}
+
+/**
+ * Le sens d'un maillon.
+ *
+ * Deux valeurs seulement, mais une liste plutôt qu'une case à cocher : « le
+ * signe moins devant le repère marque un maillon diminuant » est une convention
+ * d'écriture qu'il faut connaître. Deux libellés en toutes lettres la rendent
+ * inutile à connaître.
+ */
+const DIRECTIONS: ReadonlyArray<Option> = [
+  { value: "increasing", label: "Croissant", hint: "s'ajoute" },
+  { value: "decreasing", label: "Diminuant", hint: "se retranche" },
+];
+
+/**
+ * Assemble la saisie à partir des maillons.
+ *
+ * Mise en forme de chaîne, rien d'autre : la grammaire est celle que le parseur
+ * du moteur attend déjà. Un maillon sans nominal est ignoré plutôt que rendu
+ * sous une forme que le moteur refuserait.
+ */
+function composeChain(rows: readonly LinkRow[]): string {
+  return rows
+    .filter((row) => row.nominal.trim() !== "")
+    .map((row) => {
+      const sign = row.decreasing ? "-" : "";
+      const name = row.label.trim();
+      const head = name === "" ? "" : `${sign}${name} = `;
+      // Sans repère, le signe se porte sur le nominal : le moteur nomme alors
+      // le maillon lui-même, A, B, C…
+      const nominal = name === "" ? `${sign}${row.nominal.trim()}` : row.nominal.trim();
+      const tolerance = row.tolerance.trim();
+      return tolerance === "" ? `${head}${nominal}` : `${head}${nominal} ${tolerance}`;
+    })
+    .join("\n");
+}
+
 export function Chain() {
   const [input, setInput] = useState(DEFAULT_CHAIN);
+  // Le composeur est replie par defaut : la saisie directe est plus rapide pour
+  // qui connait la grammaire, et l'ouvrir d'office encombrerait l'ecran de
+  // celui-la. Il s'ouvre a la demande.
+  const [composing, setComposing] = useState(false);
+  const [rows, setRows] = useState<LinkRow[]>([]);
   const [minimum, setMinimum] = useState("");
   const [maximum, setMaximum] = useState("");
   const [statistical, setStatistical] = useState(false);
   const [report, setReport] = useState<ChainReport | null>(null);
   const [error, setError] = useState<AppError | null>(null);
+
+  // Le composeur ecrit dans la saisie, il ne la reflete pas : remonter du texte
+  // vers les lignes demanderait un parseur dans l'interface.
+  const compose = (next: LinkRow[]) => {
+    setRows(next);
+    setInput(composeChain(next));
+  };
 
   const run = useCallback(
     async (chain: string, options: { statistical: boolean; min: string; max: string }) => {
@@ -94,6 +152,18 @@ export function Chain() {
           </div>
 
           <div className="field" style={{ minWidth: "170px" }}>
+            <span className="field-label field-spacer" aria-hidden="true" />
+            <button
+              type="button"
+              className="btn-quiet"
+              aria-expanded={composing}
+              onClick={() => setComposing((open) => !open)}
+            >
+              {composing ? "Masquer le composeur" : "Composer les maillons"}
+            </button>
+          </div>
+
+          <div className="field" style={{ minWidth: "170px" }}>
             <label htmlFor="min">Minimum voulu (mm)</label>
             <input
               id="min"
@@ -123,6 +193,93 @@ export function Chain() {
             </button>
           </div>
         </div>
+
+        {composing ? (
+          <div className="composer">
+            <div className="composer-head">
+              <span className="composer-title">Composer les maillons</span>
+              <span className="faint">Écrit dans le champ ci-dessus</span>
+            </div>
+
+            <RowList
+              legend="Maillons"
+              items={rows}
+              onChange={compose}
+              create={() => ({
+                id: nextRowId(),
+                label: "",
+                nominal: "",
+                tolerance: "±0.1",
+                decreasing: false,
+              })}
+              addLabel="Ajouter un maillon"
+              emptyNote="Aucun maillon composé. Ajoutez une ligne, ou écrivez directement dans le champ ci-dessus."
+              describe={(row, index) =>
+                row.label.trim() === ""
+                  ? `le maillon ${index + 1}`
+                  : `le maillon ${row.label.trim()}`
+              }
+              renderRow={(row, index, update) => (
+                <>
+                  <div className="field" style={{ maxWidth: "90px" }}>
+                    <label htmlFor={`link-label-${row.id}`} className="visually-hidden">
+                      Repère du maillon {index + 1}
+                    </label>
+                    <input
+                      id={`link-label-${row.id}`}
+                      type="text"
+                      value={row.label}
+                      placeholder="A"
+                      autoComplete="off"
+                      spellCheck={false}
+                      onChange={(event) => update({ ...row, label: event.target.value })}
+                    />
+                  </div>
+
+                  <div className="field" style={{ maxWidth: "120px" }}>
+                    <label htmlFor={`link-nominal-${row.id}`} className="visually-hidden">
+                      Cote nominale du maillon {index + 1}
+                    </label>
+                    <input
+                      id={`link-nominal-${row.id}`}
+                      type="text"
+                      value={row.nominal}
+                      placeholder="20"
+                      autoComplete="off"
+                      spellCheck={false}
+                      onChange={(event) => update({ ...row, nominal: event.target.value })}
+                    />
+                  </div>
+
+                  <div className="field" style={{ maxWidth: "150px" }}>
+                    <label htmlFor={`link-tol-${row.id}`} className="visually-hidden">
+                      Tolérance du maillon {index + 1}
+                    </label>
+                    <input
+                      id={`link-tol-${row.id}`}
+                      type="text"
+                      value={row.tolerance}
+                      placeholder="±0.1"
+                      autoComplete="off"
+                      spellCheck={false}
+                      onChange={(event) => update({ ...row, tolerance: event.target.value })}
+                    />
+                  </div>
+
+                  <Select
+                    id={`link-dir-${row.id}`}
+                    label={`Sens du maillon ${index + 1}`}
+                    hideLabel
+                    options={DIRECTIONS}
+                    value={row.decreasing ? "decreasing" : "increasing"}
+                    onChange={(value) => update({ ...row, decreasing: value === "decreasing" })}
+                  />
+                </>
+              )}
+              hint="Repère, cote nominale, tolérance, sens. Un maillon sans cote nominale est ignoré."
+            />
+          </div>
+        ) : null}
       </form>
 
       {error ? (

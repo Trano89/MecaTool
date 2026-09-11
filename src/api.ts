@@ -12,6 +12,7 @@ import type {
   AppError,
   BearingCatalogue,
   ChainReport,
+  ClassCatalogue,
   ClassComparison,
   DesignationReading,
   Diagram,
@@ -231,4 +232,15 @@ export function bearingAdvise(
   boreMm: string,
 ): Promise<MountingAdvice> {
   return call<MountingAdvice>("bearing_advise", { regime, condition, family, boreMm });
+}
+
+/**
+ * Les classes de tolerance que l'interface peut proposer.
+ *
+ * Lue une fois par ecran qui en a besoin. Le moteur ne rend que les lettres
+ * dont il possede les ecarts fondamentaux : proposer les autres reviendrait a
+ * offrir un calcul qui echouera.
+ */
+export function toleranceClasses(): Promise<ClassCatalogue> {
+  return call<ClassCatalogue>("tolerance_classes", {});
 }

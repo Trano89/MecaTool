@@ -32,6 +32,7 @@
  */
 
 import type { Domain, DomainGroup } from "../types";
+import { matchesQuery } from "./listbox";
 import {
   BearingIcon,
   ChainIcon,
@@ -141,24 +142,10 @@ export function domainOf(domains: Domain[], screen: Screen): Domain | undefined 
  *
  * La recherche porte sur le **nom** et sur la **question** : on cherche souvent
  * ce qu'on veut obtenir (« jeu ») plutôt que le nom du module (« ajustements »).
- * Les accents sont neutralisés — personne ne tape « tolérancement » avec son
- * accent dans une palette.
+ * Le filtrage lui-même — mots, accents, casse — est celui de `listbox.ts`, que
+ * la liste de selection emploie aussi : deux champs de recherche dans la meme
+ * application doivent se comporter pareil.
  */
 export function matches(domain: Domain, query: string): boolean {
-  const needle = fold(query);
-  if (needle === "") return true;
-  return needle
-    .split(/\s+/)
-    .every(
-      (word) =>
-        fold(domain.name).includes(word) || fold(domain.question).includes(word),
-    );
-}
-
-function fold(text: string): string {
-  return text
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .toLowerCase()
-    .trim();
+  return matchesQuery([domain.name, domain.question], query);
 }

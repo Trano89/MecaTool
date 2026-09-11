@@ -10,19 +10,21 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import classesFixture from "../fixtures/tolerance-classes.json";
 import fitFixture from "../fixtures/fit-report.json";
 import searchFixture from "../fixtures/search-report.json";
-import type { Report } from "../types";
+import type { ClassCatalogue, Report } from "../types";
 import { Calculate } from "./Calculate";
 
 vi.mock("../api", () => ({
   analyse: vi.fn(),
   rescaleDiagram: vi.fn(),
   engineInfo: vi.fn(),
+  toleranceClasses: vi.fn(),
   isDesktop: () => true,
 }));
 
-const { analyse } = await import("../api");
+const { analyse, toleranceClasses } = await import("../api");
 
 async function calculate(report: Report, query = { input: "Ø10 H7/g6", clearance: "2..40" }) {
   vi.mocked(analyse).mockResolvedValue(report);
@@ -34,6 +36,9 @@ async function calculate(report: Report, query = { input: "Ø10 H7/g6", clearanc
 describe("écran de calcul", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Le composeur lit les classes disponibles au montage. L'échantillon est
+    // celui que le moteur exporte : l'interface n'en écrit aucune.
+    vi.mocked(toleranceClasses).mockResolvedValue(classesFixture as ClassCatalogue);
   });
 
   it("affiche les deux éléments d'un ajustement avec leurs cotes exactes", async () => {
