@@ -20,6 +20,19 @@ const FOOTER_HEIGHT: f64 = 74.0;
 /// Longueur maximale d'une ligne de l'annonce, en caracteres.
 const NOTE_WRAP: usize = 92;
 
+/// Les couleurs du dessin exporte.
+///
+/// Un SVG exporte est autonome : il part chez quelqu'un qui n'a ni
+/// l'application ni sa feuille de style, donc ses couleurs s'y ecrivent en dur.
+/// Mais le meme dessin s'affiche aussi a l'ecran, ou ce sont les jetons CSS qui
+/// le colorent — deux endroits pour une meme intention, libres de diverger.
+///
+/// Le test `les_couleurs_du_dessin_suivent_les_jetons_de_l_interface` confronte
+/// les deux : si un jeton change sans que cette constante suive, il echoue. Un
+/// dessin exporte et le meme a l'ecran doivent se ressembler.
+///
+/// L'export reste en couleurs claires quel que soit le theme : un fichier envoye
+/// a un tiers, ou imprime, n'a pas de theme.
 const HOLE_COLOUR: &str = "#2563eb";
 const SHAFT_COLOUR: &str = "#c2410c";
 const INK: &str = "#1f2937";
@@ -387,5 +400,48 @@ mod tests {
             assert!(line.chars().count() <= 12, "ligne trop longue : {line:?}");
         }
         assert_eq!(lines.join(" "), "un deux trois quatre cinq six sept");
+    }
+
+    /// Les couleurs de l'export doivent suivre celles de l'interface.
+    ///
+    /// Le dessin existe a deux endroits : exporte en SVG autonome, et affiche a
+    /// l'ecran par la feuille de style. Rien n'oblige structurellement les deux
+    /// a s'accorder — ce test si. Il lit les jetons du theme clair et les
+    /// confronte aux constantes ci-dessus.
+    ///
+    /// Le theme clair et lui seul : un fichier envoye a un tiers, ou imprime,
+    /// n'a pas de theme.
+    #[test]
+    fn les_couleurs_du_dessin_suivent_les_jetons_de_l_interface() {
+        let stylesheet =
+            std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../src/styles.css");
+        let Ok(css) = std::fs::read_to_string(&stylesheet) else {
+            // La feuille de style appartient a l'application, pas au moteur :
+            // le crate doit rester compilable seul, sans elle.
+            return;
+        };
+
+        // On ne lit que le premier bloc `:root`, celui du theme clair. Les
+        // redefinitions sombres viennent plus loin et ne concernent pas l'export.
+        let light = css.split("@media").next().unwrap_or(&css);
+
+        let token = |name: &str| -> Option<String> {
+            let needle = format!("--{name}:");
+            let start = light.find(&needle)? + needle.len();
+            let rest = &light[start..];
+            let end = rest.find(';')?;
+            Some(rest[..end].trim().to_ascii_lowercase())
+        };
+
+        for (name, constant) in [("hole-solid", HOLE_COLOUR), ("shaft-solid", SHAFT_COLOUR)] {
+            let Some(value) = token(name) else {
+                panic!("jeton --{name} introuvable dans la feuille de style");
+            };
+            assert_eq!(
+                value,
+                constant.to_ascii_lowercase(),
+                "le jeton --{name} et la constante de l'export ont diverge :                  un dessin exporte ne ressemblerait plus au meme dessin a l'ecran"
+            );
+        }
     }
 }
