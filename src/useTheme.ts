@@ -10,7 +10,7 @@ import { useCallback, useEffect, useState } from "react";
 
 export type Theme = "light" | "dark" | "system";
 
-const STORAGE_KEY = "mecatol.theme";
+const STORAGE_KEY = "mecatool.theme";
 
 export const THEME_LABEL: Record<Theme, string> = {
   light: "Clair",

@@ -9,25 +9,25 @@
 //! Rust. Renommer a la volee ferait diverger silencieusement les deux cotes le
 //! jour ou un champ change de nom.
 
-use mecatol_core::{Conclusion, DeviationLetter, Length, Provenance, Unit};
-use mecatol_engine::chain::{
+use mecatool_core::{Conclusion, DeviationLetter, Length, Provenance, Unit};
+use mecatool_engine::chain::{
     analyse_chain, contribution_chart, verify_chain, ChainAnalysis, ContributionChart,
 };
-use mecatol_engine::compare::{compare_fits, FitComparison};
-use mecatol_engine::diagram::{fit_diagram, Diagram, DiagramMode, DiagramOptions};
-use mecatol_engine::iso2768::{ClassComparison, Iso2768Engine};
-use mecatol_engine::iso286::{
+use mecatool_engine::compare::{compare_fits, FitComparison};
+use mecatool_engine::diagram::{fit_diagram, Diagram, DiagramMode, DiagramOptions};
+use mecatool_engine::iso2768::{ClassComparison, Iso2768Engine};
+use mecatool_engine::iso286::{
     classification_conclusion, FeatureAnalysis, FitAnalysis, Iso286Engine,
 };
-use mecatol_engine::parser::{
+use mecatool_engine::parser::{
     parse, parse_chain, parse_clearance_window, parse_comparison, ParsedInput,
 };
-use mecatol_engine::requirement::{verify_clearance, ClearanceRequirement, Verification};
-use mecatol_engine::search::{find_fits, SearchOptions, SearchResult};
-use mecatol_engine::geometric::{GeometricEngine, GroupAnalysis};
-use mecatol_engine::EngineError;
-use mecatol_standards::iso2768::MeasureKind;
-use mecatol_standards::{Characteristic, FamilyDefinition, Modifier};
+use mecatool_engine::requirement::{verify_clearance, ClearanceRequirement, Verification};
+use mecatool_engine::search::{find_fits, SearchOptions, SearchResult};
+use mecatool_engine::geometric::{GeometricEngine, GroupAnalysis};
+use mecatool_engine::EngineError;
+use mecatool_standards::iso2768::MeasureKind;
+use mecatool_standards::{Characteristic, FamilyDefinition, Modifier};
 use serde::{Deserialize, Serialize};
 
 /// Une erreur telle que l'interface doit la presenter.
@@ -202,7 +202,7 @@ pub fn geometric(specs: Vec<String>) -> Result<GroupAnalysis, AppError> {
         .iter()
         .filter(|s| !s.trim().is_empty())
         .map(|s| engine.parse(s))
-        .collect::<mecatol_engine::Result<Vec<_>>>()?;
+        .collect::<mecatool_engine::Result<Vec<_>>>()?;
     Ok(engine.analyse_group(&parsed)?)
 }
 
@@ -365,7 +365,7 @@ pub fn analyse(
                     message: format!("« {input} » ne donne qu'une dimension nominale."),
                     hint: Some(
                         "Ajoutez une classe de tolérance pour calculer, par exemple \
-                         « H7/g6 », ou indiquez le jeu recherché pour que Mecatol \
+                         « H7/g6 », ou indiquez le jeu recherché pour que MecaTool \
                          propose des solutions."
                             .to_string(),
                     ),
@@ -466,7 +466,7 @@ mod tests {
             panic!("un ajustement était attendu");
         };
         let verification = fit.verification.expect("un verdict était attendu");
-        assert_eq!(verification.verdict, mecatol_core::Verdict::Compatible);
+        assert_eq!(verification.verdict, mecatool_core::Verdict::Compatible);
     }
 
     #[test]
@@ -550,7 +550,7 @@ mod tests {
         // Sans exigence, le moteur ne se prononce pas.
         assert_eq!(
             report.conclusion.verdict,
-            mecatol_core::Verdict::InsufficientData
+            mecatool_core::Verdict::InsufficientData
         );
         // L'estimation statistique n'est pas faite sans qu'on la demande.
         assert!(report.analysis.statistical.is_none());
@@ -565,7 +565,7 @@ mod tests {
             Some("30.2".into()),
         )
         .unwrap();
-        assert_eq!(report.conclusion.verdict, mecatol_core::Verdict::Compatible);
+        assert_eq!(report.conclusion.verdict, mecatool_core::Verdict::Compatible);
     }
 
     #[test]
@@ -604,7 +604,7 @@ mod tests {
         assert!(comparison.entries.iter().all(|e| e.verification.is_some()));
         assert_eq!(
             comparison.entries[0].verification.as_ref().unwrap().verdict,
-            mecatol_core::Verdict::Compatible
+            mecatool_core::Verdict::Compatible
         );
     }
 

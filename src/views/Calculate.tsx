@@ -2,7 +2,7 @@
  * L'écran de calcul.
  *
  * Un seul champ de désignation, un champ de jeu facultatif. C'est la saisie qui
- * détermine ce que Mecatol fait — calculer, vérifier ou chercher — et seul le
+ * détermine ce que MecaTool fait — calculer, vérifier ou chercher — et seul le
  * moteur sait la lire. Faire choisir un mode à l'utilisateur avant qu'il ait
  * tapé quoi que ce soit lui demanderait de savoir d'avance ce qu'il cherche.
  */

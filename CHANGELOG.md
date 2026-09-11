@@ -28,7 +28,7 @@ Trois particularités de cette norme, portées par le code plutôt que subies :
 | Échelons **ouverts** (« au-delà de 6 ») | Borne haute optionnelle, validée comme dernière seulement |
 | Tolérances angulaires **décroissantes** avec la taille | Monotonie inversée dans la validation de cette table |
 
-En dessous de 0,5 mm, la norme renvoie à une cotation individuelle : Mecatol
+En dessous de 0,5 mm, la norme renvoie à une cotation individuelle : MecaTool
 refuse de conclure et le dit, en citant la norme.
 
 ### Ajouté — version 0.1
@@ -68,7 +68,7 @@ refuse de conclure et le dit, en citant la norme.
 - Application de bureau Tauri + React : accueil, calcul, recherche.
 - Thème clair, sombre ou système.
 - Bandeau permanent sur l'état de vérification des données normatives.
-- Outil de vérification en ligne de commande (`mecatol-cli`).
+- Outil de vérification en ligne de commande (`mecatool-cli`).
 
 **Vérification des données**
 

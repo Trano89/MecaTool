@@ -79,7 +79,7 @@ describe("écran des chaînes de cotes", () => {
     const note = screen.getByRole("note");
     expect(note).toHaveTextContent("CE QUE CETTE ESTIMATION SUPPOSE");
     expect(note).toHaveTextContent("indépendantes");
-    expect(note).toHaveTextContent("n'est vérifiée par Mecatol");
+    expect(note).toHaveTextContent("n'est vérifiée par MecaTool");
     // Elles ne sont pas dans un <details> : elles se voient sans action.
     expect(note.closest("details")).toBeNull();
   });

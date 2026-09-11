@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Mecatol",
+  "productName": "MecaTool",
   "version": "0.1.0",
-  "identifier": "app.mecatol.desktop",
+  "identifier": "app.mecatool.desktop",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Mecatol",
+        "title": "MecaTool",
         "width": 1240,
         "height": 840,
         "minWidth": 920,
@@ -30,7 +30,7 @@
     "targets": "all",
     "category": "Utility",
     "shortDescription": "Assistant de tolérancement mécanique",
-    "longDescription": "Mecatol calcule, vérifie et explique les tolérances et ajustements mécaniques normalisés.",
+    "longDescription": "MecaTool calcule, vérifie et explique les tolérances et ajustements mécaniques normalisés.",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",

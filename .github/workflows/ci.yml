@@ -40,7 +40,7 @@ jobs:
       # Les tables sont validees au chargement : echelons contigus, monotonie,
       # signes, recoupements croises entre tables saisies separement.
       - name: Invariants des tables
-        run: cargo test -p mecatol-standards -- --nocapture
+        run: cargo test -p mecatool-standards -- --nocapture
       - name: JSON bien forme
         run: |
           for f in data/**/*.json; do

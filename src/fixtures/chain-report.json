@@ -67,7 +67,7 @@
         "Chaque cote est centrée sur son nominal.",
         "Chaque cote suit une distribution normale dont la tolérance couvre ± 3 écarts-types.",
         "Le procédé est stable et sous contrôle.",
-        "Aucune de ces hypothèses n'est vérifiée par Mecatol : sans relevé de fabrication, l'estimation reste une hypothèse."
+        "Aucune de ces hypothèses n'est vérifiée par MecaTool : sans relevé de fabrication, l'estimation reste une hypothèse."
       ]
     },
     "steps": [

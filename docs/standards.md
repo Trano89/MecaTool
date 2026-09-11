@@ -1,9 +1,9 @@
 # Données normatives et protocole de vérification
 
-Ce document décrit comment Mecatol stocke les valeurs issues des normes, et
+Ce document décrit comment MecaTool stocke les valeurs issues des normes, et
 comment une valeur passe de « saisie » à « vérifiée ». C'est le document le plus
 important du projet : tout le reste est de la mécanique logicielle, celui-ci
-porte la règle absolue de Mecatol.
+porte la règle absolue de MecaTool.
 
 ## La règle
 
@@ -43,13 +43,21 @@ signifierait que quelqu'un a régénéré la table au lieu de la transcrire.
 
 ```
 data/
-└── iso286/
-    ├── iso286-1-2010.it-grades.json          degrés IT01 à IT18
-    └── iso286-1-2010.shaft-deviations.json   écarts fondamentaux des arbres
+├── iso286/
+│   ├── iso286-1-2010.it-grades.json          degrés IT01 à IT18
+│   └── iso286-1-2010.shaft-deviations.json   écarts fondamentaux des arbres
+├── iso2768/
+│   └── iso2768-1-1989.general-tolerances.json   tolérances générales
+└── iso1101/
+    └── iso1101.geometric-characteristics.json   caractéristiques géométriques
 ```
 
+Le fichier ISO 1101 n'a **pas de millésime dans son nom**, à la différence des
+autres. Ce n'est pas un oubli : la source le cite sans année, et MecaTool ne
+l'invente pas. Voir « Sources secondaires » plus bas.
+
 Les fichiers sont **séparés du code** et **inclus à la compilation**
-(`include_str!`). Mecatol calcule donc sans accès disque ni réseau, et ne peut
+(`include_str!`). MecaTool calcule donc sans accès disque ni réseau, et ne peut
 pas démarrer avec une table manquante.
 
 Le nom d'un fichier porte la norme, la partie et l'**édition**. Une nouvelle
@@ -88,6 +96,49 @@ Cet état remonte jusqu'à l'utilisateur. Un résultat calculé à partir d'un j
 `Provenance::is_fully_verified()` n'est vrai que si **toutes** les sources d'un
 calcul le sont. Une seule source douteuse contamine le résultat entier.
 
+## Sources secondaires
+
+Entre « confronté à la norme » et « pas encore vérifié » il existe un troisième
+cas, et l'ignorer conduirait à mentir dans un sens ou dans l'autre.
+
+Une donnée peut venir d'un **recueil technique** qui reproduit la norme : un
+manuel professionnel, lu avec soin, mais qui n'est pas la norme. La ranger sous
+`verified` reviendrait à citer une norme qu'on n'a pas ouverte. La ranger sous
+`unverified` reviendrait à dire qu'on n'a rien fait. D'où un troisième état :
+
+```json
+"verification": {
+  "state": "secondary",
+  "from": "VSM « Extrait de normes » 2022, chapitre 2, pages 174 à 189",
+  "reproduces": "SN EN ISO 1101",
+  "on": "2026-09-11"
+}
+```
+
+Il **compte comme non vérifié** pour l'affichage, mais avec son propre message :
+
+```
+/!\  ISO 1101 (classement, symboles, exigence de référence et forme des zones) :
+     Donnée transcrite d'un recueil technique, non confrontée à la norme
+     elle-même. Source : VSM « Extrait de normes » 2022, chapitre 2, pages 174
+     à 189, qui reproduit SN EN ISO 1101.
+```
+
+Deux conséquences de forme s'ensuivent :
+
+**Le millésime peut rester vide.** Le recueil cite « SN EN ISO 1101 » sans
+année. `citation()` rend alors `ISO 1101` tout court, et non `ISO 1101:` — un
+deux-points pendant se lirait comme un millésime perdu, pas comme un millésime
+inconnu. Le contenu relevé (élément unifié UF, zones combinées CZ et séparées
+SZ, composants d'association C, G, N, T, X) correspond visiblement à une édition
+récente, mais MecaTool n'en déduit pas d'année.
+
+**La réserve ne remonte pas au bandeau global.** Elle s'affiche sur l'écran
+concerné, dès son ouverture. L'ISO 286 et l'ISO 2768 sont confrontées à leur
+source primaire : jeter un doute sur elles diluerait celui qui est mérité
+ailleurs. Un avertissement affiché partout finit par ne plus rien vouloir dire
+nulle part.
+
 ## État actuel
 
 | Jeu de données                | État | Couverture | Vérifié contre |
@@ -95,6 +146,7 @@ calcul le sont. Une seule source douteuse contamine le résultat entier.
 | Degrés IT01..IT18, Ø0..500 mm | ✅ vérifié | 13 échelons × 20 degrés = **260 valeurs** | ISO 286-2:2010, tableau 1 |
 | Écarts fondamentaux arbres    | ✅ vérifié | 10 lettres : d, e, f, g, h, js, k, m, n, p | ISO 286-2:2010, tableaux 18 à 26 |
 | Tolérances générales ISO 2768-1 | ✅ vérifié | 3 tables × 4 classes | DIN ISO 2768-1:1991-06, tableaux 1 à 3 |
+| Caractéristiques géométriques ISO 1101 | ⚠️ source secondaire | 17 entrées, 4 familles, 22 modificateurs | VSM « Extrait de normes » 2022, p. 174-189, recoupé avec l'édition 2014, p. 90-91 |
 
 **Vérifié ne veut pas dire complet.** Les valeurs présentes ont été confrontées à
 la source ; il en manque encore beaucoup (voir ci-dessous).
@@ -142,7 +194,7 @@ Trois particularités de cette norme, toutes portées par le code :
   0,5 mm appartient donc bien au premier échelon.
 - **Deux cases sont vides** dans le tableau 1 : la classe `f` au-delà de
   2000 mm, la classe `v` en dessous de 3 mm. Ce ne sont pas des zéros — la norme
-  ne définit rien. Mecatol refuse ces combinaisons et le dit.
+  ne définit rien. MecaTool refuse ces combinaisons et le dit.
 - **Les tolérances angulaires se resserrent quand la pièce grandit**, à
   l'inverse des linéaires : elles dépendent de la longueur du côté le plus court
   de l'angle, et le même écart linéaire rapporté à un bras plus long donne un
@@ -150,7 +202,7 @@ Trois particularités de cette norme, toutes portées par le code :
   sur cette table.
 
 Les tolérances générales **géométriques** relevaient de l'ISO 2768-2, **retirée
-au printemps 2021** et remplacée par l'ISO 22081, conforme à l'ISO GPS. Mecatol
+au printemps 2021** et remplacée par l'ISO 22081, conforme à l'ISO GPS. MecaTool
 ne couvre ni l'une ni l'autre.
 
 Ce retrait est établi par le VSM « Extrait de normes » 2022, § 2.7.3.1, page 156.
@@ -158,7 +210,7 @@ La même page prévient qu'une transposition directe des valeurs de l'ISO 2768-2
 vers l'ISO 22081 n'est pas possible : il ne s'agit donc pas d'une table à
 recopier ailleurs, mais d'un changement d'approche. Le tableau 157/1 du recueil
 propose une correspondance, mais son propre texte la qualifie de *proposition* —
-ce n'est pas une valeur normative, et Mecatol ne la reprend pas.
+ce n'est pas une valeur normative, et MecaTool ne la reprend pas.
 
 ### Ce qui reste à saisir
 
@@ -206,7 +258,7 @@ les identités normatives qui les relient :
 Si l'une des deux tables comportait une faute de frappe, ces égalités
 tomberaient. C'est la vérification automatique la plus utile du projet.
 
-**Exactitude de lecture** — un nombre JSON transite par un `f64`. Mecatol ne
+**Exactitude de lecture** — un nombre JSON transite par un `f64`. MecaTool ne
 convertit jamais le flottant : il reprend son écriture décimale et la relit avec
 l'analyseur exact. Une table contenant `0.30000000000000004` est **rejetée** au
 chargement au lieu d'être silencieusement arrondie.

@@ -56,7 +56,7 @@ async function call<T>(command: string, args: Record<string, unknown>): Promise<
   if (!isDesktop()) {
     throw {
       message: "Le moteur de calcul n'est pas accessible.",
-      hint: "Mecatol doit être lancé comme application de bureau : « npm run app ».",
+      hint: "MecaTool doit être lancé comme application de bureau : « npm run app ».",
     } satisfies AppError;
   }
   try {

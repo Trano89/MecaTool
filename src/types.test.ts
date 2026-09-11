@@ -126,7 +126,7 @@ describe("échantillons du moteur", () => {
     // qu'il ne doit jamais circuler sans ses hypothèses.
     expect(estimate!.tolerance).toBeLessThan(chain.analysis.tolerance);
     expect(estimate!.assumptions.length).toBeGreaterThan(0);
-    expect(estimate!.assumptions.join(" ")).toMatch(/n'est vérifiée par Mecatol/);
+    expect(estimate!.assumptions.join(" ")).toMatch(/n'est vérifiée par MecaTool/);
   });
 
   it("décrit un comparatif d'ajustements", () => {

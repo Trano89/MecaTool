@@ -217,7 +217,7 @@ export function Compare() {
             </div>
 
             <p className="faint" style={{ marginTop: "0.8rem" }}>
-              L'ordre est celui de votre saisie. Mecatol ne reclasse pas : « g6, k6, p6 » se lit
+              L'ordre est celui de votre saisie. MecaTool ne reclasse pas : « g6, k6, p6 » se lit
               comme une progression, pas comme un classement.
             </p>
           </section>

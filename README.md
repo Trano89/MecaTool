@@ -1,4 +1,4 @@
-# Mecatol
+# MecaTool
 
 **Mechanical Tolerance Assistant** — un assistant de tolérancement mécanique,
 pas un simple calculateur.
@@ -40,7 +40,7 @@ BESOIN → CALCUL → COMPARAISON → VALIDATION → EXPLICATION → VISUALISATI
 | Tolérances géométriques (v0.3) | ⛔ ISO 1101 indisponible |
 | États de surface (v0.4) | ⛔ ISO 21920 indisponible |
 
-Les deux derniers modules sont **bloqués faute de source primaire**. Mecatol
+Les deux derniers modules sont **bloqués faute de source primaire**. MecaTool
 n'invente pas une règle normative : plutôt qu'un module GD&T aux règles
 approximatives, il n'y a pas de module GD&T.
 
@@ -53,7 +53,7 @@ npm run app
 
 L'écran d'accueil pose une question — « Que voulez-vous calculer ? » — et chaque
 carte pré-remplit la saisie correspondante. Un seul champ de désignation suffit
-ensuite : c'est la saisie qui détermine si Mecatol calcule, vérifie ou cherche.
+ensuite : c'est la saisie qui détermine si MecaTool calcule, vérifie ou cherche.
 
 ## Essayer sans l'interface
 
@@ -63,11 +63,11 @@ direct de confronter un résultat à une table de manuel.
 **Calculer** — que va donner cet ajustement ?
 
 ```bash
-cargo run -p mecatol-cli -- "Ø10 H7/g6"
+cargo run -p mecatool-cli -- "Ø10 H7/g6"
 ```
 
 ```
-MECATOL 0.1.0 — Ajustement Ø10 H7/g6
+MECATOOL 0.1.0 — Ajustement Ø10 H7/g6
 ================================================================
 
 ALÉSAGE H7
@@ -101,7 +101,7 @@ L'option `--expert` déplie tout le calcul, formules comprises.
 **Vérifier** — est-ce que ça convient ?
 
 ```bash
-cargo run -p mecatol-cli -- "Ø20 H7/g6" --jeu 5..50
+cargo run -p mecatool-cli -- "Ø20 H7/g6" --jeu 5..50
 ```
 
 ```
@@ -116,10 +116,10 @@ cargo run -p mecatol-cli -- "Ø20 H7/g6" --jeu 5..50
 **Trouver** — quels ajustements répondent à mon besoin ?
 
 ```bash
-cargo run -p mecatol-cli -- "Ø20" --jeu 10..30
+cargo run -p mecatool-cli -- "Ø20" --jeu 10..30
 ```
 
-Quand rien ne convient exactement, Mecatol dit **pourquoi** plutôt que de
+Quand rien ne convient exactement, MecaTool dit **pourquoi** plutôt que de
 renvoyer une liste vide :
 
 ```
@@ -141,11 +141,11 @@ Frontend (React + TypeScript)
         ↓
 Commandes Tauri
         ↓
-mecatol-engine      algorithmes, aucune valeur normative
+mecatool-engine      algorithmes, aucune valeur normative
         ↓
-mecatol-standards   données normatives versionnées, validées au chargement
+mecatool-standards   données normatives versionnées, validées au chargement
         ↓
-mecatol-core        types, arithmétique exacte, traçabilité
+mecatool-core        types, arithmétique exacte, traçabilité
 ```
 
 Le frontend ne contient **jamais** de règle normative. Le moteur est totalement
@@ -154,10 +154,10 @@ exactement le même code.
 
 | Crate | Rôle |
 |---|---|
-| `mecatol-core` | `Length` et `Angle` (entiers exacts), `ToleranceClass`, `Fit`, `Provenance` |
-| `mecatol-standards` | chargement et validation des tables ISO 286 et ISO 2768 |
-| `mecatol-engine` | calcul des tolérances et ajustements, parser, explications |
-| `mecatol-cli` | banc d'essai du moteur, pour confronter les résultats à un manuel |
+| `mecatool-core` | `Length` et `Angle` (entiers exacts), `ToleranceClass`, `Fit`, `Provenance` |
+| `mecatool-standards` | chargement et validation des tables ISO 286 et ISO 2768 |
+| `mecatool-engine` | calcul des tolérances et ajustements, parser, explications |
+| `mecatool-cli` | banc d'essai du moteur, pour confronter les résultats à un manuel |
 
 Toute grandeur est un entier : les longueurs en **nanomètres**, les angles en
 **millisecondes d'arc**. Le second choix compte autant que le premier —

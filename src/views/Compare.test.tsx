@@ -89,13 +89,13 @@ describe("écran de comparaison", () => {
 
   it("dit explicitement qu'il ne reclasse pas", async () => {
     await show();
-    expect(await screen.findByText(/Mecatol ne reclasse pas/)).toBeInTheDocument();
+    expect(await screen.findByText(/MecaTool ne reclasse pas/)).toBeInTheDocument();
   });
 
   it("relaie la question du moteur quand la saisie est ambiguë", async () => {
     vi.mocked(compare).mockRejectedValue({
       message: "Entrée ambiguë : « 7 ajustements »",
-      hint: "Mecatol compare au plus 6 ajustements à la fois : au-delà, les zones deviennent trop étroites pour être lues.",
+      hint: "MecaTool compare au plus 6 ajustements à la fois : au-delà, les zones deviennent trop étroites pour être lues.",
     });
     render(<Compare />);
 

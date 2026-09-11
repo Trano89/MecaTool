@@ -110,7 +110,7 @@ function Catalogue({ catalogue }: { catalogue: GeometricCatalogue }) {
         <section>
           <h3>Modificateurs</h3>
           <p className="hint">
-            Mecatol les restitue mais ne vérifie pas qu'ils s'appliquent à une caractéristique
+            MecaTool les restitue mais ne vérifie pas qu'ils s'appliquent à une caractéristique
             donnée : la source consultée les catalogue sans énoncer de règle d'applicabilité
             complète. Tous ne sont pas définis par l'ISO 1101, et la colonne le dit.
           </p>
@@ -207,7 +207,7 @@ export function Geometry() {
         <p className="hint">
           Il ne propose aucune valeur de tolérance. L'ISO 1101 n'en donne pas : elle définit les
           symboles et la forme des zones, et la valeur se choisit en fonction de la pièce, du
-          procédé et du besoin fonctionnel. Mecatol lit ce que vous écrivez, il ne le décide pas à
+          procédé et du besoin fonctionnel. MecaTool lit ce que vous écrivez, il ne le décide pas à
           votre place.
         </p>
       </div>

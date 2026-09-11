@@ -27,7 +27,7 @@ Le VSM est un **recueil technique** qui reproduit le contenu normatif ; ce
 n'est pas la norme. Pour l'ISO 1101, le VSM cite lui-même sa source :
 « 2.8 Tolérancement géométrique (SN EN ISO 1101) », page 174.
 
-Mecatol ne présente donc jamais ces données comme lues dans l'ISO 1101. Elles
+MecaTool ne présente donc jamais ces données comme lues dans l'ISO 1101. Elles
 portent une provenance distincte, qui nomme le recueil, la page, et la norme
 que le recueil déclare reproduire. Voir `docs/standards.md`.
 
@@ -56,7 +56,7 @@ Détail de 2.9 : symboles 204, symbole complet 205, indications sur les dessins
 
 Le tableau 153/1 « Écarts limites pour dimensions linéaires » et le tableau
 153/2 « rayons et hauteurs de chanfreins » ont été confrontés case par case aux
-données déjà embarquées par Mecatol. **Aucun écart.** C'est un troisième
+données déjà embarquées par MecaTool. **Aucun écart.** C'est un troisième
 recoupement indépendant, après les éditions française et allemande de la norme.
 
 Le VSM ajoute une précision utile que la norme laisse implicite : la classe
@@ -83,7 +83,7 @@ Note 1) du tableau, portant sur les deux profils de la colonne « forme » :
 
 ## 2.8.1.1 à 2.8.1.3.4 — hiérarchie des zones (page 174)
 
-Les notes du texte énoncent un emboîtement que Mecatol peut vérifier :
+Les notes du texte énoncent un emboîtement que MecaTool peut vérifier :
 
 - une tolérance d'orientation « limite aussi l'écart de forme » ;
 - une tolérance de position « limite aussi la tolérance de forme et la
@@ -156,7 +156,7 @@ si la valeur se préfixe d'un `ø`.
 Le battement se subdivise dans le tableau 189/1 en radial et axial, alors que la
 vue d'ensemble de la page 175 n'expose que « simple » et « total ». Les deux
 lectures s'accordent : le symbole est le même, c'est la géométrie du dessin qui
-distingue radial d'axial. Mecatol garde donc les deux caractéristiques de la
+distingue radial d'axial. MecaTool garde donc les deux caractéristiques de la
 page 175, et rattache l'orientation au commentaire, pas au symbole.
 
 Remarque de la page 187, sur le profil quand un élément de direction est
@@ -193,7 +193,7 @@ Deux écarts, qui sont des évolutions de la norme et non des désaccords :
 | Profils | dans la famille forme seulement, nommés « forme ligne / surface quelconque » | aussi en orientation et en position, nommés « profil d'une ligne / d'une surface » |
 | Localisation | avec référence | avec **ou sans** référence |
 
-Mecatol retient l'édition 2022. Le fait que les deux lectures concordent partout
+MecaTool retient l'édition 2022. Le fait que les deux lectures concordent partout
 ailleurs, et divergent exactement là où la norme a changé, est un argument de
 plus en faveur de la transcription : une erreur de lecture n'aurait aucune
 raison de tomber juste sur la structure de l'édition suivante.

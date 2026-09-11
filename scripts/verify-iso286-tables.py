@@ -1,4 +1,4 @@
-"""Confronte les tables normatives de Mecatol au texte de l'ISO 286-2:2010.
+"""Confronte les tables normatives de MecaTool au texte de l'ISO 286-2:2010.
 
 Une vérification faite à la main n'est pas une vérification : elle ne se rejoue
 pas, et personne ne peut la contrôler. Ce script lit le PDF de la norme, en
@@ -223,7 +223,7 @@ def compare_it_grades(pdf: Path) -> list[str]:
             checked += 1
             if expected != actual:
                 problems.append(
-                    f"{grade}, jusqu'à {up_to} mm : Mecatol {actual}, ISO {expected}"
+                    f"{grade}, jusqu'à {up_to} mm : MecaTool {actual}, ISO {expected}"
                 )
     print(f"Tableau 1, degrés de tolérance  : {checked} cases comparées", end="")
     print(" — aucun écart." if not problems else f" — {len(problems)} écart(s).")
@@ -249,7 +249,7 @@ def compare_shaft_deviations(pdf: Path) -> list[str]:
                 bound = RANGES[index][1]
                 problems.append(
                     f"{letter.lower()}, jusqu'à {bound} mm : "
-                    f"Mecatol {actual} µm, ISO {expected} µm"
+                    f"MecaTool {actual} µm, ISO {expected} µm"
                 )
 
     print(f"Tableaux 18 à 26, écarts arbres : {checked} cases comparées", end="")

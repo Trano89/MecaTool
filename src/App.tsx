@@ -2,9 +2,14 @@
  * L'ossature de l'application.
  *
  * Six écrans : l'accueil, le calcul d'ajustement, la comparaison, les
- * tolérances générales, les chaînes de cotes et le tolérancement géométrique. Le bandeau sur l'état des
- * données normatives est permanent et non masquable — aucun écran ne doit
- * laisser croire qu'une table est vérifiée quand elle ne l'est pas.
+ * tolérances générales, les chaînes de cotes et le tolérancement géométrique.
+ *
+ * Le bandeau sur l'état des données normatives est permanent et non masquable —
+ * aucun écran ne doit laisser croire qu'une table est vérifiée quand elle ne
+ * l'est pas. Le tolérancement géométrique fait exception et porte sa propre
+ * réserve, sur son écran : sa source est secondaire, celles des autres écrans
+ * ne le sont pas, et un avertissement affiché partout finirait par ne plus rien
+ * vouloir dire nulle part.
  */
 
 import { useEffect, useState } from "react";
@@ -48,7 +53,7 @@ export function App() {
     <div className="app">
       <header className="topbar">
         <div className="wordmark">
-          MECATOL <small>{info?.app_version ?? "0.1.0"}</small>
+          MECATOOL <small>{info?.app_version ?? "0.1.0"}</small>
         </div>
 
         <nav aria-label="Navigation principale">
@@ -129,7 +134,7 @@ export function App() {
               <span aria-hidden="true">⚠</span>
               <div>
                 <strong>Moteur de calcul inaccessible.</strong> Cette page est ouverte hors de
-                l'application. Lancez Mecatol avec « npm run app » pour accéder au moteur.
+                l'application. Lancez MecaTool avec « npm run app » pour accéder au moteur.
               </div>
             </div>
           ) : null}

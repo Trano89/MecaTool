@@ -2,8 +2,8 @@
  * Vérifie que l'écran de calcul restitue fidèlement ce que le moteur renvoie.
  *
  * Les données ne sont pas inventées pour le test : ce sont les échantillons
- * produits par le moteur lui-même. Un écart entre ce que Mecatol calcule et ce
- * que Mecatol affiche fait donc échouer ce fichier.
+ * produits par le moteur lui-même. Un écart entre ce que MecaTool calcule et ce
+ * que MecaTool affiche fait donc échouer ce fichier.
  */
 
 import { render, screen, waitFor, within } from "@testing-library/react";

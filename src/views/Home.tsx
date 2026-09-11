@@ -2,7 +2,7 @@
  * L'écran d'accueil.
  *
  * Une question, des cartes. L'utilisateur n'a pas à connaître la norme ni le
- * vocabulaire pour démarrer : il choisit ce qu'il veut obtenir, et Mecatol
+ * vocabulaire pour démarrer : il choisit ce qu'il veut obtenir, et MecaTool
  * pré-remplit la saisie correspondante.
  *
  * Les modules non encore construits sont montrés **désactivés** plutôt que

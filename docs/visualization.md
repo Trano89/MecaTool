@@ -4,7 +4,7 @@
 
 Un graphique qui contredirait les valeurs affichées serait pire qu'absent. La
 position et la hauteur de chaque zone sont donc calculées dans
-`mecatol-engine::diagram`, à partir des `Length` exactes du moteur, et testées.
+`mecatool-engine::diagram`, à partir des `Length` exactes du moteur, et testées.
 
 L'interface — CLI, application Tauri, export — se contente de tracer les
 rectangles qu'on lui donne. **Il n'y a aucune conversion à faire côté
@@ -113,8 +113,8 @@ est rappelé dans la légende, sous le dessin.
 ## Exemples
 
 ```bash
-cargo run -p mecatol-cli -- "Ø20 H7/g6" --svg exemple.svg
-cargo run -p mecatol-cli -- "Ø20 H7/p6" --svg serrage.svg --fidele
+cargo run -p mecatool-cli -- "Ø20 H7/g6" --svg exemple.svg
+cargo run -p mecatool-cli -- "Ø20 H7/p6" --svg serrage.svg --fidele
 ```
 
 - [exemple-h7g6.svg](exemple-h7g6.svg) — ajustement avec jeu

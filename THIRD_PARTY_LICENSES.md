@@ -1,6 +1,6 @@
 # Licences des dépendances
 
-Mecatol est distribué sous double licence MIT ou Apache-2.0. Ce fichier recense
+MecaTool est distribué sous double licence MIT ou Apache-2.0. Ce fichier recense
 les dépendances **directes** et leurs licences.
 
 ## Comment régénérer la liste complète
@@ -57,10 +57,10 @@ ses organismes membres.
 
 Ce logiciel n'est ni approuvé ni certifié par l'ISO. Il ne remplace pas la
 consultation des normes elles-mêmes, notamment pour les prescriptions que
-Mecatol n'implémente pas.
+MecaTool n'implémente pas.
 
 ## Polices et icônes
 
-Aucune police n'est distribuée avec Mecatol : l'interface utilise les polices du
+Aucune police n'est distribuée avec MecaTool : l'interface utilise les polices du
 système. L'icône est générée par `scripts/make-icon.mjs`, sans ressource
 externe, et reprend le motif du diagramme de zones de tolérance.

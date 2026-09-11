@@ -5,13 +5,13 @@
 ```
 Interface (React + TypeScript)
         ↓  commandes Tauri
-mecatol-app         traduction, aucune décision
+mecatool-app         traduction, aucune décision
         ↓
-mecatol-engine      algorithmes, aucune valeur normative
+mecatool-engine      algorithmes, aucune valeur normative
         ↓
-mecatol-standards   valeurs normatives, aucun algorithme
+mecatool-standards   valeurs normatives, aucun algorithme
         ↓
-mecatol-core        types, arithmétique exacte, traçabilité
+mecatool-core        types, arithmétique exacte, traçabilité
 ```
 
 Chaque couche ne connaît que celle du dessous. Une règle normative ne peut donc
@@ -21,11 +21,11 @@ pas se retrouver dans l'interface : elle n'y a pas accès.
 
 | Crate | Contient | Ne contient jamais |
 |---|---|---|
-| `mecatol-core` | `Length`, `ToleranceClass`, `Fit`, `Provenance` | de valeur issue d'une norme |
-| `mecatol-standards` | les tables ISO, leur validation, la règle de dérivation des alésages | d'algorithme de calcul |
-| `mecatol-engine` | composition des écarts, parser, recherche, géométrie du diagramme | de valeur en dur |
-| `mecatol-app` | les commandes Tauri | de calcul |
-| `mecatol-cli` | le banc d'essai du moteur | — |
+| `mecatool-core` | `Length`, `ToleranceClass`, `Fit`, `Provenance` | de valeur issue d'une norme |
+| `mecatool-standards` | les tables ISO, leur validation, la règle de dérivation des alésages | d'algorithme de calcul |
+| `mecatool-engine` | composition des écarts, parser, recherche, géométrie du diagramme | de valeur en dur |
+| `mecatool-app` | les commandes Tauri | de calcul |
+| `mecatool-cli` | le banc d'essai du moteur | — |
 
 `src-tauri` est **hors de l'espace de travail Cargo**. `cargo test --workspace`
 teste ainsi le moteur seul, sans avoir à compiler un moteur de rendu web ni à
@@ -59,7 +59,7 @@ Si un champ est renommé, supprimé ou change de type côté Rust, `tsc` échoue
 l'échantillon — pas seulement à l'exécution, mais à la compilation.
 
 ```
-cargo test -p mecatol-app   →  src/fixtures/*.json
+cargo test -p mecatool-app   →  src/fixtures/*.json
                                       ↓
 npx tsc --noEmit            →  src/types.ts confronté aux échantillons
 ```

@@ -1,4 +1,4 @@
-// Genere l'icone source de Mecatol, sans dependance externe.
+// Genere l'icone source de MecaTool, sans dependance externe.
 //
 // Le motif est celui du diagramme de zones de tolerance : une ligne zero, une
 // zone d'alesage au-dessus a gauche, une zone d'arbre en dessous a droite.

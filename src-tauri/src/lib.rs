@@ -1,4 +1,4 @@
-//! Pont entre le moteur Mecatol et l'interface.
+//! Pont entre le moteur MecaTool et l'interface.
 //!
 //! Cette couche ne calcule rien. Elle lit l'entree, appelle le moteur, et rend
 //! le resultat tel quel. Toute regle normative, toute conversion d'unite, toute
@@ -29,5 +29,5 @@ pub fn run() {
             commands::geometric_catalogue
         ])
         .run(tauri::generate_context!())
-        .expect("le lancement de Mecatol a échoué");
+        .expect("le lancement de MecaTool a échoué");
 }

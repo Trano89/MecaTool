@@ -1,0 +1,17 @@
+[package]
+name = "mecatool-cli"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[[bin]]
+name = "mecatool"
+path = "src/main.rs"
+
+[dependencies]
+mecatool-core = { workspace = true }
+mecatool-standards = { workspace = true }
+mecatool-engine = { workspace = true }

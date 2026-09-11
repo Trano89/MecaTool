@@ -2,7 +2,7 @@
 
 ## Versions suivies
 
-Mecatol est en version 0.x. Seule la dernière version publiée reçoit des
+MecaTool est en version 0.x. Seule la dernière version publiée reçoit des
 correctifs.
 
 ## Signaler une vulnérabilité
@@ -15,7 +15,7 @@ Réponse attendue sous quelques jours.
 
 ## Ce qui compte comme faille de sécurité
 
-Mecatol est une application de bureau qui ne fait ni requête réseau ni appel
+MecaTool est une application de bureau qui ne fait ni requête réseau ni appel
 système au-delà de la lecture de ses propres données. Le périmètre est donc
 étroit :
 
@@ -38,4 +38,4 @@ du [protocole de vérification des données](docs/standards.md).
 Les tables normatives embarquées dans la version 0.1 sont marquées
 `unverified` : elles ont été saisies mais pas encore confrontées à une source
 primaire. L'application le signale en permanence. Ne fondez pas une décision de
-fabrication sur un résultat Mecatol sans vérifier ses valeurs de base.
+fabrication sur un résultat MecaTool sans vérifier ses valeurs de base.

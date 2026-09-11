@@ -1772,12 +1772,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "mecatol-app"
+name = "mecatool-app"
 version = "0.1.0"
 dependencies = [
- "mecatol-core",
- "mecatol-engine",
- "mecatol-standards",
+ "mecatool-core",
+ "mecatool-engine",
+ "mecatool-standards",
  "serde",
  "serde_json",
  "tauri",
@@ -1785,7 +1785,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "mecatol-core"
+name = "mecatool-core"
 version = "0.1.0"
 dependencies = [
  "serde",
@@ -1793,21 +1793,21 @@ dependencies = [
 ]
 
 [[package]]
-name = "mecatol-engine"
+name = "mecatool-engine"
 version = "0.1.0"
 dependencies = [
- "mecatol-core",
- "mecatol-standards",
+ "mecatool-core",
+ "mecatool-standards",
  "serde",
  "serde_json",
  "thiserror 2.0.20",
 ]
 
 [[package]]
-name = "mecatol-standards"
+name = "mecatool-standards"
 version = "0.1.0"
 dependencies = [
- "mecatol-core",
+ "mecatool-core",
  "serde",
  "serde_json",
  "thiserror 2.0.20",

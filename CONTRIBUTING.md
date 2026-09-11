@@ -1,7 +1,7 @@
-# Contribuer à Mecatol
+# Contribuer à MecaTool
 
 Merci de l'intérêt porté au projet. Ce document dit surtout **ce qui est
-non négociable**, parce que Mecatol calcule des cotes que des gens vont usiner.
+non négociable**, parce que MecaTool calcule des cotes que des gens vont usiner.
 
 ## La règle absolue
 
@@ -21,9 +21,9 @@ Voir [docs/standards.md](docs/standards.md) pour le protocole complet.
 | Vous ajoutez | Ça va dans |
 |---|---|
 | une valeur issue d'une norme | `data/`, en JSON versionné par édition |
-| une règle de composition normative | `mecatol-standards` |
-| un algorithme, un parser, une recherche | `mecatol-engine` |
-| un type ou un invariant du domaine | `mecatol-core` |
+| une règle de composition normative | `mecatool-standards` |
+| un algorithme, un parser, une recherche | `mecatool-engine` |
+| un type ou un invariant du domaine | `mecatool-core` |
 | une commande exposée à l'interface | `src-tauri/src/commands.rs` |
 | de l'affichage | `src/` |
 
