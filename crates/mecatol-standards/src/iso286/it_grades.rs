@@ -325,6 +325,18 @@ mod tests {
                 );
                 assert!(on.starts_with("20"), "date de controle absente : {on}");
             }
+            mecatol_core::VerificationStatus::Secondary {
+                from, reproduces, ..
+            } => {
+                // Etat legitime, mais il doit nommer le recueil ET la norme
+                // reproduite : l'un sans l'autre ne permet pas de refaire le
+                // controle, ce qui est le seul point de citer une source.
+                assert!(!from.is_empty(), "recueil non nomme");
+                assert!(
+                    reproduces.contains("ISO 286"),
+                    "norme reproduite imprecise : {reproduces}"
+                );
+            }
             mecatol_core::VerificationStatus::Unverified { pending } => {
                 // Etat legitime, mais il doit dire ce qu'il reste a faire.
                 assert!(!pending.is_empty(), "non verifie sans marche a suivre");

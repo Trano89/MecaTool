@@ -30,11 +30,16 @@
 #![warn(missing_debug_implementations)]
 
 pub mod error;
+pub mod iso1101;
 pub mod iso2768;
 pub mod iso286;
 pub mod value;
 
 pub use error::{Result, StandardsError};
+pub use iso1101::{
+    Characteristic, CharacteristicTable, DatumRule, FamilyDefinition, Modifier, ToleranceFamily,
+    ZoneDefinition, ZoneGeometry,
+};
 pub use iso2768::{
     GeneralClass, GeneralDeviation, GeneralLookup, GeneralRange, GeneralToleranceTable, MeasureKind,
 };
