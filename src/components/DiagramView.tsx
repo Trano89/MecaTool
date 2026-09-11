@@ -84,10 +84,9 @@ export function DiagramView({ diagram }: Props) {
           y1={diagram.zero_line_y}
           x2={diagram.width}
           y2={diagram.zero_line_y}
-          stroke="var(--ink)"
-          strokeWidth="1.25"
+          className="zero-line"
         />
-        <text x="2" y={diagram.zero_line_y} dy="-5" fill="var(--ink)" fontWeight="700" fontSize="11">
+        <text x="2" y={diagram.zero_line_y} dy="-5" className="zero-label" fontSize="11">
           0
         </text>
 
@@ -116,7 +115,7 @@ export function DiagramView({ diagram }: Props) {
                 height={height}
                 fill={`url(#${isHole ? holeHatch : shaftHatch})`}
                 stroke={colour}
-                strokeWidth="1.5"
+                className="band"
               />
               <text
                 x={centre}
@@ -194,8 +193,7 @@ export function DiagramView({ diagram }: Props) {
                 x2={x}
                 y2={marker.hole_y}
                 stroke={stroke}
-                strokeWidth="0.6"
-                opacity="0.45"
+                className="lead-line"
               />
               <line
                 x1={x}
@@ -203,8 +201,7 @@ export function DiagramView({ diagram }: Props) {
                 x2={gapEnd}
                 y2={marker.shaft_y}
                 stroke={stroke}
-                strokeWidth="0.6"
-                opacity="0.45"
+                className="lead-line"
               />
               <line x1={x} y1={top} x2={x} y2={bottom} stroke={stroke} strokeWidth="1" />
               {[top, bottom].map((y) => (

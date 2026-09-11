@@ -67,10 +67,11 @@ export function Compare() {
 
   return (
     <div className="stack">
-      <div>
+      <div className="page-header">
         <h1>Comparer des ajustements</h1>
-        <p className="muted" style={{ marginTop: "0.35rem" }}>
-          Plusieurs solutions sur la même dimension, sur une échelle unique.
+        <p className="lead">
+          Plusieurs solutions sur la même dimension, sur une échelle unique. Le dessin porte les
+          positions relatives, le tableau porte les valeurs.
         </p>
       </div>
 
@@ -82,7 +83,7 @@ export function Compare() {
         }}
       >
         <div className="row">
-          <div className="grow">
+          <div className="field grow">
             <label htmlFor="fits">Ajustements à comparer</label>
             <input
               id="fits"
@@ -99,7 +100,7 @@ export function Compare() {
             </p>
           </div>
 
-          <div style={{ minWidth: "170px" }}>
+          <div className="field" style={{ minWidth: "180px" }}>
             <label htmlFor="window">Jeu voulu (facultatif)</label>
             <input
               id="window"
@@ -113,20 +114,21 @@ export function Compare() {
             <p className="hint">Ajoute un verdict par ligne.</p>
           </div>
 
-          <button type="submit" className="btn-primary" disabled={busy}>
-            {busy ? "Calcul…" : "Comparer"}
-          </button>
+          <div className="field">
+            <span className="field-label field-spacer" aria-hidden="true" />
+            <button type="submit" className="btn-primary" disabled={busy}>
+              {busy ? "Calcul…" : "Comparer"}
+            </button>
+          </div>
         </div>
 
-        <div className="row" style={{ marginTop: "0.9rem", gap: "0.4rem" }}>
-          <span className="faint" style={{ alignSelf: "center" }}>
-            Exemples :
-          </span>
+        <div className="chips">
+          <span className="chips-label">Exemples</span>
           {EXAMPLES.map((example) => (
             <button
               key={example.label}
               type="button"
-              className="btn-quiet"
+              className="chip"
               title={example.why}
               onClick={() => {
                 setInput(example.input);
@@ -189,7 +191,11 @@ export function Compare() {
                 <tbody>
                   {result.entries.map((entry) => (
                     <tr key={entry.designation}>
-                      <th scope="row" className="num" style={{ fontWeight: 600 }}>
+                      {/* Une désignation n'est pas un nombre : elle se compose
+                          en chasse fixe et se cale à gauche, comme son
+                          en-tête. La caler à droite avec les jeux ferait
+                          croire à une colonne de valeurs. */}
+                      <th scope="row" className="mono">
                         {entry.designation}
                       </th>
                       <td className="num">{umLabel(entry.fit.min_clearance)}</td>

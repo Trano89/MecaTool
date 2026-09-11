@@ -3,7 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
     <title>MecaTool</title>
+    <script>
+      /*
+       * Le thème, avant le premier tracé.
+       *
+       * `useTheme` pose l'attribut au montage de React, c'est-à-dire après que
+       * la page a déjà été peinte : en thème sombre, l'application s'ouvrait
+       * sur un éclair blanc. Ces trois lignes lisent le même réglage, sous la
+       * même clé, avant que quoi que ce soit s'affiche.
+       *
+       * Elles ne décident rien : « système » n'écrit aucun attribut, et c'est
+       * alors `prefers-color-scheme` qui tranche dans la feuille de style.
+       */
+      try {
+        var theme = localStorage.getItem("mecatool.theme");
+        if (theme === "light" || theme === "dark") {
+          document.documentElement.setAttribute("data-theme", theme);
+        }
+      } catch (error) {
+        /* Stockage indisponible : le défaut « système » s'applique. */
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

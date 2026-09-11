@@ -4,6 +4,7 @@
     "name": "Ajustements",
     "question": "Que donne cet ajustement, et lequel choisir ?",
     "group": "dimensional",
+    "group_label": "Dimensionnel",
     "status": "ready",
     "sources": [
       "ISO 286-1:2010",
@@ -22,6 +23,7 @@
     "name": "Comparateur",
     "question": "Lequel de ces ajustements convient le mieux ?",
     "group": "dimensional",
+    "group_label": "Dimensionnel",
     "status": "ready",
     "sources": [
       "ISO 286-1:2010",
@@ -38,6 +40,7 @@
     "name": "Tolérances générales",
     "question": "Que valent les cotes qui ne portent pas de tolérance ?",
     "group": "dimensional",
+    "group_label": "Dimensionnel",
     "status": "ready",
     "sources": [
       "ISO 2768-1:1989"
@@ -54,6 +57,7 @@
     "name": "Chaîne de cotes",
     "question": "Que donne cet empilement de cotes ?",
     "group": "dimensional",
+    "group_label": "Dimensionnel",
     "status": "ready",
     "sources": [
       "aucune source externe : géométrie seule"
@@ -69,6 +73,7 @@
     "name": "Tolérancement géométrique",
     "question": "Que dit ce cadre de tolérance, et que lui manque-t-il ?",
     "group": "geometry",
+    "group_label": "Géométrie",
     "status": "reserved",
     "sources": [
       "ISO 1101"
@@ -86,6 +91,7 @@
     "name": "États de surface",
     "question": "Quelle rugosité pour ce procédé ?",
     "group": "geometry",
+    "group_label": "Géométrie",
     "status": "blocked",
     "sources": [],
     "reserve": null,
@@ -97,6 +103,7 @@
     "name": "Roulements",
     "question": "Quel alésage, et quelle tolérance sur la portée d'arbre ?",
     "group": "components",
+    "group_label": "Composants",
     "status": "reserved",
     "sources": [
       "ISO 15",
@@ -115,6 +122,7 @@
     "name": "Soudure",
     "question": "Que dit ce symbole, et quel niveau de qualité exiger ?",
     "group": "components",
+    "group_label": "Composants",
     "status": "blocked",
     "sources": [],
     "reserve": null,
@@ -126,6 +134,7 @@
     "name": "Visserie",
     "question": "Quel filetage, et quel trou de passage ?",
     "group": "components",
+    "group_label": "Composants",
     "status": "blocked",
     "sources": [],
     "reserve": null,
@@ -137,6 +146,7 @@
     "name": "Matières",
     "question": "Quelle nuance, et quelles propriétés ?",
     "group": "materials",
+    "group_label": "Matières",
     "status": "blocked",
     "sources": [],
     "reserve": null,

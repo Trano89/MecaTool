@@ -183,10 +183,14 @@ export function Geometry() {
 
   return (
     <div className="stack">
-      <div>
+      <div className="page-header">
         <h1>Tolérancement géométrique</h1>
-        <p className="muted" style={{ marginTop: "0.35rem" }}>
-          Ce que dit un cadre de tolérance, et ce qui lui manque.
+        {/* Attention en modifiant ce chapeau : un test vérifie que la phrase
+            « ne propose aucune valeur » n'apparaît qu'une fois dans l'écran,
+            sur le panneau qui l'explique. */}
+        <p className="lead">
+          Ce que dit un cadre de tolérance, et ce qui lui manque. L'ISO 1101 définit un
+          vocabulaire, pas des chiffres.
         </p>
       </div>
 
@@ -234,7 +238,7 @@ export function Geometry() {
           s'écrit entouré ou entre parenthèses, <code>(M)</code>. Elles doivent porter sur le
           <strong> même élément</strong> : c'est ce qui donne son sens au contrôle de recouvrement.
         </p>
-        <button type="submit" className="btn">
+        <button type="submit" className="btn-primary" style={{ marginTop: "var(--s-5)" }}>
           Contrôler
         </button>
       </form>

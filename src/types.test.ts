@@ -21,6 +21,9 @@ import comparisonFixture from "./fixtures/fit-comparison.json";
 import chainFixture from "./fixtures/chain-report.json";
 import catalogueFixture from "./fixtures/geometric-catalogue.json";
 import geometryFixture from "./fixtures/geometric-group.json";
+import domainsFixture from "./fixtures/domains.json";
+import bearingCatalogueFixture from "./fixtures/bearing-catalogue.json";
+import bearingAdviceFixture from "./fixtures/bearing-advice.json";
 
 import {
   NM_PER_UM,
@@ -31,7 +34,10 @@ import {
   type FitComparison,
   type FitReport,
   type GeometricCatalogue,
+  type BearingCatalogue,
+  type Domain,
   type GroupAnalysis,
+  type MountingAdvice,
   type SearchReport,
 } from "./types";
 
@@ -45,6 +51,9 @@ const comparison = comparisonFixture as FitComparison;
 const chain = chainFixture as ChainReport;
 const catalogue = catalogueFixture as GeometricCatalogue;
 const geometry = geometryFixture as GroupAnalysis;
+const registry = domainsFixture as Domain[];
+const bearings = bearingCatalogueFixture as BearingCatalogue;
+const advice = bearingAdviceFixture as MountingAdvice;
 
 describe("échantillons du moteur", () => {
   it("décrit un ajustement Ø10 H7/g6 exact", () => {
@@ -234,6 +243,73 @@ describe("échantillons du moteur", () => {
 
     // La valeur reste un entier de nanomètres jusqu'au bout.
     expect(geometry.specs[0]!.spec.value).toBe(20 * 1000);
+  });
+
+  it("décrit le registre des domaines", () => {
+    expect(registry.length).toBeGreaterThanOrEqual(10);
+
+    // Les identifiants routent : deux domaines homonymes feraient afficher
+    // l'un pour l'autre.
+    const ids = registry.map((domain) => domain.id);
+    expect(new Set(ids).size).toBe(ids.length);
+
+    for (const domain of registry) {
+      // Le nom nomme, la question aide à choisir.
+      expect(domain.question.endsWith("?")).toBe(true);
+      // Le libellé de groupe vient du moteur : sans lui, l'interface tiendrait
+      // sa propre table de traduction.
+      expect(domain.group_label.length).toBeGreaterThan(0);
+      // Un domaine bloqué dit pourquoi ; un domaine disponible ne le fait pas.
+      expect(domain.status === "blocked").toBe(domain.unavailable !== null);
+    }
+
+    // L'état se déduit des sources : l'ISO 286 est confrontée, l'ISO 1101 non.
+    expect(registry.find((d) => d.id === "fit")?.status).toBe("ready");
+    expect(registry.find((d) => d.id === "geometry")?.status).toBe("reserved");
+    expect(registry.find((d) => d.id === "bearing")?.status).toBe("reserved");
+  });
+
+  it("décrit le conseil de montage d'un roulement", () => {
+    expect(advice.class).toBe("k5");
+    expect(advice.designation).toBe("Ø50 k5");
+
+    // La composition : le domaine roulements s'arrête à la classe, le domaine
+    // ajustements rend les écarts. Les deux arrivent dans le même rapport.
+    expect(advice.shaft.tolerance.deviations.lower).toBe(2 * NM_PER_UM);
+    expect(advice.shaft.tolerance.deviations.upper).toBe(13 * NM_PER_UM);
+    expect(advice.bore).toBe(50 * 1_000_000);
+
+    // Et la provenance garde les deux natures de source distinctes : une
+    // recommandation de fabricant pour la classe, une norme confrontée pour
+    // les écarts. Les confondre tromperait dans un sens ou dans l'autre.
+    const states = advice.provenance.references.map(
+      (reference) => reference.verification.state,
+    );
+    expect(states).toContain("verified");
+    expect(states).toContain("recommended");
+
+    expect(advice.conclusion.warnings.join(" ")).toMatch(/sans caractère normatif/);
+  });
+
+  it("décrit le catalogue des roulements", () => {
+    expect(bearings.families).toHaveLength(4);
+    expect(bearings.regimes).toHaveLength(2);
+    expect(bearings.cases.length).toBeGreaterThan(0);
+
+    // Chaque régime explique ce qu'il impose : c'est ce qui permet de juger si
+    // l'on peut s'en écarter.
+    for (const regime of bearings.regimes) {
+      expect(regime.explanation.length).toBeGreaterThan(0);
+    }
+
+    // Deux réserves, et elles ne disent pas la même chose. La règle du symbole
+    // d'alésage vient d'un recueil qui reproduit l'ISO 15 ; le tableau de
+    // montage ne vient d'aucune norme. Les fondre en un seul avertissement
+    // ferait passer l'une pour l'autre.
+    expect(bearings.warnings).toHaveLength(2);
+    const joined = bearings.warnings.join(" ");
+    expect(joined).toMatch(/recueil technique/);
+    expect(joined).toMatch(/sans caractère normatif/);
   });
 
   it("décrit l'état de vérification de ses données", () => {

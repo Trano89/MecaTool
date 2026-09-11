@@ -53,27 +53,27 @@ export function GeneralTolerances() {
 
   return (
     <div className="stack">
-      <div>
+      <div className="page-header">
         <h1>Tolérances générales</h1>
-        <p className="muted" style={{ marginTop: "0.35rem" }}>
+        <p className="lead">
           Ce que valent les cotes qui ne portent pas de tolérance individuelle, selon la classe
-          inscrite au cartouche.
+          inscrite au cartouche. Les quatre classes sont montrées ensemble : on en choisit une en
+          voyant ce que les autres donneraient.
         </p>
       </div>
 
       <form className="card" onSubmit={(event) => event.preventDefault()}>
         {/* Les deux groupes n'ont pas la même hauteur : les caler en haut aligne
             leurs libellés, ce que l'alignement en bas par défaut ne fait pas. */}
-        <div className="row" style={{ alignItems: "flex-start" }}>
-          <div>
+        <div className="row">
+          <div className="field">
             <label htmlFor="kind">Type de cote</label>
-            <div style={{ display: "flex", gap: "0.3rem" }}>
+            <div className="segmented">
               {KINDS.map((option) => (
                 <button
                   key={option}
                   type="button"
                   id={option === kind ? "kind" : undefined}
-                  className="btn-quiet"
                   aria-pressed={option === kind}
                   onClick={() => setKind(option)}
                 >
@@ -83,7 +83,7 @@ export function GeneralTolerances() {
             </div>
           </div>
 
-          <div className="grow" style={{ maxWidth: "260px" }}>
+          <div className="field grow" style={{ maxWidth: "260px" }}>
             <label htmlFor="size">
               {isAngular ? "Longueur du côté le plus court" : "Dimension nominale"}
             </label>
@@ -150,10 +150,10 @@ export function GeneralTolerances() {
                 {comparison.rows.map((row) => (
                   <tr key={row.symbol}>
                     <th scope="row">
-                      <strong className="num">{row.symbol}</strong>{" "}
+                      <strong className="mono">{row.symbol}</strong>{" "}
                       <span className="muted">{row.name}</span>
                     </th>
-                    <td className="num">ISO 2768-{row.symbol}</td>
+                    <td className="mono">ISO 2768-{row.symbol}</td>
 
                     {row.deviation_label ? (
                       <>

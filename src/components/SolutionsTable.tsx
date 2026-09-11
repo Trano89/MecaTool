@@ -55,7 +55,7 @@ export function SolutionsTable({ solutions, limit = 15, onSelect }: Props) {
             const { verdict } = solution.verification;
             return (
               <tr key={designation}>
-                <th scope="row" className="num" style={{ fontWeight: 600 }}>
+                <th scope="row" className="mono">
                   {onSelect ? (
                     <button
                       type="button"

@@ -94,16 +94,24 @@ export interface Conclusion {
 }
 
 /**
- * Trois états, pas deux.
+ * Quatre états, pas deux.
  *
- * Entre « confronté à la norme » et « pas encore vérifié » il existe un cas
- * intermédiaire : la donnée vient d'un recueil technique qui reproduit la norme,
- * lu avec soin, mais qui n'est pas la norme. `secondary` le nomme, et compte
- * comme non vérifié à l'affichage.
+ * Entre « confronté à la norme » et « pas encore vérifié » il existe deux cas
+ * intermédiaires, et les confondre tromperait dans les deux sens :
+ *
+ * - `secondary` — la donnée vient d'un recueil technique qui reproduit la
+ *   norme, lu avec soin, mais qui n'est pas la norme.
+ * - `recommended` — la donnée n'est pas normative du tout : c'est une pratique
+ *   que des fabricants recommandent. La présenter comme une norme durcirait une
+ *   recommandation ; la présenter comme une donnée douteuse banaliserait une
+ *   pratique établie.
+ *
+ * Aucun des deux ne compte comme vérifié à l'affichage.
  */
 export type VerificationStatus =
   | { state: "verified"; against: string; on: string }
   | { state: "secondary"; from: string; reproduces: string; on: string }
+  | { state: "recommended"; by: string; on: string }
   | { state: "unverified"; pending: string };
 
 export interface StandardReference {
@@ -582,3 +590,188 @@ export const SEVERITY_CLASS: Record<Severity, string> = {
   caution: "caution",
   note: "insufficient-data",
 };
+
+/* ---------- Registre des domaines ---------- */
+
+/**
+ * L'état d'un domaine.
+ *
+ * `blocked` ne veut pas dire « caché ». Un domaine prévu dont la source n'est
+ * pas exploitable reste visible et désactivé, avec `unavailable` en toutes
+ * lettres : masquer la feuille de route ferait chercher en vain une fonction
+ * qui n'existe pas, et laisserait croire qu'elle n'est pas prévue.
+ */
+export type DomainStatus = "ready" | "reserved" | "blocked";
+
+/** Le groupe de navigation auquel un domaine appartient. */
+export type DomainGroup = "dimensional" | "geometry" | "components" | "materials";
+
+/**
+ * Un domaine du registre.
+ *
+ * C'est le moteur qui décide ce que l'application sait faire. La navigation,
+ * l'accueil et la palette de commandes se construisent à partir de cette liste
+ * et d'elle seule : ajouter un domaine ne doit toucher aucun composant.
+ */
+export interface Domain {
+  /** Identifiant stable, celui que l'interface emploie pour router. */
+  id: string;
+  /** Le nom court, celui de la navigation. */
+  name: string;
+  /** La question à laquelle le domaine répond. C'est elle qui aide à choisir. */
+  question: string;
+  group: DomainGroup;
+  /**
+   * Le libellé du groupe, déjà traduit par le moteur.
+   *
+   * Redondant avec `group` en apparence, mais c'est ce qui évite que
+   * l'interface tienne sa propre table de traduction : un libellé est un texte
+   * métier, et le frontend n'en écrit aucun.
+   */
+  group_label: string;
+  status: DomainStatus;
+  /** Les normes ou sources mobilisées, citation courte. */
+  sources: string[];
+  /** La réserve à afficher, quand il y en a une. */
+  reserve: string | null;
+  /** Pourquoi le domaine n'est pas disponible, le cas échéant. */
+  unavailable: string | null;
+  /** Exemples de saisie, pour la recherche et l'accueil. */
+  examples: string[];
+}
+
+/* ---------- Roulements ---------- */
+
+export interface BearingFamily {
+  id: string;
+  name: string;
+  note: string | null;
+}
+
+/** Le régime de charge de la bague intérieure. */
+export interface LoadRegime {
+  id: string;
+  name: string;
+  /** Pourquoi ce régime impose ce qu'il impose. */
+  explanation: string;
+}
+
+export interface DiameterRange {
+  from: number;
+  to: number | null;
+}
+
+/** Une ligne du tableau : une classe, et les échelons où elle s'applique. */
+export interface MountingRow {
+  class: string;
+  /** Vrai quand la ligne vaut quel que soit le diamètre. */
+  all_diameters: boolean;
+  /**
+   * Échelon par famille de roulement. Une famille absente signifie que la
+   * source ne définit rien pour elle sur cette ligne.
+   */
+  ranges: Record<string, DiameterRange>;
+}
+
+/** Un cas d'emploi : un régime, une condition, et ses lignes. */
+export interface MountingCase {
+  regime: string;
+  condition: string;
+  examples: string;
+  rows: MountingRow[];
+}
+
+/** Ce qu'il faut pour peupler l'écran des roulements avant toute saisie. */
+export interface BearingCatalogue {
+  families: BearingFamily[];
+  regimes: LoadRegime[];
+  cases: MountingCase[];
+  provenance: Provenance;
+  /** La réserve de source, dont celle qui dit que le tableau n'est pas normatif. */
+  warnings: string[];
+}
+
+/**
+ * Une lecture possible d'une désignation de roulement.
+ *
+ * Plusieurs, parce que la source ne dit pas comment découper une désignation :
+ * « 6203 » se lit série 62 + symbole 03, « 623 » se lit série 62 + symbole 3, et
+ * rien ne permet de trancher mécaniquement. Le moteur rend donc les lectures
+ * possibles au lieu d'en choisir une.
+ */
+export interface DesignationReading {
+  designation: string;
+  /** Ce qui précède le symbole d'alésage : série, type, suffixes de tête. */
+  series: string;
+  bore_code: string;
+  bore: Nanometres;
+  explanation: string;
+}
+
+/** Un cas d'emploi proposé à l'utilisateur, avec ce qu'il donnerait. */
+export interface MountingOption {
+  regime: string;
+  condition: string;
+  examples: string;
+  /** La classe, ou `null` avec la raison de son absence. */
+  class: string | null;
+  unavailable: string | null;
+}
+
+/**
+ * Le conseil de portée d'arbre, écarts compris.
+ *
+ * Le résultat croise deux natures de source, et l'écran doit les tenir
+ * séparées : `class` est une **recommandation de fabricant** — aucune norme ne
+ * l'impose — tandis que `shaft`, les écarts qui en découlent, est **normatif**
+ * (ISO 286). `conclusion.why` pose les deux étapes côte à côte.
+ */
+export interface MountingAdvice {
+  family: BearingFamily;
+  regime: LoadRegime;
+  condition: string;
+  examples: string;
+  bore: Nanometres;
+  /** La classe recommandée, par ex. `"k5"`. */
+  class: string;
+  /** La cote telle qu'elle s'inscrirait sur le plan, par ex. `"Ø50 k5"`. */
+  designation: string;
+  /** Les écarts réels, calculés par le moteur ISO 286. */
+  shaft: FeatureAnalysis;
+  conclusion: Conclusion;
+  provenance: Provenance;
+}
+
+/* ---------- État d'une source ---------- */
+
+/**
+ * L'état d'une source, en toutes lettres.
+ *
+ * Comme les verdicts, il ne doit jamais être porté par la seule couleur : ces
+ * quatre libellés accompagnent toujours la pastille correspondante.
+ */
+export const VERIFICATION_LABEL: Record<VerificationStatus["state"], string> = {
+  verified: "Vérifié sur la norme",
+  secondary: "Source secondaire",
+  recommended: "Pratique recommandée",
+  unverified: "Non vérifié",
+};
+
+/**
+ * La phrase qui dit *comment* la source a été établie.
+ *
+ * Elle se compose des champs que le moteur transmet — jamais d'un texte écrit
+ * ici : ce sont ses mots, avec sa date.
+ */
+export function VERIFICATION_DETAIL(status: VerificationStatus): string {
+  switch (status.state) {
+    case "verified":
+      return `Confronté à ${status.against} — le ${status.on}.`;
+    case "secondary":
+      return `Transcrit de ${status.from}, qui reproduit ${status.reproduces} — le ${status.on}.`;
+    case "recommended":
+      return `Recommandé par ${status.by} — relevé le ${status.on}. Aucune norme ne l'impose.`;
+    case "unverified":
+      return `Reste à faire : ${status.pending}`;
+  }
+}

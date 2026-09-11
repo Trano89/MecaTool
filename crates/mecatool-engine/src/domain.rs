@@ -88,6 +88,14 @@ pub struct Domain {
     /// l'utilisateur. C'est elle qui aide a choisir, pas le nom.
     pub question: String,
     pub group: DomainGroup,
+    /// Le libelle du groupe, deja traduit.
+    ///
+    /// Redondant avec `group` en apparence, mais il evite que l'interface tienne
+    /// sa propre table de traduction : un libelle est un texte metier, et le
+    /// frontend n'en ecrit aucun. Sans ce champ, les quatre libelles et leur
+    /// ordre se retrouveraient ecrits des deux cotes de la frontiere, libres de
+    /// diverger.
+    pub group_label: String,
     pub status: DomainStatus,
     /// Les normes ou sources mobilisees, citation courte.
     pub sources: Vec<String>,
@@ -124,6 +132,7 @@ fn from_provenance(
         name: name.to_string(),
         question: question.to_string(),
         group,
+        group_label: group.label_fr().to_string(),
         status: if warnings.is_empty() {
             DomainStatus::Ready
         } else {
@@ -142,6 +151,7 @@ fn blocked(id: &str, name: &str, question: &str, group: DomainGroup, reason: &st
         name: name.to_string(),
         question: question.to_string(),
         group,
+        group_label: group.label_fr().to_string(),
         status: DomainStatus::Blocked,
         sources: Vec::new(),
         reserve: None,
@@ -192,6 +202,7 @@ pub fn registry() -> Result<Vec<Domain>> {
             name: "Chaîne de cotes".into(),
             question: "Que donne cet empilement de cotes ?".into(),
             group: DomainGroup::Dimensional,
+            group_label: DomainGroup::Dimensional.label_fr().to_string(),
             status: DomainStatus::Ready,
             sources: vec!["aucune source externe : géométrie seule".into()],
             reserve: None,
@@ -345,6 +356,17 @@ mod tests {
         // obligerait l'utilisateur a deviner ce qu'il y trouverait.
         for domain in domains() {
             assert!(domain.question.ends_with('?'), "{}", domain.id);
+        }
+    }
+
+    #[test]
+    fn chaque_domaine_porte_le_libelle_de_son_groupe() {
+        // Sans ce champ, l'interface tiendrait sa propre table de traduction :
+        // quatre libelles metier ecrits des deux cotes de la frontiere, libres
+        // de diverger le jour ou l'un change.
+        for domain in domains() {
+            assert_eq!(domain.group_label, domain.group.label_fr(), "{}", domain.id);
+            assert!(!domain.group_label.is_empty());
         }
     }
 

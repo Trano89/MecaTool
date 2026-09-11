@@ -68,16 +68,17 @@ export function Chain() {
 
   return (
     <div className="stack">
-      <div>
+      <div className="page-header">
         <h1>Chaîne de cotes</h1>
-        <p className="muted" style={{ marginTop: "0.35rem" }}>
-          Ce que devient une dimension qui dépend de plusieurs cotes tolérancées.
+        <p className="lead">
+          Ce que devient une dimension qui dépend de plusieurs cotes tolérancées — et quel maillon
+          y pèse le plus lourd.
         </p>
       </div>
 
       <form className="card" onSubmit={submit}>
-        <div className="row" style={{ alignItems: "flex-start" }}>
-          <div className="grow">
+        <div className="row">
+          <div className="field grow">
             <label htmlFor="links">Maillons, un par ligne</label>
             <textarea
               id="links"
@@ -92,7 +93,7 @@ export function Chain() {
             </p>
           </div>
 
-          <div style={{ minWidth: "160px" }}>
+          <div className="field" style={{ minWidth: "170px" }}>
             <label htmlFor="min">Minimum voulu (mm)</label>
             <input
               id="min"
@@ -115,9 +116,12 @@ export function Chain() {
             />
           </div>
 
-          <button type="submit" className="btn-primary">
-            Calculer
-          </button>
+          <div className="field">
+            <span className="field-label field-spacer" aria-hidden="true" />
+            <button type="submit" className="btn-primary">
+              Calculer
+            </button>
+          </div>
         </div>
       </form>
 

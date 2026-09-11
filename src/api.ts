@@ -10,14 +10,19 @@ import { invoke } from "@tauri-apps/api/core";
 
 import type {
   AppError,
+  BearingCatalogue,
   ChainReport,
   ClassComparison,
+  DesignationReading,
   Diagram,
+  Domain,
   EngineInfo,
   FitComparison,
   GeometricCatalogue,
   GroupAnalysis,
   MeasureKind,
+  MountingAdvice,
+  MountingOption,
   Report,
 } from "./types";
 
@@ -169,4 +174,61 @@ export function geometricCatalogue(): Promise<GeometricCatalogue> {
  */
 export function geometric(specs: string[]): Promise<GroupAnalysis> {
   return call<GroupAnalysis>("geometric", { specs });
+}
+
+/**
+ * Le registre des domaines, lu une fois au démarrage.
+ *
+ * C'est le moteur qui dit ce que l'application sait faire. La barre latérale,
+ * l'accueil et la palette de commandes se construisent à partir de cette liste
+ * et d'elle seule : ajouter un domaine ne touche aucun composant.
+ */
+export function domains(): Promise<Domain[]> {
+  return call<Domain[]>("domains", {});
+}
+
+/**
+ * Le catalogue des roulements : familles, régimes de charge, cas d'emploi.
+ *
+ * Rendu d'un bloc avant toute saisie, comme le catalogue géométrique — et pour
+ * la même raison : ses `warnings` portent la réserve qui dit que le tableau des
+ * classes de montage n'est **pas** normatif. C'est à savoir avant de s'en
+ * servir, pas après.
+ */
+export function bearingCatalogue(): Promise<BearingCatalogue> {
+  return call<BearingCatalogue>("bearing_catalogue", {});
+}
+
+/**
+ * Les lectures possibles d'une désignation de roulement.
+ *
+ * Plusieurs, et non une : la source ne dit pas comment découper une
+ * désignation, et le moteur refuse de trancher à la place de l'utilisateur.
+ */
+export function bearingRead(designation: string): Promise<DesignationReading[]> {
+  return call<DesignationReading[]>("bearing_read", { designation });
+}
+
+/** Les cas d'emploi d'un régime, avec ce que chacun donnerait. */
+export function bearingOptions(
+  regime: string,
+  family: string,
+  boreMm: string,
+): Promise<MountingOption[]> {
+  return call<MountingOption[]>("bearing_options", { regime, family, boreMm });
+}
+
+/**
+ * Le conseil complet : la classe recommandée, et les écarts qui en découlent.
+ *
+ * Deux natures de source dans un seul résultat — une recommandation de
+ * fabricant, puis un calcul normatif ISO 286. L'écran doit les tenir séparées.
+ */
+export function bearingAdvise(
+  regime: string,
+  condition: string,
+  family: string,
+  boreMm: string,
+): Promise<MountingAdvice> {
+  return call<MountingAdvice>("bearing_advise", { regime, condition, family, boreMm });
 }

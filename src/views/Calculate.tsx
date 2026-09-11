@@ -101,9 +101,16 @@ export function Calculate({ query, onQueryChange }: Props) {
 
   return (
     <div className="stack">
+      <div className="page-header">
+        <h1>Calculer un ajustement</h1>
+        <p className="lead">
+          Une seule saisie. C'est elle qui détermine si MecaTool calcule, vérifie ou cherche.
+        </p>
+      </div>
+
       <form onSubmit={submit} className="card">
         <div className="row">
-          <div className="grow">
+          <div className="field grow">
             <label htmlFor="designation">Désignation</label>
             <input
               id="designation"
@@ -121,7 +128,7 @@ export function Calculate({ query, onQueryChange }: Props) {
             </p>
           </div>
 
-          <div style={{ minWidth: "180px" }}>
+          <div className="field" style={{ minWidth: "190px" }}>
             <label htmlFor="clearance">Jeu recherché (facultatif)</label>
             <input
               id="clearance"
@@ -135,20 +142,21 @@ export function Calculate({ query, onQueryChange }: Props) {
             <p className="hint">En µm, ou avec unité : « 0.01..0.03 mm ».</p>
           </div>
 
-          <button type="submit" className="btn-primary" disabled={busy}>
-            {busy ? "Calcul…" : "Calculer"}
-          </button>
+          <div className="field">
+            <span className="field-label field-spacer" aria-hidden="true" />
+            <button type="submit" className="btn-primary" disabled={busy}>
+              {busy ? "Calcul…" : "Calculer"}
+            </button>
+          </div>
         </div>
 
-        <div className="row" style={{ marginTop: "0.9rem", gap: "0.4rem" }}>
-          <span className="faint" style={{ alignSelf: "center" }}>
-            Exemples :
-          </span>
+        <div className="chips">
+          <span className="chips-label">Exemples</span>
           {EXAMPLES.map((example) => (
             <button
               key={example.label}
               type="button"
-              className="btn-quiet"
+              className="chip"
               onClick={() => pick(example.query)}
               title={example.why}
             >
