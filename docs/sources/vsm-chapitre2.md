@@ -295,3 +295,33 @@ Le changement de fond de 2013 est l'existence de **deux systèmes**, A et B, qui
 désignent différemment le côté de la soudure — double trait de référence contre
 trait unique. La norme interdit de les mélanger et exige que le dessin dise
 lequel il emploie. C'est une règle vérifiable.
+
+## Le recueil confronté à la norme : ISO 13920
+
+L'utilisateur a fourni la norme elle-même, NF EN ISO 13920 d'octobre 1996. La
+transcription faite depuis le VSM 2022 lui a été confrontée par un script
+rejouable — `scripts/verify-iso13920-tables.py`. **Quatre-vingts cases, aucun
+écart de valeur sur les échelons communs.** Mais deux différences de couverture
+et une erreur :
+
+**Le recueil tronque.** La norme porte un échelon de plus dans les deux tableaux
+de longueurs et de forme : « > 20 000 », ouvert, absent du recueil. Le tableau
+des longueurs compte onze échelons et non dix ; celui de la forme, dix et non
+neuf.
+
+**Une valeur était fausse.** La classe E, échelon 400 à 1000, vaut **1,5 mm** dans
+la norme. Elle avait été transcrite **1,6** depuis la photographie du recueil. Que
+l'erreur vienne du recueil ou de ma lecture de la photo, elle est corrigée et
+c'est la norme qui fait foi.
+
+Le script vaut d'être expliqué, parce que les deux tableaux ont demandé deux
+méthodes. Les longueurs portent toutes le signe `±`, qui sert donc de
+séparateur. Les valeurs de forme sont nues, et la couche de texte les rend
+collées : `0,511,52345678` est la ligne E entière, qu'aucune expression
+régulière ne peut découper — `11,5` se lit « 1 puis 1,5 » ou « 11,5 » selon ce
+qu'on cherche. On prend alors le problème à l'envers : au lieu de découper la
+chaîne de la norme, on **reconstruit** la même chaîne depuis les valeurs
+embarquées et on compare. Une seule valeur fausse, et les chaînes diffèrent.
+
+Le script a été éprouvé en y injectant deux erreurs : il les a nommées, classe et
+colonne comprises.

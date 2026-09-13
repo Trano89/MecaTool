@@ -147,6 +147,10 @@ nulle part.
 | Écarts fondamentaux arbres    | ✅ vérifié | 10 lettres : d, e, f, g, h, js, k, m, n, p | ISO 286-2:2010, tableaux 18 à 26 |
 | Tolérances générales ISO 2768-1 | ✅ vérifié | 3 tables × 4 classes | DIN ISO 2768-1:1991-06, tableaux 1 à 3 |
 | Caractéristiques géométriques ISO 1101 | ⚠️ source secondaire | 17 entrées, 4 familles, 22 modificateurs | VSM « Extrait de normes » 2022, p. 174-189, recoupé avec l'édition 2014, p. 90-91 |
+| Symboles de soudure ISO 2553 | ✅ vérifié | 22 symboles élémentaires, 6 supplémentaires, 2 systèmes | ISO 2553:2013(F), tableaux 1 et 3, § 4.2 à 4.4 |
+| Tolérances de construction soudée ISO 13920 | ✅ vérifié | 3 tables, **80 valeurs** | EN ISO 13920:1996, tableaux 1 et 3, par script rejouable |
+| Symbole d'alésage ISO 15 | ⚠️ source secondaire | une règle, 4 codes spéciaux | VSM 2014, § 4.14.2.1 |
+| Classes de montage des roulements | ⚠️ recommandation | 5 cas, 4 familles | VSM 2014, tableau 237/1 — pratiques de fabricants |
 
 **Vérifié ne veut pas dire complet.** Les valeurs présentes ont été confrontées à
 la source ; il en manque encore beaucoup (voir ci-dessous).
