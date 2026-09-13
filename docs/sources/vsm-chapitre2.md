@@ -255,3 +255,43 @@ qui restera vide.
 Les pages 164 et 165 de l'édition 2022 portent aussi l'**ISO 8062-3** pour les
 pièces moulées — classes DCTG et GCTG, tableaux complets. Hors sujet ici, mais
 noté : c'est un domaine entier, adossable en l'état.
+
+## Les quatre PDF fournis pour la soudure
+
+Trois d'entre eux ne sont **pas** les normes : ce sont des fiches de
+correspondance d'une page, issues de la gestion documentaire de l'entreprise,
+qui renvoient vers l'équivalent européen.
+
+| Fichier | Ce que c'est | Millésime attesté |
+|---|---|---|
+| `5817_ISO.pdf` | fiche de correspondance | ISO 5817 éd. 2003 + corr. 2005 + corr. 2006 → EN ISO 5817 août 2007 |
+| `13920_ISO.pdf` | fiche de correspondance | ISO 13920 éd. 1996 → EN ISO 13920 août 1996 |
+| `4063_ISO.pdf` | fiche de correspondance | ISO 4063 éd. 2009 + corr. 2010 → EN ISO 4063 déc. 2010 |
+| `2553_ISO_(F)_2013…pdf` | **la norme**, 64 pages, français, couche de texte | ISO 2553:2013, quatrième édition |
+
+Une fiche atteste du millésime **existant**, pas de celui que le recueil
+transcrit. Elle ne remplit donc pas le champ d'édition ; elle est consignée en
+note.
+
+## ISO 2553:2013 — et ce qu'elle révèle du recueil
+
+C'est la **première source primaire** du domaine soudure, et elle corrige une
+erreur qu'aucune relecture du recueil n'aurait détectée.
+
+Le tableau 135/1 du VSM 2014 porte quinze symboles, numérotés 1 à 13 puis 18 et
+19, sous des désignations comme « Soudure en I » ou « Soudure sur bords
+relevés ». J'avais noté ce saut de 13 à 18 comme une lacune du recueil.
+
+Ce n'en était pas une. Le recueil cite SN EN 22553, c'est-à-dire l'**ISO
+2553:1992**. La quatrième édition, de 2013, a renuméroté et renommé : elle
+compte **vingt-deux** symboles élémentaires, et « Soudure en I » y devient
+« soudure bout à bout à bords droits ».
+
+Autrement dit : le recueil reproduit fidèlement une édition périmée. C'est
+exactement le risque que l'état `secondary` était censé signaler, et il s'est
+matérialisé. MecaTool suit la norme.
+
+Le changement de fond de 2013 est l'existence de **deux systèmes**, A et B, qui
+désignent différemment le côté de la soudure — double trait de référence contre
+trait unique. La norme interdit de les mélanger et exige que le dessin dise
+lequel il emploie. C'est une règle vérifiable.

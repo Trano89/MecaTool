@@ -1,0 +1,101 @@
+{
+  "dataset": "iso2553-2013.symbols",
+  "standard": {
+    "id": "ISO 2553",
+    "edition": "2013",
+    "title": "Soudage et techniques connexes — Représentations symboliques sur les dessins — Joints soudés",
+    "scope": "symboles élémentaires et supplémentaires, et les deux systèmes de représentation",
+    "source": "ISO 2553:2013(F), quatrième édition 2013-12-15. Exemplaire sous licence fourni par l'utilisateur.",
+    "verification": {
+      "state": "verified",
+      "against": "ISO 2553:2013(F), Tableau 1 (symboles élémentaires, 22 entrées), Tableau 3 (symboles supplémentaires, 6 entrées) et § 4.2 à 4.4 — lus dans la norme elle-même, couche de texte",
+      "on": "2026-09-13"
+    },
+    "notes": [
+      "PREMIÈRE SOURCE PRIMAIRE du domaine soudure. Contrairement aux données ISO 1101 et ISO 15, celle-ci ne vient pas d'un recueil : elle est lue dans la norme.",
+      "Le recueil VSM 2014 reproduit une édition PÉRIMÉE. Son tableau 135/1 porte quinze symboles numérotés 1 à 13 puis 18 et 19, sous des désignations différentes (« Soudure en I », « Soudure sur bords relevés »). Il cite SN EN 22553, c'est-à-dire l'ISO 2553:1992. La quatrième édition de 2013 a renuméroté et renommé : elle compte vingt-deux symboles élémentaires. MecaTool suit la norme, pas le recueil.",
+      "La numérotation qui semblait « sauter » de 13 à 18 dans le recueil n'était donc pas une lacune de transcription : c'est celle de l'édition antérieure.",
+      "Le changement majeur de 2013 est l'existence de DEUX systèmes, A et B. Ils ne se distinguent pas par les symboles mais par la façon de désigner le côté de la soudure, et la norme interdit de les mélanger.",
+      "Les symboles sont des tracés, non des caractères : la plupart n'ont pas d'équivalent Unicode fidèle. Ce jeu de données porte le vocabulaire — numéros, désignations, règles — et non les glyphes. Forcer un caractère approchant ferait afficher un symbole faux, ce qui est pire que pas de symbole.",
+      "Les dimensions des soudures (a, z, n, l, e) relèvent de l'Article 5 de la norme, non transcrit ici."
+    ]
+  },
+
+  "systems": [
+    {
+      "id": "A",
+      "name": "système A",
+      "reference_line": "double trait de référence : une ligne continue et une ligne interrompue",
+      "note": "Quand la seule exigence est d'indiquer qu'un assemblage doit être soudé, le double trait de référence n'est pas requis, puisqu'aucun détail n'est communiqué."
+    },
+    {
+      "id": "B",
+      "name": "système B",
+      "reference_line": "un seul trait de référence",
+      "note": null
+    }
+  ],
+
+  "system_rules": [
+    "Les systèmes A et B ne doivent pas être mélangés sur un même dessin.",
+    "Le dessin doit clairement indiquer quel système est utilisé, y compris les unités de mesure conformément à l'ISO 129-1.",
+    "Les articles, tableaux et figures suffixés « A » ou « B » ne s'appliquent respectivement qu'au système A ou au système B ; ceux sans suffixe s'appliquent aux deux."
+  ],
+
+  "base_symbol": {
+    "parts": ["ligne repère", "trait de référence", "fourche"],
+    "note": "Le symbole de base, sans type ni détail d'assemblage, sert souvent à indiquer la position des soudures de pointage."
+  },
+
+  "placement_rules": [
+    "Les symboles élémentaires se tracent sur le trait de référence, généralement en son milieu.",
+    "L'orientation des symboles élémentaires ne doit pas être différente de celle indiquée dans la norme.",
+    "Un symbole élémentaire peut être complété par des symboles supplémentaires, des dimensions, et des informations complémentaires.",
+    "Si une représentation claire par des symboles n'est pas réalisable, les sections droites des soudures peuvent être représentées et cotées."
+  ],
+
+  "footnotes": {
+    "full_penetration": "Les soudures sont à pleine pénétration sauf spécification contraire indiquée par les cotes sur le symbole de la soudure ou par référence à d'autres informations, par exemple le DMOS.",
+    "multi_part": "Peut être utilisé pour les assemblages de plus de deux parties."
+  },
+
+  "elementary": [
+    { "number": 1,  "designation": "soudure bout à bout à bords droits", "full_penetration": true,  "multi_part": false },
+    { "number": 2,  "designation": "soudure bout à bout en V", "full_penetration": true,  "multi_part": false },
+    { "number": 3,  "designation": "soudure bout à bout en Y", "full_penetration": true,  "multi_part": false },
+    { "number": 4,  "designation": "soudure bout à bout en demi V", "full_penetration": true,  "multi_part": false },
+    { "number": 5,  "designation": "soudure bout à bout en demi Y", "full_penetration": true,  "multi_part": false },
+    { "number": 6,  "designation": "soudure bout à bout en U", "full_penetration": true,  "multi_part": false },
+    { "number": 7,  "designation": "soudure bout à bout en J", "full_penetration": true,  "multi_part": false },
+    { "number": 8,  "designation": "soudure évasée en V", "full_penetration": false, "multi_part": false },
+    { "number": 9,  "designation": "soudure évasée à chanfrein", "full_penetration": false, "multi_part": false },
+    { "number": 10, "designation": "soudure d'angle", "full_penetration": false, "multi_part": false },
+    { "number": 11, "designation": "soudure en bouchons ou sur entailles", "full_penetration": false, "multi_part": false },
+    { "number": 12, "designation": "soudure par points par résistance", "full_penetration": false, "multi_part": false,
+      "note": "Y compris le bossage pour le système A." },
+    { "number": 13, "designation": "soudure par points par fusion", "full_penetration": false, "multi_part": false,
+      "note": "Et soudure par bossage pour le système B." },
+    { "number": 14, "designation": "soudure à la molette par résistance", "full_penetration": false, "multi_part": false },
+    { "number": 15, "designation": "soudure à la molette fusion", "full_penetration": false, "multi_part": false },
+    { "number": 16, "designation": "soudure des goujons", "full_penetration": false, "multi_part": false },
+    { "number": 17, "designation": "soudure bout à bout en V à flancs droits", "full_penetration": true,  "multi_part": false },
+    { "number": 18, "designation": "soudure bout à bout en demi V à flancs droits", "full_penetration": true,  "multi_part": false },
+    { "number": 19, "designation": "soudure sur chant", "full_penetration": false, "multi_part": true },
+    { "number": 20, "designation": "soudure bout à bout à bords relevés, ou soudure en angle extérieure", "full_penetration": false, "multi_part": false },
+    { "number": 21, "designation": "soudure par rechargement", "full_penetration": false, "multi_part": true },
+    { "number": 22, "designation": "soudure par transparence", "full_penetration": false, "multi_part": false }
+  ],
+
+  "supplementary": [
+    { "number": 1, "designation": "plate — finition affleurée",
+      "note": "Une soudure qui nécessite une face affleurée ou convexe SANS finition après soudage se spécifie par ce symbole de contour. Une finition obtenue par traitement après soudage exige une information supplémentaire, par exemple une note dans la fourche." },
+    { "number": 2, "designation": "convexe", "note": null },
+    { "number": 3, "designation": "concave", "note": null },
+    { "number": 4, "designation": "bords du cordon de soudure convenablement mouillés",
+      "note": "Les bords doivent être convenablement mouillés par soudure ou finition. Le procédé détaillé peut être spécifié par instruction ou par le DMOS." },
+    { "number": 5, "designation": "passe de racine, ou reprise à l'envers",
+      "note": "La passe de racine se réalise APRÈS une soudure bout à bout en V ; la reprise à l'envers, AVANT. La séquence des passes peut être indiquée par des traits de référence multiples, une note dans la fourche, ou un descriptif de mode opératoire." },
+    { "number": 6, "designation": "surépaisseur spécifiée à la racine",
+      "note": "Pour le système B, également utilisé pour désigner les soudures bout à bout entre tôles à bords relevés et les soudures en angle extérieures." }
+  ]
+}
