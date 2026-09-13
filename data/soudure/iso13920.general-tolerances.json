@@ -1,0 +1,113 @@
+{
+  "dataset": "iso13920.general-tolerances",
+  "standard": {
+    "id": "ISO 13920",
+    "edition": "",
+    "title": "Soudage — Tolérances générales relatives aux constructions soudées — Dimensions des longueurs et angles, formes et positions",
+    "scope": "tolérances générales linéaires, angulaires, et de forme et position des constructions soudées",
+    "source": "VSM, « Extrait de normes », édition 2022, § 2.7.4, tableaux 163/1, 163/2 et 164/1, pages 163 et 164.",
+    "verification": {
+      "state": "secondary",
+      "from": "VSM « Extrait de normes » 2022, § 2.7.4, pages 163 et 164",
+      "reproduces": "SN EN ISO 13920",
+      "on": "2026-09-13"
+    },
+    "notes": [
+      "Ce jeu de données vient d'un recueil qui reproduit la norme, pas de la norme. Le recueil cite « SN EN ISO 13920 » sans millésime, et MecaTool ne l'invente pas.",
+      "Contrairement au reste du chapitre soudure, ces trois tableaux sont COMPLETS dans le recueil : quatre classes sur dix échelons pour les longueurs, quatre classes sur trois échelons pour les angles, quatre classes sur neuf échelons pour la forme et la position. Rien n'y est présenté comme un exemple.",
+      "Les tolérances angulaires s'expriment de deux façons : en degrés et minutes, et en millimètres par mètre. La seconde est la valeur de la première, « calculée et arrondie » selon le recueil. MecaTool porte les deux, et ne recalcule pas l'une à partir de l'autre : l'arrondi appartient à la source.",
+      "L'échelon angulaire se lit sur la LONGUEUR DU PLUS PETIT CÔTÉ de l'angle, et non sur la valeur de l'angle. Même principe que l'ISO 2768-1.",
+      "Le premier échelon linéaire, de 2 à 30 mm, vaut ±1 pour les quatre classes : c'est une cellule fusionnée dans le recueil, pas une valeur répétée par erreur.",
+      "Ces tolérances « ne sont valables que pour des dimensions pour lesquelles aucun traitement n'est prévu après le soudage » (§ 2.7.4).",
+      "La norme ne spécifie PAS la coaxialité ni la symétrie. Le recueil le dit : « si de telles tolérances sont exigées pour des raisons fonctionnelles, elles doivent être indiquées sur les dessins ». MecaTool refuse donc de conclure sur ces deux caractéristiques plutôt que d'extrapoler depuis la rectitude.",
+      "La désignation porte deux lettres : une classe de longueur et une classe de forme, par exemple « ISO 13920-BF ». Les deux sont indépendantes."
+    ]
+  },
+
+  "classes": {
+    "size": [
+      { "symbol": "A", "name": "fin" },
+      { "symbol": "B", "name": "moyen" },
+      { "symbol": "C", "name": "grossier" },
+      { "symbol": "D", "name": "très grossier" }
+    ],
+    "form": [
+      { "symbol": "E", "name": "fin" },
+      { "symbol": "F", "name": "moyen" },
+      { "symbol": "G", "name": "grossier" },
+      { "symbol": "H", "name": "très grossier" }
+    ]
+  },
+
+  "linear": {
+    "table": "Tableau 163/1 — Tolérances relatives aux dimensions linéaires",
+    "value_unit": "millimetre",
+    "size_unit": "millimetre",
+    "size_ranges": [
+      { "from": 2, "to": 30 },
+      { "from": 30, "to": 120 },
+      { "from": 120, "to": 400 },
+      { "from": 400, "to": 1000 },
+      { "from": 1000, "to": 2000 },
+      { "from": 2000, "to": 4000 },
+      { "from": 4000, "to": 8000 },
+      { "from": 8000, "to": 12000 },
+      { "from": 12000, "to": 16000 },
+      { "from": 16000, "to": 20000 }
+    ],
+    "rows": {
+      "A": [1, 1, 1, 2, 3, 4, 5, 6, 7, 8],
+      "B": [1, 2, 2, 3, 4, 6, 8, 10, 12, 14],
+      "C": [1, 3, 4, 6, 8, 11, 14, 18, 21, 24],
+      "D": [1, 4, 7, 9, 12, 16, 21, 27, 32, 36]
+    }
+  },
+
+  "angular": {
+    "table": "Tableau 163/2 — Tolérances relatives aux dimensions angulaires",
+    "size_unit": "millimetre",
+    "size_basis": "longueur du plus petit côté de l'angle",
+    "size_ranges": [
+      { "from": 0, "to": 400 },
+      { "from": 400, "to": 1000 },
+      { "from": 1000, "to": null }
+    ],
+    "rows_angle": {
+      "A": ["20'", "15'", "10'"],
+      "B": ["45'", "30'", "20'"],
+      "C": ["1°", "45'", "30'"],
+      "D": ["1°30'", "1°15'", "1°"]
+    },
+    "rows_mm_per_metre": {
+      "A": [6, 4.5, 3],
+      "B": [13, 9, 6],
+      "C": [18, 13, 9],
+      "D": [26, 22, 18]
+    }
+  },
+
+  "form": {
+    "table": "Tableau 164/1 — Tolérances de rectitude, planéité et parallélisme",
+    "value_unit": "millimetre",
+    "size_unit": "millimetre",
+    "size_basis": "grand côté de la surface",
+    "characteristics": ["rectitude", "planéité", "parallélisme"],
+    "size_ranges": [
+      { "from": 30, "to": 120 },
+      { "from": 120, "to": 400 },
+      { "from": 400, "to": 1000 },
+      { "from": 1000, "to": 2000 },
+      { "from": 2000, "to": 4000 },
+      { "from": 4000, "to": 8000 },
+      { "from": 8000, "to": 12000 },
+      { "from": 12000, "to": 16000 },
+      { "from": 16000, "to": 20000 }
+    ],
+    "rows": {
+      "E": [0.5, 1, 1.6, 2, 3, 4, 5, 6, 7],
+      "F": [1, 1.5, 3, 4.5, 6, 8, 10, 12, 14],
+      "G": [1.5, 3, 5.5, 9, 11, 16, 20, 22, 25],
+      "H": [2.5, 5, 9, 14, 18, 26, 32, 36, 40]
+    }
+  }
+}

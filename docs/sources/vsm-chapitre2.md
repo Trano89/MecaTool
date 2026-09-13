@@ -206,3 +206,52 @@ raison de tomber juste sur la structure de l'édition suivante.
 - **§ 2.9 (2022, pages 204 à 211)** : états de surface.
 - **§ 2.12 (2014, pages 102 à 109)** : états de surface, édition antérieure à
   l'ISO 21920 ; les deux ne sont donc pas interchangeables.
+
+## Relevé du chapitre soudure
+
+Deux endroits, dans les deux éditions, et ils ne se recouvrent pas.
+
+### Édition 2014, § 3.1 « Raccords soudés », pages 134 à 147
+
+| Sujet | Pages | Norme citée | État de la source |
+|---|---|---|---|
+| Symboles élémentaires | 135 | SN EN 22553 (ISO 2553) | **exploitable** — 15 symboles, lisibles |
+| Symboles complémentaires | 135 | ISO 2553 | **exploitable** |
+| Règles d'insertion | 137 | ISO 2553 | exemples, pas l'énoncé complet |
+| Indications complémentaires | 138 | ISO 2553 | exemples |
+| Numéros de procédés | 138 | SN EN ISO 4063 | **partiel** — annonce huit groupes principaux, en montre quatre |
+| Classification des irrégularités | 139 | SN EN ISO 6520-1 | groupes seulement |
+| Niveaux de qualité B / C / D | 139 | SN EN ISO 5817 | **deux exemples** sur des dizaines |
+| Cotation des cordons | 140 | — | exploitable |
+| Préparation des joints | 141-147 | SN EN ISO 9692-1 à -4 | matrices de dessins, transcription risquée |
+
+La numérotation des symboles élémentaires saute de 13 à 18 : les numéros 14 à 17
+existent dans l'ISO 2553 mais ne figurent pas au recueil.
+
+Le tableau 139/2 est titré « **Exemples** d'indications des limites
+d'irrégularité ». C'est la limite décisive : la question « quel niveau de
+qualité exiger » ne peut pas se répondre avec deux lignes d'exemple.
+
+### Édition 2022, § 2.7.4, pages 163 et 164
+
+| Sujet | Page | Norme | État |
+|---|---|---|---|
+| Tolérances linéaires, classes A à D | 163 | SN EN ISO 13920 | **complet** — 4 classes × 10 échelons |
+| Tolérances angulaires, classes A à D | 163 | SN EN ISO 13920 | **complet** — en degrés et minutes, et en mm/m |
+| Rectitude, planéité, parallélisme, classes E à H | 164 | SN EN ISO 13920 | **complet** — 4 classes × 9 échelons |
+
+C'est le seul bloc de valeurs numériques complet de tout le chapitre, et il
+tombe juste : les tolérances angulaires s'expriment en degrés et minutes
+(`±20′`, `±1°30′`), ce que le type `Angle` en millisecondes d'arc représente
+exactement — il avait été construit pour l'ISO 2768-1, qui pose le même problème.
+
+Le recueil précise que l'ISO 13920 ne spécifie **pas** la coaxialité ni la
+symétrie : « si de telles tolérances sont exigées pour des raisons
+fonctionnelles, elles doivent être indiquées sur les dessins ». Une case vide
+qui restera vide.
+
+### Trouvaille de bord
+
+Les pages 164 et 165 de l'édition 2022 portent aussi l'**ISO 8062-3** pour les
+pièces moulées — classes DCTG et GCTG, tableaux complets. Hors sujet ici, mais
+noté : c'est un domaine entier, adossable en l'état.
