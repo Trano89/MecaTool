@@ -325,3 +325,39 @@ embarquées et on compare. Une seule valeur fausse, et les chaînes diffèrent.
 
 Le script a été éprouvé en y injectant deux erreurs : il les a nommées, classe et
 colonne comprises.
+
+## L'ISO 15 confrontée : une attribution fausse
+
+L'utilisateur a fourni l'ISO 15:2011(E), troisième édition. Elle corrige deux
+choses, et aucune n'était une erreur de transcription.
+
+**Le millésime n'était pas 1998.** L'utilisateur l'avait indiqué de mémoire, et
+c'était vraisemblable. La norme dit **2011**. Le champ d'édition étant resté vide
+par discipline, rien de faux n'avait été écrit.
+
+**La règle n'est pas dans l'ISO 15.** Son domaine d'application est explicite :
+« preferred boundary dimensions for radial bearings of the diameter series 7, 8,
+9, 0, 1, 2, 3 and 4 ». Ce sont des **dimensions**. Ses tableaux donnent le
+diamètre `d` en millimètres, directement, sans aucune colonne de symbole.
+
+La règle « symbole = d/5 » que le recueil énonce sous un titre citant l'ISO 15
+vient donc d'ailleurs — vraisemblablement d'une pratique de désignation, le
+§ 4.14.1 du même recueil citant par ailleurs la DIN 623-1. Le jeu de données ne
+s'attribue plus de norme, et un test empêche l'attribution de revenir.
+
+**Ce que l'ISO 15 apporte en propre**, et qui est désormais embarqué comme donnée
+vérifiée : les **soixante-treize diamètres d'alésage normalisés**, de 0,6 à
+950 mm.
+
+Confrontés à la règle du recueil, dix-huit d'entre eux n'ont aucun symbole :
+
+| Diamètres | Pourquoi |
+|---|---|
+| 0,6 / 1,5 / 2,5 | non entiers, sous le domaine des symboles à un chiffre |
+| **22 / 28 / 32** | entiers dans le domaine multiplié, mais pas multiples de cinq |
+| 500 à 950 | au-delà du plafond de 480 mm |
+
+Ce n'est pas une lacune de transcription : c'est une limite de la règle
+elle-même, et MecaTool peut maintenant distinguer deux refus qui n'ont pas le
+même sens — « 11 mm n'est pas un alésage normalisé » et « 22 mm en est un, mais
+la règle ne sait pas l'écrire ».

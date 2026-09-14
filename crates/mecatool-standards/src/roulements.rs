@@ -542,6 +542,33 @@ mod tests {
     }
 
     #[test]
+    fn la_regle_dalesage_ne_sattribue_a_aucune_norme() {
+        // Elle a porte l'identifiant « ISO 15 », parce que le recueil l'enonce
+        // sous un titre citant cette norme. L'ISO 15:2011, lue depuis, ne
+        // contient aucun symbole d'alesage : ses tableaux donnent le diametre
+        // directement. L'attribution etait donc fausse.
+        //
+        // Ce test empeche qu'elle revienne. Citer une norme qui ne dit pas ce
+        // qu'on lui fait dire est pire que ne citer personne.
+        let standard = bore().standard();
+        assert!(
+            !standard.id.contains("ISO 15"),
+            "la regle de designation ne vient pas de l'ISO 15 : {}",
+            standard.id
+        );
+        match &standard.verification {
+            VerificationStatus::Secondary { reproduces, .. } => {
+                assert!(
+                    !reproduces.starts_with("ISO 15"),
+                    "le champ `reproduces` ne doit pas nommer l'ISO 15 comme \
+                     source de la regle : {reproduces}"
+                );
+            }
+            other => panic!("statut inattendu : {other:?}"),
+        }
+    }
+
+    #[test]
     fn le_tableau_de_montage_est_une_recommandation_pas_une_norme() {
         // Le coeur de ce jeu de donnees : il ne vient d'aucune norme, et le
         // confondre avec une exigence tromperait celui qui doit decider.

@@ -1,22 +1,22 @@
 {
   "dataset": "iso15.bore-designation",
   "standard": {
-    "id": "ISO 15",
+    "id": "Désignation d'alésage des roulements",
     "edition": "",
-    "title": "Roulements — Roulements radiaux — Dimensions d'encombrement, plan général",
+    "title": "Correspondance entre le symbole d'alésage d'une désignation de roulement et le diamètre d'alésage",
     "scope": "règle de correspondance entre le symbole d'alésage et le diamètre d'alésage",
     "source": "VSM, « Extrait de normes », édition 2014, § 4.14.2.1, page 234.",
     "verification": {
       "state": "secondary",
       "from": "VSM « Extrait de normes » 2014, § 4.14.2.1, page 234",
-      "reproduces": "ISO 15",
+      "reproduces": "une pratique de désignation que le recueil place sous un titre citant l'ISO 15",
       "on": "2026-09-11"
     },
     "notes": [
+      "ATTRIBUTION CORRIGÉE. Ce jeu portait l'identifiant « ISO 15 », parce que le recueil énonce la règle sous un titre citant cette norme. L'ISO 15:2011, lue depuis, ne contient AUCUN symbole d'alésage : ses tableaux donnent le diamètre d directement. La règle vient donc d'ailleurs — vraisemblablement d'une pratique de désignation reprise par le recueil, dont le § 4.14.1 cite par ailleurs la DIN 623-1. MecaTool ne lui attribue plus de norme.",
       "La source énonce la règle en une phrase : « Le symbole d'alésage est égal au diamètre en mm jusqu'à un diamètre d'alésage d = 9 mm. Les diamètres d'alésage 10, 12, 15 et 17 mm correspondent aux symboles 00, 01, 02 et 03. De 20 à 480 mm, le symbole d'alésage est égal au 1/5 du diamètre d'alésage. »",
       "C'est une RÈGLE et non une table : MecaTool l'applique au lieu de recopier 96 correspondances. Les quatre codes spéciaux sont la seule partie qui s'énumère, parce qu'ils échappent justement à la règle.",
-      "Le recueil cite « ISO 15 » sans millésime. MecaTool ne l'invente pas.",
-      "L'utilisateur a indiqué l'édition 1998, et c'est cohérent : le recueil consulté date de 2014, donc antérieur à la révision de 2017. Mais le recueil ne cite aucun millésime, et MecaTool ne complète pas une citation normative par déduction, si vraisemblable soit-elle. Le champ d'édition reste vide jusqu'à confrontation avec la norme elle-même.",
+      "La règle ne couvre pas tous les roulements qui existent. Confrontée aux soixante-treize diamètres normalisés de l'ISO 15:2011, elle en laisse dix-huit sans symbole : 0,6 / 1,5 / 2,5 sous le domaine des symboles à un chiffre, 22 / 28 / 32 qui ne sont pas multiples de cinq, et tout ce qui dépasse 480 mm. Ce n'est pas une lacune de transcription mais une limite de la règle elle-même.",
       "La règle ne dit PAS comment découper une désignation complète en série et symbole d'alésage. « 6203 » se lit série 62 + symbole 03, mais « 623 » se lit série 62 + symbole 3, et rien dans la phrase citée ne permet de trancher mécaniquement. MecaTool rend donc les lectures possibles au lieu d'en choisir une.",
       "Au-delà du symbole 96, soit 480 mm, la source ne dit rien : MecaTool refuse de conclure plutôt que de prolonger la règle."
     ]
