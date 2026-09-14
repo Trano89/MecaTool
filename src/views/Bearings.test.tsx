@@ -172,6 +172,29 @@ describe("écran des roulements", () => {
     expect(screen.getByText(advice.designation)).toBeInTheDocument();
   });
 
+  it("va jusqu'à l'ajustement, et montre les deux moitiés du calcul", async () => {
+    await show();
+    const open = await screen.findAllByRole("button", { name: "Voir les écarts" });
+    await userEvent.click(open[0]!);
+    await waitFor(() => expect(bearingAdvise).toHaveBeenCalled());
+
+    // Le troisième panneau : ce que les deux premiers ne pouvaient pas dire.
+    expect(screen.getByText("3 — Ajustement obtenu")).toBeInTheDocument();
+
+    // La phrase vient du moteur — l'écran ne la recompose pas à partir des
+    // signes. Si le moteur changeait de convention, c'est lui qui changerait
+    // de phrase, et cette assertion suivrait la fixture.
+    const attendu =
+      advice.fit.summary.charAt(0).toUpperCase() + advice.fit.summary.slice(1);
+    expect(screen.getByText(attendu)).toBeInTheDocument();
+
+    // Et les deux moitiés du calcul restent lisibles : l'alésage du roulement
+    // n'est pas h0, c'est tout l'intérêt.
+    expect(screen.getByText(advice.bearing_bore.characteristic)).toBeInTheDocument();
+    expect(screen.getByText(advice.bearing_bore.range_label)).toBeInTheDocument();
+    expect(screen.getByText("Normale")).toBeInTheDocument();
+  });
+
   it("porte le verdict par un libellé, pas seulement par une couleur", async () => {
     await show();
     const open = await screen.findAllByRole("button", { name: "Voir les écarts" });
