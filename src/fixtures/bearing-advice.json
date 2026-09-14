@@ -107,9 +107,27 @@
       ]
     }
   },
+  "bearing_bore": {
+    "ring": "inner",
+    "nominal": 50000000,
+    "deviations": {
+      "lower": -12000,
+      "upper": 0
+    },
+    "characteristic": "Δdmp",
+    "meaning": "écart du diamètre moyen d'alésage dans un plan unique",
+    "range_label": "au-dessus de 30 mm jusqu'à 50 mm",
+    "tolerance_class": "Normale"
+  },
+  "fit": {
+    "min_clearance": -25000,
+    "max_clearance": -2000,
+    "kind": "interference",
+    "summary": "serrage de 2 µm à 25 µm"
+  },
   "conclusion": {
     "verdict": "caution",
-    "detail": "Ø50 k5 — classe k5 recommandée pour roulements à billes radiaux sous charge tournante sur la bague intérieure, ou direction de charge indéterminée.",
+    "detail": "Ø50 k5 — classe k5 recommandée pour roulements à billes radiaux sous charge tournante sur la bague intérieure, ou direction de charge indéterminée. Sur l'arbre : serrage de 2 µm à 25 µm.",
     "why": [
       {
         "label": "Alésage du roulement",
@@ -135,32 +153,42 @@
         "label": "Écarts de la classe",
         "expression": "ISO 286-1",
         "value": "ei = +2 µm, es = +13 µm"
+      },
+      {
+        "label": "Tolérance de l'alésage",
+        "expression": "Δdmp — classe Normale",
+        "value": "-12 µm à 0"
+      },
+      {
+        "label": "Ajustement obtenu",
+        "expression": "écarts de l'alésage − écarts de l'arbre",
+        "value": "serrage de 2 µm à 25 µm"
       }
     ],
     "warnings": [
-      "ISO 15 (règle de correspondance entre le symbole d'alésage et le diamètre d'alésage) : Donnée transcrite d'un recueil technique, non confrontée à la norme elle-même. Source : VSM « Extrait de normes » 2014, § 4.14.2.1, page 234, qui reproduit ISO 15.",
+      "Désignation d'alésage des roulements (règle de correspondance entre le symbole d'alésage et le diamètre d'alésage) : Donnée transcrite d'un recueil technique, non confrontée à la norme elle-même. Source : VSM « Extrait de normes » 2014, § 4.14.2.1, page 234, qui reproduit une pratique de désignation que le recueil place sous un titre citant l'ISO 15.",
       "Montage des roulements — portée d'arbre (classe de tolérance d'arbre selon le régime de charge, le type de roulement et le diamètre) : Pratique recommandée, sans caractère normatif : aucune norme ne l'impose, et s'en écarter reste légitime si la raison en est connue. Recommandée par les fabricants de roulements, relayés par le VSM « Extrait de normes » 2014, tableau 237/1, page 237."
     ]
   },
   "provenance": {
     "references": [
       {
-        "id": "ISO 15",
+        "id": "Désignation d'alésage des roulements",
         "edition": "",
-        "title": "Roulements — Roulements radiaux — Dimensions d'encombrement, plan général",
+        "title": "Correspondance entre le symbole d'alésage d'une désignation de roulement et le diamètre d'alésage",
         "scope": "règle de correspondance entre le symbole d'alésage et le diamètre d'alésage",
         "source": "VSM, « Extrait de normes », édition 2014, § 4.14.2.1, page 234.",
         "verification": {
           "state": "secondary",
           "from": "VSM « Extrait de normes » 2014, § 4.14.2.1, page 234",
-          "reproduces": "ISO 15",
+          "reproduces": "une pratique de désignation que le recueil place sous un titre citant l'ISO 15",
           "on": "2026-09-11"
         },
         "notes": [
+          "ATTRIBUTION CORRIGÉE. Ce jeu portait l'identifiant « ISO 15 », parce que le recueil énonce la règle sous un titre citant cette norme. L'ISO 15:2011, lue depuis, ne contient AUCUN symbole d'alésage : ses tableaux donnent le diamètre d directement. La règle vient donc d'ailleurs — vraisemblablement d'une pratique de désignation reprise par le recueil, dont le § 4.14.1 cite par ailleurs la DIN 623-1. MecaTool ne lui attribue plus de norme.",
           "La source énonce la règle en une phrase : « Le symbole d'alésage est égal au diamètre en mm jusqu'à un diamètre d'alésage d = 9 mm. Les diamètres d'alésage 10, 12, 15 et 17 mm correspondent aux symboles 00, 01, 02 et 03. De 20 à 480 mm, le symbole d'alésage est égal au 1/5 du diamètre d'alésage. »",
           "C'est une RÈGLE et non une table : MecaTool l'applique au lieu de recopier 96 correspondances. Les quatre codes spéciaux sont la seule partie qui s'énumère, parce qu'ils échappent justement à la règle.",
-          "Le recueil cite « ISO 15 » sans millésime. MecaTool ne l'invente pas.",
-          "L'utilisateur a indiqué l'édition 1998, et c'est cohérent : le recueil consulté date de 2014, donc antérieur à la révision de 2017. Mais le recueil ne cite aucun millésime, et MecaTool ne complète pas une citation normative par déduction, si vraisemblable soit-elle. Le champ d'édition reste vide jusqu'à confrontation avec la norme elle-même.",
+          "La règle ne couvre pas tous les roulements qui existent. Confrontée aux soixante-treize diamètres normalisés de l'ISO 15:2011, elle en laisse dix-huit sans symbole : 0,6 / 1,5 / 2,5 sous le domaine des symboles à un chiffre, 22 / 28 / 32 qui ne sont pas multiples de cinq, et tout ce qui dépasse 480 mm. Ce n'est pas une lacune de transcription mais une limite de la règle elle-même.",
           "La règle ne dit PAS comment découper une désignation complète en série et symbole d'alésage. « 6203 » se lit série 62 + symbole 03, mais « 623 » se lit série 62 + symbole 3, et rien dans la phrase citée ne permet de trancher mécaniquement. MecaTool rend donc les lectures possibles au lieu d'en choisir une.",
           "Au-delà du symbole 96, soit 480 mm, la source ne dit rien : MecaTool refuse de conclure plutôt que de prolonger la règle."
         ]
@@ -225,6 +253,26 @@
           "LETTRES ABSENTES ET POURQUOI. Les lettres a, b, c d'une part, et r à zc d'autre part, emploient des échelons de dimensions nominales PLUS FINS que les 13 échelons standards : la plage 30..50 y est scindée en 30..40 et 40..50, la plage 50..80 en 50..65 et 65..80, etc. Les saisir sur les 13 échelons standards produirait des valeurs fausses. Elles seront ajoutées avec leurs propres échelons après vérification sur source primaire.",
           "La lettre k ne prend sa valeur tabulée que pour les degrés IT4 à IT7 ; pour tous les autres degrés, l'écart fondamental de k est nul.",
           "Les valeurs publiées résultent d'un arrondi vers des nombres normalisés et ne sont pas reproductibles exactement par les formules d'écart fondamental. La table fait foi."
+        ]
+      },
+      {
+        "id": "ISO 492",
+        "edition": "2014",
+        "title": "Roulements — Roulements radiaux — Spécification géométrique des produits (GPS) et valeurs de tolérance",
+        "scope": "écarts limites du diamètre moyen d'alésage et du diamètre moyen extérieur, classe de tolérance Normale",
+        "source": "NF ISO 492, 6 septembre 2014, version corrigée 1 de 2016-02, tableaux 2 et 3. Exemplaire sous licence fourni par l'utilisateur.",
+        "verification": {
+          "state": "verified",
+          "against": "ISO 492:2014(F), Tableau 2 (bague intérieure, classe Normale) et Tableau 3 (bague extérieure, classe Normale) — lus dans la couche de texte de la norme",
+          "on": "2026-09-14"
+        },
+        "notes": [
+          "CE JEU FERME UNE BOUCLE. MecaTool savait recommander une classe de tolérance pour l'arbre — k5, m6 — mais ignorait la tolérance propre de l'alésage du roulement, et ne pouvait donc pas calculer le serrage qui en résulte. Un alésage de roulement n'est pas h0 : il porte un écart normalisé, toujours négatif.",
+          "Seule la classe de tolérance NORMALE est transcrite. La norme en définit cinq — Normale, 6, 5, 4 et 2 — aux tableaux 2 à 11. La Normale est celle que supposent les tableaux de recommandation de montage. Les quatre autres existent et ne sont pas ici : c'est une lacune bornée et déclarée, pas un oubli.",
+          "Seuls les écarts du diamètre MOYEN sont transcrits : Δdmp pour l'alésage, ΔDmp pour le diamètre extérieur. Ce sont ceux qui déterminent l'ajustement. Les autres colonnes des mêmes tableaux — Vdsp, Vdmp, Kia, ΔBs, VBs — décrivent des variations de forme et de largeur, non l'ajustement, et ne sont pas reprises.",
+          "Les échelons de la bague intérieure et ceux de la bague extérieure NE COÏNCIDENT PAS. L'alésage distingue 2,5 à 10 puis 10 à 18 ; le diamètre extérieur distingue 2,5 à 6 puis 6 à 18. Et l'extérieur coupe à 150 là où l'intérieur va d'un trait de 120 à 180. Les deux tables sont donc portées séparément, jamais fusionnées.",
+          "Les roulements à rouleaux coniques relèvent de tableaux distincts (12 à 24) et ne sont pas couverts ici.",
+          "L'écart supérieur vaut zéro partout : le diamètre moyen d'un roulement ne dépasse jamais son nominal. C'est ce qui rend un montage serré possible avec un arbre en k ou m."
         ]
       }
     ]

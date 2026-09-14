@@ -738,8 +738,55 @@ export interface MountingAdvice {
   designation: string;
   /** Les écarts réels, calculés par le moteur ISO 286. */
   shaft: FeatureAnalysis;
+  /** La tolérance propre de l'alésage du roulement, selon l'ISO 492. */
+  bearing_bore: RingTolerance;
+  /** L'ajustement qui résulte des deux. */
+  fit: BearingFit;
   conclusion: Conclusion;
   provenance: Provenance;
+}
+
+/** La bague concernée par une tolérance ISO 492. */
+export type Ring = "inner" | "outer";
+
+/** La tolérance normalisée d'une bague de roulement. */
+export interface RingTolerance {
+  ring: Ring;
+  nominal: Nanometres;
+  deviations: Deviations;
+  /** Le symbole de la caractéristique, par ex. `"Δdmp"`. */
+  characteristic: string;
+  /** Ce que ce symbole désigne, en toutes lettres. */
+  meaning: string;
+  /** L'échelon de la table d'où sort cette tolérance. */
+  range_label: string;
+  /** La classe de tolérance du roulement, par ex. `"Normale"`. */
+  tolerance_class: string;
+}
+
+/**
+ * L'ajustement entre l'arbre et l'alésage du roulement.
+ *
+ * La grandeur portée est le **jeu** signé, dont le négatif est un serrage —
+ * même convention que `Fit`, et pour la même raison : deux conventions opposées
+ * dans le même dépôt seraient une source d'erreurs de signe.
+ *
+ * Le texte à afficher est `summary`, écrit par le moteur : l'écran n'a pas à
+ * décider si « −2 µm de jeu » se dit « 2 µm de serrage ».
+ */
+export interface BearingFit {
+  /** `EI − es` : l'alésage au plus petit, l'arbre au plus grand. */
+  min_clearance: Nanometres;
+  /** `ES − ei` : l'alésage au plus grand, l'arbre au plus petit. */
+  max_clearance: Nanometres;
+  kind: FitKind;
+  /**
+   * L'ajustement en toutes lettres, rédigé par le moteur.
+   *
+   * Cet écran ne recompose pas la phrase à partir des signes : il l'affiche.
+   * La rédiger ici aussi reviendrait à tenir la même règle en deux langues.
+   */
+  summary: string;
 }
 
 /* ---------- État d'une source ---------- */

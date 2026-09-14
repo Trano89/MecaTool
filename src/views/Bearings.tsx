@@ -32,7 +32,7 @@ import { FeatureBlock } from "../components/FeatureBlock";
 import { SourceTag, Sources } from "../components/Sources";
 import { StatusBox } from "../components/StatusBox";
 import { Why } from "../components/Why";
-import { nominal } from "../format";
+import { deviation, nominal } from "../format";
 import type {
   AppError,
   BearingCatalogue,
@@ -40,6 +40,17 @@ import type {
   MountingAdvice,
   MountingOption,
 } from "../types";
+
+/**
+ * Une majuscule en tête de phrase.
+ *
+ * Le moteur rend sa phrase en minuscule parce qu'elle s'insère au milieu de la
+ * conclusion (« Sur l'arbre : serrage de… »). En titre de panneau, elle prend
+ * la majuscule : c'est de la typographie, pas une règle.
+ */
+function capitalise(phrase: string): string {
+  return phrase.charAt(0).toUpperCase() + phrase.slice(1);
+}
 
 export function Bearings() {
   const [catalogue, setCatalogue] = useState<BearingCatalogue | null>(null);
@@ -427,6 +438,46 @@ export function Bearings() {
             <div style={{ marginTop: "var(--s-6)" }}>
               <Why steps={advice.shaft.steps} label="Comment ces écarts sont obtenus" />
             </div>
+          </section>
+
+          {/*
+            Troisième panneau : ce que les deux premiers ne pouvaient pas dire.
+            La classe seule ne renseigne pas sur le montage — il faut savoir ce
+            que l'arbre rencontre. L'alésage d'un roulement n'est pas h0 : il
+            porte son propre écart normalisé, toujours négatif, d'où le serrage.
+          */}
+          <section className="card">
+            <header>
+              <span className="card-title">3 — Ajustement obtenu</span>
+            </header>
+
+            <p className="headline">
+              <strong className="num">{capitalise(advice.fit.summary)}</strong>
+            </p>
+
+            <dl className="rows wrap">
+              <dt>Alésage du roulement</dt>
+              <dd>
+                <span className="mono">{advice.bearing_bore.characteristic}</span>{" "}
+                {deviation(advice.bearing_bore.deviations.lower)} à{" "}
+                {deviation(advice.bearing_bore.deviations.upper)}
+              </dd>
+              <dt>Classe du roulement</dt>
+              <dd>{advice.bearing_bore.tolerance_class}</dd>
+              <dt>Échelon</dt>
+              <dd>{advice.bearing_bore.range_label}</dd>
+              <dt>Arbre {advice.class}</dt>
+              <dd>
+                {deviation(advice.shaft.tolerance.deviations.lower)} à{" "}
+                {deviation(advice.shaft.tolerance.deviations.upper)}
+              </dd>
+            </dl>
+
+            <p className="hint">
+              {advice.bearing_bore.meaning}. Les deux moitiés du calcul sont normatives —
+              ISO 286 pour l'arbre, ISO 492 pour le roulement ; seul le choix de la classe
+              reste une recommandation.
+            </p>
           </section>
 
           <section className="card">

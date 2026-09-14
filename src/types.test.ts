@@ -291,6 +291,25 @@ describe("échantillons du moteur", () => {
     expect(advice.conclusion.warnings.join(" ")).toMatch(/sans caractère normatif/);
   });
 
+  it("porte l'ajustement dans la convention signée du moteur", () => {
+    // L'alésage d'un roulement n'est pas h0 : classe Normale à 50 mm, il mesure
+    // 0 / −12 µm. C'est ce que la classe k5 rencontre.
+    expect(advice.bearing_bore.deviations.upper).toBe(0);
+    expect(advice.bearing_bore.deviations.lower).toBe(-12 * NM_PER_UM);
+    expect(advice.bearing_bore.tolerance_class).toBe("Normale");
+
+    // La grandeur portée est le JEU signé, jamais le serrage : un serrage
+    // garanti se lit donc sur deux bornes négatives. Si le moteur inversait un
+    // jour sa convention, cette assertion tomberait avant l'écran.
+    expect(advice.fit.kind).toBe("interference");
+    expect(advice.fit.min_clearance).toBe(-25 * NM_PER_UM);
+    expect(advice.fit.max_clearance).toBe(-2 * NM_PER_UM);
+    expect(advice.fit.min_clearance).toBeLessThan(advice.fit.max_clearance);
+
+    // Et la phrase à afficher vient du moteur, pas de l'écran.
+    expect(advice.fit.summary).toBe("serrage de 2 µm à 25 µm");
+  });
+
   it("décrit le catalogue des roulements", () => {
     expect(bearings.families).toHaveLength(4);
     expect(bearings.regimes).toHaveLength(2);

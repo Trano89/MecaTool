@@ -106,10 +106,10 @@
     "group_label": "Composants",
     "status": "reserved",
     "sources": [
-      "ISO 15",
+      "Désignation d'alésage des roulements",
       "Montage des roulements — portée d'arbre"
     ],
-    "reserve": "ISO 15 (règle de correspondance entre le symbole d'alésage et le diamètre d'alésage) : Donnée transcrite d'un recueil technique, non confrontée à la norme elle-même. Source : VSM « Extrait de normes » 2014, § 4.14.2.1, page 234, qui reproduit ISO 15.",
+    "reserve": "Désignation d'alésage des roulements (règle de correspondance entre le symbole d'alésage et le diamètre d'alésage) : Donnée transcrite d'un recueil technique, non confrontée à la norme elle-même. Source : VSM « Extrait de normes » 2014, § 4.14.2.1, page 234, qui reproduit une pratique de désignation que le recueil place sous un titre citant l'ISO 15.",
     "unavailable": null,
     "examples": [
       "6210",

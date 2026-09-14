@@ -1,0 +1,86 @@
+{
+  "dataset": "iso492-2014.tolerances",
+  "standard": {
+    "id": "ISO 492",
+    "edition": "2014",
+    "title": "Roulements — Roulements radiaux — Spécification géométrique des produits (GPS) et valeurs de tolérance",
+    "scope": "écarts limites du diamètre moyen d'alésage et du diamètre moyen extérieur, classe de tolérance Normale",
+    "source": "NF ISO 492, 6 septembre 2014, version corrigée 1 de 2016-02, tableaux 2 et 3. Exemplaire sous licence fourni par l'utilisateur.",
+    "verification": {
+      "state": "verified",
+      "against": "ISO 492:2014(F), Tableau 2 (bague intérieure, classe Normale) et Tableau 3 (bague extérieure, classe Normale) — lus dans la couche de texte de la norme",
+      "on": "2026-09-14"
+    },
+    "notes": [
+      "CE JEU FERME UNE BOUCLE. MecaTool savait recommander une classe de tolérance pour l'arbre — k5, m6 — mais ignorait la tolérance propre de l'alésage du roulement, et ne pouvait donc pas calculer le serrage qui en résulte. Un alésage de roulement n'est pas h0 : il porte un écart normalisé, toujours négatif.",
+
+      "Seule la classe de tolérance NORMALE est transcrite. La norme en définit cinq — Normale, 6, 5, 4 et 2 — aux tableaux 2 à 11. La Normale est celle que supposent les tableaux de recommandation de montage. Les quatre autres existent et ne sont pas ici : c'est une lacune bornée et déclarée, pas un oubli.",
+
+      "Seuls les écarts du diamètre MOYEN sont transcrits : Δdmp pour l'alésage, ΔDmp pour le diamètre extérieur. Ce sont ceux qui déterminent l'ajustement. Les autres colonnes des mêmes tableaux — Vdsp, Vdmp, Kia, ΔBs, VBs — décrivent des variations de forme et de largeur, non l'ajustement, et ne sont pas reprises.",
+
+      "Les échelons de la bague intérieure et ceux de la bague extérieure NE COÏNCIDENT PAS. L'alésage distingue 2,5 à 10 puis 10 à 18 ; le diamètre extérieur distingue 2,5 à 6 puis 6 à 18. Et l'extérieur coupe à 150 là où l'intérieur va d'un trait de 120 à 180. Les deux tables sont donc portées séparément, jamais fusionnées.",
+
+      "Les roulements à rouleaux coniques relèvent de tableaux distincts (12 à 24) et ne sont pas couverts ici.",
+
+      "L'écart supérieur vaut zéro partout : le diamètre moyen d'un roulement ne dépasse jamais son nominal. C'est ce qui rend un montage serré possible avec un arbre en k ou m."
+    ]
+  },
+
+  "tolerance_class": "Normale",
+  "unit": "micrometre",
+
+  "bore": {
+    "table": "Tableau 2 — Bague intérieure, classe de tolérance Normale",
+    "characteristic": "Δdmp",
+    "meaning": "écart du diamètre moyen d'alésage dans un plan unique",
+    "ranges": [
+      { "from": 0,    "to": 0.6,  "upper": 0, "lower": -8 },
+      { "from": 0.6,  "to": 2.5,  "upper": 0, "lower": -8 },
+      { "from": 2.5,  "to": 10,   "upper": 0, "lower": -8 },
+      { "from": 10,   "to": 18,   "upper": 0, "lower": -8 },
+      { "from": 18,   "to": 30,   "upper": 0, "lower": -10 },
+      { "from": 30,   "to": 50,   "upper": 0, "lower": -12 },
+      { "from": 50,   "to": 80,   "upper": 0, "lower": -15 },
+      { "from": 80,   "to": 120,  "upper": 0, "lower": -20 },
+      { "from": 120,  "to": 180,  "upper": 0, "lower": -25 },
+      { "from": 180,  "to": 250,  "upper": 0, "lower": -30 },
+      { "from": 250,  "to": 315,  "upper": 0, "lower": -35 },
+      { "from": 315,  "to": 400,  "upper": 0, "lower": -40 },
+      { "from": 400,  "to": 500,  "upper": 0, "lower": -45 },
+      { "from": 500,  "to": 630,  "upper": 0, "lower": -50 },
+      { "from": 630,  "to": 800,  "upper": 0, "lower": -75 },
+      { "from": 800,  "to": 1000, "upper": 0, "lower": -100 },
+      { "from": 1000, "to": 1250, "upper": 0, "lower": -125 },
+      { "from": 1250, "to": 1600, "upper": 0, "lower": -160 },
+      { "from": 1600, "to": 2000, "upper": 0, "lower": -200 }
+    ]
+  },
+
+  "outside": {
+    "table": "Tableau 3 — Bague extérieure, classe de tolérance Normale",
+    "characteristic": "ΔDmp",
+    "meaning": "écart du diamètre moyen extérieur dans un plan unique",
+    "ranges": [
+      { "from": 0,    "to": 2.5,  "upper": 0, "lower": -8 },
+      { "from": 2.5,  "to": 6,    "upper": 0, "lower": -8 },
+      { "from": 6,    "to": 18,   "upper": 0, "lower": -8 },
+      { "from": 18,   "to": 30,   "upper": 0, "lower": -9 },
+      { "from": 30,   "to": 50,   "upper": 0, "lower": -11 },
+      { "from": 50,   "to": 80,   "upper": 0, "lower": -13 },
+      { "from": 80,   "to": 120,  "upper": 0, "lower": -15 },
+      { "from": 120,  "to": 150,  "upper": 0, "lower": -18 },
+      { "from": 150,  "to": 180,  "upper": 0, "lower": -25 },
+      { "from": 180,  "to": 250,  "upper": 0, "lower": -30 },
+      { "from": 250,  "to": 315,  "upper": 0, "lower": -35 },
+      { "from": 315,  "to": 400,  "upper": 0, "lower": -40 },
+      { "from": 400,  "to": 500,  "upper": 0, "lower": -45 },
+      { "from": 500,  "to": 630,  "upper": 0, "lower": -50 },
+      { "from": 630,  "to": 800,  "upper": 0, "lower": -75 },
+      { "from": 800,  "to": 1000, "upper": 0, "lower": -100 },
+      { "from": 1000, "to": 1250, "upper": 0, "lower": -125 },
+      { "from": 1250, "to": 1600, "upper": 0, "lower": -160 },
+      { "from": 1600, "to": 2000, "upper": 0, "lower": -200 },
+      { "from": 2000, "to": 2500, "upper": 0, "lower": -250 }
+    ]
+  }
+}

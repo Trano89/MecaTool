@@ -17,6 +17,9 @@
 //!         │
 //!         ▼  moteur ISO 286 : classe + nominal → ecarts
 //!    Ø50 k5, ei = +2 µm, es = +13 µm
+//!         │
+//!         ▼  ISO 492 : l'alesage du roulement lui-meme, 0 / −12 µm
+//!    serrage +2 a +25 µm (jeu de −2 a −25 µm)
 //! ```
 //!
 //! # La provenance melangee, et pourquoi elle importe
@@ -30,8 +33,23 @@
 //! l'utilisateur voie exactement ou s'arrete la recommandation et ou commence la
 //! norme. Presenter l'ensemble comme normatif durcirait le choix de la classe ;
 //! le presenter comme une simple suggestion banaliserait les ecarts.
+//!
+//! # Ce que l'ISO 492 a ferme
+//!
+//! Le module s'arretait aux ecarts de l'arbre. Il disait ce que l'arbre mesure
+//! sans dire ce qu'il rencontre — et donc sans pouvoir enoncer le serrage, qui
+//! est pourtant la seule chose qui interesse celui qui monte.
+//!
+//! Un alesage de roulement n'est pas `h0` : il porte son propre ecart
+//! normalise, d'ecart superieur toujours nul. Le serrage se lit alors sur la
+//! difference des deux jeux d'ecarts, rapportes au meme nominal — aucune
+//! dimension absolue n'entre dans le calcul, donc aucune soustraction de grands
+//! nombres presque egaux.
 
-use mecatool_core::{Conclusion, Length, Provenance, ReasoningStep, ToleranceClass, Verdict};
+use mecatool_core::{
+    Conclusion, FitKind, Length, Provenance, ReasoningStep, ToleranceClass, Verdict,
+};
+use mecatool_standards::iso492::{BearingToleranceTable, Ring, RingTolerance};
 use mecatool_standards::roulements::{
     BearingFamily, BoreDesignation, LoadRegime, MountingCase, ShaftMountingTable,
 };
@@ -74,8 +92,104 @@ pub struct MountingAdvice {
     /// C'est la composition : le domaine roulements s'arrete a la classe, le
     /// domaine ajustements prend le relais.
     pub shaft: FeatureAnalysis,
+    /// La tolerance propre de l'alesage du roulement, selon l'ISO 492.
+    pub bearing_bore: RingTolerance,
+    /// L'ajustement qui resulte des deux.
+    pub fit: BearingFit,
     pub conclusion: Conclusion,
     pub provenance: Provenance,
+}
+
+/// L'ajustement entre l'arbre et l'alesage du roulement.
+///
+/// C'est le resultat que le domaine ne savait pas produire avant d'avoir la
+/// tolerance propre du roulement.
+///
+/// # Pourquoi un type propre, et non `Fit`
+///
+/// `Fit::assemble` prend deux `FeatureTolerance`, qui portent chacun une classe
+/// ISO 286. L'alesage d'un roulement n'en a pas : sa tolerance vient de
+/// l'ISO 492, dont la classe « Normale » n'appartient pas au systeme ISO 286.
+/// Lui forger une classe pour entrer dans `Fit` reviendrait a inventer une
+/// donnee normative.
+///
+/// # Pourquoi la meme convention de signe malgre tout
+///
+/// La grandeur portee est le **jeu** signe, dont le negatif est un serrage —
+/// exactement comme dans `fit.rs`, qui dit deja pourquoi : deux notions
+/// concurrentes dans le meme depot seraient une source d'erreurs de signe. Le
+/// serrage, positif, se lit par `min_interference` et `max_interference`,
+/// comme sur un `Fit`.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct BearingFit {
+    /// `EI - es` : l'alesage au plus petit, l'arbre au plus grand.
+    pub min_clearance: Length,
+    /// `ES - ei` : l'alesage au plus grand, l'arbre au plus petit.
+    pub max_clearance: Length,
+    pub kind: FitKind,
+    /// L'ajustement en toutes lettres, redige ici et non a l'ecran.
+    ///
+    /// Le frontend afficherait sinon la meme phrase dans sa propre langue, et
+    /// les deux redactions divergeraient au premier changement de convention.
+    pub summary: String,
+}
+
+impl BearingFit {
+    fn between(ring: &RingTolerance, shaft: &FeatureAnalysis) -> Self {
+        // Les deux jeux d'ecarts se rapportent au meme nominal, donc l'ajustement
+        // se lit directement sur leur difference — aucune dimension absolue
+        // n'entre dans le calcul, et rien ne s'annule de travers.
+        let bore = ring.deviations;
+        let shaft = shaft.tolerance.deviations;
+        let min_clearance = bore.lower() - shaft.upper();
+        let max_clearance = bore.upper() - shaft.lower();
+        let kind = FitKind::classify(min_clearance, max_clearance);
+        BearingFit {
+            min_clearance,
+            max_clearance,
+            kind,
+            summary: describe_fr(kind, min_clearance, max_clearance),
+        }
+    }
+
+    /// Serrage maximal, positif, ou `None` si le montage ne serre jamais.
+    pub fn max_interference(&self) -> Option<Length> {
+        self.min_clearance
+            .is_negative()
+            .then(|| -self.min_clearance)
+    }
+
+    /// Serrage minimal, positif, ou `None` si le montage peut ne pas serrer.
+    pub fn min_interference(&self) -> Option<Length> {
+        self.max_clearance
+            .is_negative()
+            .then(|| -self.max_clearance)
+    }
+}
+
+/// L'ajustement en toutes lettres.
+///
+/// Les trois cas sont rediges separement plutot que ramenes a une formule signee
+/// unique : « un serrage de −2 µm » ne veut rien dire pour celui qui monte la
+/// piece. La convention signee sert au calcul, pas a la lecture.
+fn describe_fr(kind: FitKind, min_clearance: Length, max_clearance: Length) -> String {
+    match kind {
+        FitKind::Interference => format!(
+            "serrage de {} à {}",
+            format::um(-max_clearance),
+            format::um(-min_clearance)
+        ),
+        FitKind::Clearance => format!(
+            "jeu de {} à {}",
+            format::um(min_clearance),
+            format::um(max_clearance)
+        ),
+        FitKind::Transition => format!(
+            "selon les pièces, de {} de jeu à {} de serrage",
+            format::um(max_clearance),
+            format::um(-min_clearance)
+        ),
+    }
 }
 
 /// Un cas d'emploi propose a l'utilisateur, avec ce qu'il donnerait.
@@ -95,6 +209,7 @@ pub struct MountingOption {
 pub struct BearingEngine {
     bore: &'static BoreDesignation,
     mounting: &'static ShaftMountingTable,
+    tolerances: &'static BearingToleranceTable,
     iso286: Iso286Engine,
 }
 
@@ -103,6 +218,7 @@ impl BearingEngine {
         Ok(BearingEngine {
             bore: BoreDesignation::embedded()?,
             mounting: ShaftMountingTable::embedded()?,
+            tolerances: BearingToleranceTable::embedded()?,
             iso286: Iso286Engine::new()?,
         })
     }
@@ -287,20 +403,21 @@ impl BearingEngine {
 
         let designation = format!("Ø{} {}", format::mm_trimmed(bore), row.class);
 
+        // Et la troisieme etape : l'alesage du roulement lui-meme. Sans elle, on
+        // saurait ce que mesure l'arbre sans savoir ce qu'il rencontre, donc
+        // sans pouvoir dire le serrage.
+        let ring = self.tolerances.tolerance(Ring::Inner, bore)?;
+        let fit = BearingFit::between(&ring, &shaft);
+
         let mut provenance = self.provenance();
         provenance.merge(&shaft.provenance);
+        provenance.push(self.tolerances.standard().clone());
 
-        let mut conclusion = Conclusion::new(
-            Verdict::Caution,
-            format!(
-                "{designation} — classe {} recommandée pour {} sous {}.",
-                row.class, family_def.name, regime_def.name
-            ),
-        );
-        conclusion.why = self.reasoning(family_def, regime_def, case, bore, &row.class, &shaft);
-        conclusion.warnings = provenance.warnings_fr();
-
-        Ok(MountingAdvice {
+        // Le conseil s'assemble d'abord, la conclusion le decrit ensuite. Le
+        // faire dans l'autre sens obligeait a passer huit valeurs separees au
+        // redacteur du raisonnement — huit occasions d'en oublier une le jour
+        // ou le conseil s'enrichit.
+        let mut advice = MountingAdvice {
             family: family_def.clone(),
             regime: regime_def.clone(),
             condition: case.condition.clone(),
@@ -309,34 +426,54 @@ impl BearingEngine {
             class: row.class.clone(),
             designation,
             shaft,
-            conclusion,
+            bearing_bore: ring,
+            fit,
+            conclusion: Conclusion::new(Verdict::Caution, String::new()),
             provenance,
-        })
+        };
+        advice.conclusion = self.conclude(&advice);
+        Ok(advice)
+    }
+
+    /// La conclusion d'un conseil, redigee a partir du conseil lui-meme.
+    fn conclude(&self, advice: &MountingAdvice) -> Conclusion {
+        // Une recommandation n'est pas une validation : sans exigence
+        // fonctionnelle, le verdict reste prudent quel que soit le serrage.
+        let mut conclusion = Conclusion::new(
+            Verdict::Caution,
+            format!(
+                "{} — classe {} recommandée pour {} sous {}. Sur l'arbre : {}.",
+                advice.designation,
+                advice.class,
+                advice.family.name,
+                advice.regime.name,
+                advice.fit.summary.clone()
+            ),
+        );
+        conclusion.why = self.reasoning(advice);
+        conclusion.warnings = advice.provenance.warnings_fr();
+        conclusion
     }
 
     /// Le raisonnement, du symbole jusqu'aux ecarts.
-    fn reasoning(
-        &self,
-        family: &BearingFamily,
-        regime: &LoadRegime,
-        case: &MountingCase,
-        bore: Length,
-        class: &str,
-        shaft: &FeatureAnalysis,
-    ) -> Vec<ReasoningStep> {
+    /// Le raisonnement, du symbole d'alesage jusqu'au serrage.
+    fn reasoning(&self, advice: &MountingAdvice) -> Vec<ReasoningStep> {
+        let ring = &advice.bearing_bore;
+        let fit = &advice.fit;
+
         let mut steps = vec![
             ReasoningStep::new("Alésage du roulement")
-                .with_expression(family.name.clone())
-                .with_value(format!("{} mm", format::mm_trimmed(bore))),
+                .with_expression(advice.family.name.clone())
+                .with_value(format!("{} mm", format::mm_trimmed(advice.bore))),
             ReasoningStep::new("Régime de charge")
-                .with_expression(regime.name.clone())
-                .with_value(regime.explanation.clone()),
+                .with_expression(advice.regime.name.clone())
+                .with_value(advice.regime.explanation.clone()),
             ReasoningStep::new("Cas d'emploi")
-                .with_expression(case.condition.clone())
-                .with_value(case.examples.clone()),
+                .with_expression(advice.condition.clone())
+                .with_value(advice.examples.clone()),
             // L'etape qui dit ou s'arrete la recommandation.
             ReasoningStep::new("Classe recommandée")
-                .with_expression(class.to_string())
+                .with_expression(advice.class.clone())
                 .with_value(
                     "Pratique de montage des fabricants, sans caractère normatif.".to_string(),
                 ),
@@ -348,15 +485,38 @@ impl BearingEngine {
                 .with_expression("ISO 286-1".to_string())
                 .with_value(format!(
                     "ei = {}, es = {}",
-                    format::um_signed(shaft.tolerance.deviations.lower()),
-                    format::um_signed(shaft.tolerance.deviations.upper()),
+                    format::um_signed(advice.shaft.tolerance.deviations.lower()),
+                    format::um_signed(advice.shaft.tolerance.deviations.upper()),
                 )),
         );
 
-        if let Some(note) = &family.note {
+        steps.push(
+            ReasoningStep::new("Tolérance de l'alésage")
+                .with_expression(format!(
+                    "{} — classe {}",
+                    ring.characteristic, ring.tolerance_class
+                ))
+                .with_value(format!(
+                    "{} à {}",
+                    format::um_signed(ring.deviations.lower()),
+                    format::um_signed(ring.deviations.upper())
+                )),
+        );
+
+        // L'etape qui n'existait pas : l'ajustement effectif. Les deux moities du
+        // calcul viennent de normes confrontees, l'ISO 286 pour l'arbre et
+        // l'ISO 492 pour le roulement ; seul le CHOIX de la classe reste une
+        // recommandation.
+        steps.push(
+            ReasoningStep::new("Ajustement obtenu")
+                .with_expression("écarts de l'alésage − écarts de l'arbre".to_string())
+                .with_value(fit.summary.clone()),
+        );
+
+        if let Some(note) = &advice.family.note {
             steps.push(
                 ReasoningStep::new("Réserve de la source")
-                    .with_expression(family.name.clone())
+                    .with_expression(advice.family.name.clone())
                     .with_value(note.clone()),
             );
         }
@@ -605,5 +765,147 @@ mod tests {
             .iter()
             .find(|s| s.label == "Réserve de la source");
         assert!(reserve.is_some(), "la note sur les aiguilles doit suivre");
+    }
+
+    #[test]
+    fn le_conseil_va_maintenant_jusquau_serrage() {
+        // Ce que le domaine ne savait pas faire avant d'avoir l'ISO 492 : dire
+        // ce que l'arbre rencontre, et donc quel serrage en resulte.
+        let advice = engine()
+            .advise("rotating_inner", NORMALE, "ball_radial", mm(50))
+            .unwrap();
+
+        // L'alesage d'un roulement de classe Normale a 50 mm : 0 / −12 µm.
+        assert_eq!(advice.bearing_bore.deviations.upper(), Length::ZERO);
+        assert_eq!(
+            advice.bearing_bore.deviations.lower(),
+            Length::from_micrometres(-12)
+        );
+
+        // L'arbre k5 mesure +2 / +13. Le serrage va donc de +2 à +25 µm —
+        // c'est-à-dire, dans la convention signée du dépôt, un jeu de −2 à −25.
+        assert_eq!(advice.fit.kind, FitKind::Interference);
+        assert_eq!(
+            advice.fit.min_interference(),
+            Some(Length::from_micrometres(2))
+        );
+        assert_eq!(
+            advice.fit.max_interference(),
+            Some(Length::from_micrometres(25))
+        );
+        assert_eq!(advice.fit.max_clearance, Length::from_micrometres(-2));
+        assert_eq!(advice.fit.min_clearance, Length::from_micrometres(-25));
+
+        // Et la phrase rendue à l'utilisateur parle bien de serrage positif :
+        // « un serrage de −2 µm » ne voudrait rien dire pour qui monte la pièce.
+        assert_eq!(advice.fit.summary.clone(), "serrage de 2 µm à 25 µm");
+    }
+
+    #[test]
+    fn une_bague_libre_laisse_du_jeu_et_le_dit() {
+        // Roue folle : la bague doit coulisser, donc g6. Le jeu calculé doit
+        // rester positif au maximum — le montage ne serre pas toujours — et le
+        // moteur doit le DIRE, pas laisser lire « serrage » avec un signe
+        // contraire. Le signe porte l'information, le texte la rend lisible.
+        let advice = engine()
+            .advise(
+                "stationary_inner",
+                "La bague intérieure doit pouvoir coulisser facilement sur l'arbre",
+                "ball_radial",
+                mm(50),
+            )
+            .unwrap();
+        assert_ne!(advice.fit.kind, FitKind::Interference);
+        assert_eq!(advice.fit.min_interference(), None);
+        assert!(advice.fit.max_clearance > Length::ZERO);
+        assert!(advice.fit.summary.clone().contains("jeu"));
+    }
+
+    #[test]
+    fn le_serrage_ne_depend_que_des_ecarts() {
+        // Le calcul soustrait deux jeux d'écarts rapportés au même nominal.
+        // Aucune dimension absolue n'y entre, donc aucune soustraction de
+        // grands nombres presque égaux : l'exactitude est structurelle.
+        let advice = engine()
+            .advise("rotating_inner", NORMALE, "ball_radial", mm(50))
+            .unwrap();
+        let shaft = advice.shaft.tolerance.deviations;
+        let bore = advice.bearing_bore.deviations;
+        assert_eq!(advice.fit.min_clearance, bore.lower() - shaft.upper());
+        assert_eq!(advice.fit.max_clearance, bore.upper() - shaft.lower());
+    }
+
+    #[test]
+    fn la_provenance_porte_les_trois_sources() {
+        // Le resultat croise desormais TROIS natures : une recommandation de
+        // fabricant pour la classe, l'ISO 286 pour les ecarts de l'arbre, et
+        // l'ISO 492 pour ceux du roulement. Les deux dernieres sont confrontees
+        // a leur source primaire ; la premiere ne l'est pas, et rien ne doit
+        // laisser croire le contraire.
+        let advice = engine()
+            .advise("rotating_inner", NORMALE, "ball_radial", mm(50))
+            .unwrap();
+
+        let citations: Vec<String> = advice
+            .provenance
+            .references
+            .iter()
+            .map(|r| r.citation())
+            .collect();
+        assert!(
+            citations.iter().any(|c| c.contains("ISO 286")),
+            "{citations:?}"
+        );
+        assert!(
+            citations.iter().any(|c| c.contains("ISO 492")),
+            "{citations:?}"
+        );
+
+        assert!(!advice.provenance.is_fully_verified());
+        assert!(advice
+            .conclusion
+            .warnings
+            .join(" ")
+            .contains("sans caractère normatif"));
+    }
+
+    #[test]
+    fn le_raisonnement_montre_les_deux_moities_du_calcul() {
+        let advice = engine()
+            .advise("rotating_inner", NORMALE, "ball_radial", mm(50))
+            .unwrap();
+        let labels: Vec<&str> = advice
+            .conclusion
+            .why
+            .iter()
+            .map(|s| s.label.as_str())
+            .collect();
+        assert!(labels.contains(&"Écarts de la classe"));
+        assert!(labels.contains(&"Tolérance de l'alésage"));
+        assert!(labels.contains(&"Ajustement obtenu"));
+    }
+
+    #[test]
+    fn deux_etapes_ne_portent_jamais_le_meme_libelle() {
+        // Le raisonnement a porte un temps deux etapes « Alésage du roulement »,
+        // l'une pour le diametre, l'autre pour sa tolerance. Deux lignes de meme
+        // nom dans une explication ne s'expliquent plus : elles se contredisent
+        // en apparence. Le cas se reproduira a chaque etape ajoutee, d'ou ce
+        // garde-fou plutot qu'une simple correction.
+        for family in ["ball_radial", "needle_with_inner_ring"] {
+            let advice = engine()
+                .advise("rotating_inner", NORMALE, family, mm(50))
+                .unwrap();
+            let mut vus: Vec<&str> = advice
+                .conclusion
+                .why
+                .iter()
+                .map(|s| s.label.as_str())
+                .collect();
+            let total = vus.len();
+            vus.sort_unstable();
+            vus.dedup();
+            assert_eq!(vus.len(), total, "libellés répétés dans {family} : {vus:?}");
+        }
     }
 }
