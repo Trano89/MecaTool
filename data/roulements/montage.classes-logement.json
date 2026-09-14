@@ -1,0 +1,129 @@
+{
+  "dataset": "roulements.montage-logement",
+  "standard": {
+    "id": "Montage des roulements — portée de logement",
+    "edition": "",
+    "title": "Classes de tolérance usuelles pour l'alésage du logement d'un roulement",
+    "scope": "classe de tolérance de logement selon le régime de charge de la bague extérieure et le type de logement",
+    "source": "VSM, « Extrait de normes », édition 2014, tableau 238/1, page 238.",
+    "verification": {
+      "state": "recommended",
+      "by": "les fabricants de roulements, relayés par le VSM « Extrait de normes » 2014, tableau 238/1, page 238",
+      "on": "2026-09-14"
+    },
+    "notes": [
+      "CE N'EST PAS UNE NORME, exactement comme le tableau 237/1 dont ce tableau est le pendant pour le logement. Aucune norme n'impose ces classes : ce sont les pratiques de montage recommandées par les fabricants. S'en écarter reste légitime si la raison en est connue.",
+
+      "Le critère décisif est le régime de charge de la bague EXTÉRIEURE, symétrique de celui de la bague intérieure au tableau 237/1. Quand le point chargé parcourt la bague extérieure, celle-ci doit être serrée sous peine de ramper dans le logement.",
+
+      "Contrairement au tableau des arbres, celui-ci NE DÉPEND PAS DU DIAMÈTRE. Aucun échelon : la classe se lit sur les seules conditions d'emploi.",
+
+      "Le type de logement entre dans le choix, et ce n'est pas une remarque décorative : les classes serrées — P7, N7, M7, K7 — exigent un logement EN UNE PIÈCE. Seules JS7, H7 et H8 admettent un logement en une ou deux pièces. La frontière passe à l'intérieur du groupe « direction de charge indéterminée », entre K7 et JS7.",
+
+      "La colonne « Remarques » du recueil emploie des cellules fusionnées, et l'une d'elles ne se rattache pas sans ambiguïté à la ligne « chocs importants ». Cette ligne porte donc une remarque nulle plutôt qu'une remarque devinée.",
+
+      "Les sept classes citées — P7, N7, M7, K7, JS7, H7, H8 — sont toutes couvertes par les écarts fondamentaux ISO 286 embarqués, ce qui permet de poursuivre jusqu'aux écarts réels."
+    ]
+  },
+
+  "housings": [
+    {
+      "id": "one_piece",
+      "name": "logement en une pièce",
+      "note": "Obligatoire pour les classes serrées : un logement fendu ne tiendrait pas un ajustement P7 à K7."
+    },
+    {
+      "id": "one_or_two_piece",
+      "name": "logement en une ou deux pièces",
+      "note": "Admis lorsque la bague extérieure n'a pas besoin d'être fortement serrée."
+    }
+  ],
+
+  "regimes": [
+    {
+      "id": "rotating_outer",
+      "name": "charge tournante sur la bague extérieure",
+      "figure": "238/1",
+      "explanation": "Le point chargé parcourt la bague extérieure — et, symétriquement, la charge est fixe pour la bague intérieure. Sans serrage, la bague extérieure ramperait dans le logement."
+    },
+    {
+      "id": "indeterminate",
+      "name": "direction de charge indéterminée",
+      "figure": null,
+      "explanation": "La direction de la charge n'est pas connue à l'avance : le montage doit tenir les deux cas."
+    },
+    {
+      "id": "stationary_outer",
+      "name": "charge fixe sur la bague extérieure",
+      "figure": "238/2",
+      "explanation": "Le point chargé de la bague extérieure ne se déplace pas — la charge tourne alors pour la bague intérieure. La bague extérieure peut rester libre, ce qui permet en outre son déplacement axial."
+    }
+  ],
+
+  "cases": [
+    {
+      "housing": "one_piece",
+      "regime": "rotating_outer",
+      "condition": "Roulements fortement chargés montés dans des roulements à parois minces, chocs importants",
+      "examples": "Moyeux de roues avec roulements à rouleaux, têtes de bielles",
+      "class": "P7",
+      "remark": "La bague extérieure ne peut pas coulisser."
+    },
+    {
+      "housing": "one_piece",
+      "regime": "rotating_outer",
+      "condition": "Charges normales et grandes",
+      "examples": "Moyeux de roues avec roulements à billes, têtes de bielles, roues porteuses de grues",
+      "class": "N7",
+      "remark": "La bague extérieure ne peut pas coulisser."
+    },
+    {
+      "housing": "one_piece",
+      "regime": "rotating_outer",
+      "condition": "Charges faibles et variables",
+      "examples": "Rouleaux de transport, galets tendeurs de courroies, poulies à câble",
+      "class": "M7",
+      "remark": "La bague extérieure ne peut pas coulisser."
+    },
+    {
+      "housing": "one_piece",
+      "regime": "indeterminate",
+      "condition": "Chocs importants",
+      "examples": "Moteurs électriques de traction",
+      "class": "M7",
+      "remark": null
+    },
+    {
+      "housing": "one_piece",
+      "regime": "indeterminate",
+      "condition": "Charges normales et grandes",
+      "examples": "Moteurs électriques, pompes, paliers principaux de vilebrequin",
+      "class": "K7",
+      "remark": "La bague extérieure ne peut, en général, pas coulisser."
+    },
+    {
+      "housing": "one_or_two_piece",
+      "regime": "indeterminate",
+      "condition": "Charges normales et faibles",
+      "examples": "Machines électriques de grandeur moyenne, pompes, paliers de vilebrequin",
+      "class": "JS7",
+      "remark": "La bague extérieure ne peut, en général, pas coulisser."
+    },
+    {
+      "housing": "one_or_two_piece",
+      "regime": "stationary_outer",
+      "condition": "Charges quelconques",
+      "examples": "Mécanique générale, boîtes d'essieux pour véhicules sur rails",
+      "class": "H7",
+      "remark": "La bague extérieure peut coulisser facilement."
+    },
+    {
+      "housing": "one_or_two_piece",
+      "regime": "stationary_outer",
+      "condition": "Charges normales et faibles en condition d'utilisation simple",
+      "examples": "Transmissions",
+      "class": "H8",
+      "remark": "La bague extérieure peut coulisser facilement."
+    }
+  ]
+}
