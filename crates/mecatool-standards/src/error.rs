@@ -47,6 +47,15 @@ pub enum StandardsError {
     #[error("{grade} ne s'applique pas ici : {reason}")]
     GradeNotApplicable { grade: String, reason: String },
 
+    #[error(
+        "aucun roulement de série de dimensions {dimension_series} n'existe à un alésage          de {bore} dans {dataset} : choisissez une autre série de dimensions, ou un          autre diamètre d'alésage"
+    )]
+    SizeUnavailable {
+        dataset: String,
+        dimension_series: String,
+        bore: String,
+    },
+
     #[error("table incoherente dans {dataset} : {detail}")]
     Inconsistent { dataset: String, detail: String },
 

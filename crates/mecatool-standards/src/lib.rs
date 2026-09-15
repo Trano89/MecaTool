@@ -31,6 +31,7 @@
 
 pub mod error;
 pub mod iso1101;
+pub mod iso15;
 pub mod iso2768;
 pub mod iso286;
 pub mod iso492;
