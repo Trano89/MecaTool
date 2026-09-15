@@ -10,7 +10,9 @@
 //! jour ou un champ change de nom.
 
 use mecatool_core::{Conclusion, DeviationLetter, Length, Provenance, Unit};
-use mecatool_engine::bearing::{BearingEngine, DesignationReading, MountingAdvice, MountingOption};
+use mecatool_engine::bearing::{
+    BearingEngine, DesignationReading, MountingAdvice, MountingOption, SizeSearch,
+};
 use mecatool_engine::chain::{
     analyse_chain, contribution_chart, verify_chain, ChainAnalysis, ContributionChart,
 };
@@ -305,6 +307,22 @@ pub fn bearing_catalogue() -> Result<BearingCatalogue, AppError> {
         warnings: provenance.warnings_fr(),
         provenance,
     })
+}
+
+/// Les diametres d'alesage normalises, pour une liste de selection.
+///
+/// C'est la reponse au reproche d'usage : l'ecran ne doit pas exiger qu'on
+/// connaisse deja « 6210 » pour servir a quelque chose.
+#[tauri::command]
+pub fn bearing_bore_diameters() -> Result<Vec<Length>, AppError> {
+    Ok(BearingEngine::new()?.bore_diameters())
+}
+
+/// Les roulements normalises qui existent a un diametre d'alesage donne.
+#[tauri::command]
+pub fn bearing_sizes(bore_mm: String) -> Result<SizeSearch, AppError> {
+    let engine = BearingEngine::new()?;
+    Ok(engine.sizes_for_bore(parse_bore(&bore_mm)?))
 }
 
 /// Les lectures possibles d'une designation de roulement.
@@ -908,6 +926,15 @@ mod tests {
         let bearings =
             serde_json::to_string_pretty(&bearing_catalogue().unwrap()).expect("sérialisation");
         std::fs::write(dir.join("bearing-catalogue.json"), bearings + "\n").expect("écriture");
+
+        // Ce qui existe sur un arbre Ø50 : le chemin inverse de la désignation.
+        // L'échantillon garde les quatre premières tailles — assez pour que le
+        // typage voie un tableau peuplé, sans embarquer les dix-huit.
+        let mut recherche = bearing_sizes("50".into()).unwrap();
+        recherche.sizes.truncate(4);
+        let recherche = serde_json::to_string_pretty(&recherche).expect("sérialisation");
+        std::fs::write(dir.join("bearing-sizes.json"), recherche + "
+").expect("écriture");
     }
 
     #[test]

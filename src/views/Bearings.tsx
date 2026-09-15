@@ -26,7 +26,14 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import { bearingAdvise, bearingCatalogue, bearingOptions, bearingRead } from "../api";
+import {
+  bearingAdvise,
+  bearingBoreDiameters,
+  bearingCatalogue,
+  bearingOptions,
+  bearingRead,
+  bearingSizes,
+} from "../api";
 import { Select } from "../components/Select";
 import { FeatureBlock } from "../components/FeatureBlock";
 import { SourceTag, Sources } from "../components/Sources";
@@ -38,7 +45,9 @@ import type {
   BearingCatalogue,
   DesignationReading,
   MountingAdvice,
+  Nanometres,
   MountingOption,
+  SizeSearch,
 } from "../types";
 
 /**
@@ -61,6 +70,8 @@ export function Bearings() {
   const [regime, setRegime] = useState("");
   const [options, setOptions] = useState<MountingOption[] | null>(null);
   const [advice, setAdvice] = useState<MountingAdvice | null>(null);
+  const [diameters, setDiameters] = useState<Nanometres[] | null>(null);
+  const [search, setSearch] = useState<SizeSearch | null>(null);
   const [error, setError] = useState<AppError | null>(null);
 
   useEffect(() => {
@@ -73,6 +84,11 @@ export function Bearings() {
         setFamily((current) => current || (loaded.families[0]?.id ?? ""));
         setRegime((current) => current || (loaded.regimes[0]?.id ?? ""));
       })
+      .catch((cause) => setError(cause as AppError));
+    // La liste des alésages normalisés : c'est elle qui permet de partir d'un
+    // arbre. Elle ne dépend d'aucune saisie, donc elle se charge une fois.
+    bearingBoreDiameters()
+      .then(setDiameters)
       .catch((cause) => setError(cause as AppError));
   }, []);
 
@@ -153,6 +169,108 @@ export function Bearings() {
           </div>
         </div>
       ))}
+
+      {/*
+        Premier écran, et non dernier : personne ne part d'une désignation.
+        On part d'un arbre, et on cherche ce qui va dessus. Exiger « 6210 »
+        avant de rendre le moindre service revenait à demander la réponse
+        pour poser la question.
+      */}
+      <section className="card">
+        <header>
+          <span className="card-title">Partir de l'arbre</span>
+          {search ? <SourceTag provenance={search.provenance} /> : null}
+        </header>
+
+        <p className="hint">
+          Vous ne connaissez pas la désignation ? Choisissez le diamètre de votre arbre :
+          MecaTool rend les roulements normalisés qui existent à cette cote.
+        </p>
+
+        <div style={{ maxWidth: "260px", marginTop: "var(--s-6)" }}>
+          <Select
+            id="bearing-bore-pick"
+            label="Diamètre d'alésage (mm)"
+            options={(diameters ?? []).map((value) => ({
+              value: nominal(value),
+              label: `${nominal(value)} mm`,
+            }))}
+            value={search ? nominal(search.bore) : null}
+            onChange={(value) => {
+              setBore(value);
+              setAdvice(null);
+              bearingSizes(value)
+                .then((found) => {
+                  setSearch(found);
+                  setError(null);
+                })
+                .catch((cause) => {
+                  setSearch(null);
+                  setError(cause as AppError);
+                });
+            }}
+            placeholder="Choisir un diamètre…"
+          />
+        </div>
+
+        {search?.note ? (
+          <p className="muted" style={{ marginTop: "var(--s-6)" }}>
+            {search.note}
+          </p>
+        ) : null}
+
+        {search && search.sizes.length > 0 ? (
+          <>
+            <div className="table-scroll" style={{ marginTop: "var(--s-6)" }}>
+              <table>
+                <caption className="visually-hidden">
+                  Roulements normalisés existant à ce diamètre d'alésage
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Série</th>
+                    <th scope="col">d × D × B</th>
+                    <th scope="col" className="num">
+                      Chanfrein
+                    </th>
+                    <th scope="col">Symbole</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {search.sizes.map((size) => (
+                    <tr
+                      key={`${size.size.diameter_series}-${size.size.dimension_series}`}
+                    >
+                      <th scope="row" className="mono">
+                        {size.size.dimension_series}
+                      </th>
+                      <td className="mono">{size.label}</td>
+                      <td className="num">
+                        {size.size.chamfer === null ? "—" : `${nominal(size.size.chamfer)} mm`}
+                      </td>
+                      <td className="mono">{size.bore_code ?? "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/*
+              Pourquoi la désignation complète n'est pas rendue. Assembler
+              « 6210 » demanderait le chiffre du type, que l'ISO 15 ne donne
+              pas, et une règle d'écriture de la série qui n'est pas uniforme :
+              « 6210 » et « 6004 » n'écrivent tous deux que le diamètre de leur
+              série, alors que ces séries diffèrent (02 et 10).
+            */}
+            <p className="hint" style={{ marginTop: "var(--s-6)" }}>
+              Ces tailles viennent de l'ISO 15, qui donne des dimensions et non des
+              désignations. Le symbole d'alésage est le même pour toutes — il ne désigne que
+              l'alésage. Le premier chiffre d'une désignation nomme le type de roulement, que
+              cette norme ne dit pas.
+            </p>
+          </>
+        ) : null}
+      </section>
 
       <form
         className="card"

@@ -19,12 +19,14 @@ import { userEvent } from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import adviceFixture from "../fixtures/bearing-advice.json";
+import sizesFixture from "../fixtures/bearing-sizes.json";
 import catalogueFixture from "../fixtures/bearing-catalogue.json";
 import type {
   BearingCatalogue,
   DesignationReading,
   MountingAdvice,
   MountingOption,
+  SizeSearch,
 } from "../types";
 import { Bearings } from "./Bearings";
 
@@ -33,14 +35,23 @@ vi.mock("../api", () => ({
   bearingRead: vi.fn(),
   bearingOptions: vi.fn(),
   bearingAdvise: vi.fn(),
+  bearingBoreDiameters: vi.fn(),
+  bearingSizes: vi.fn(),
   isDesktop: () => true,
 }));
 
-const { bearingAdvise, bearingCatalogue, bearingOptions, bearingRead } =
-  await import("../api");
+const {
+  bearingAdvise,
+  bearingBoreDiameters,
+  bearingCatalogue,
+  bearingOptions,
+  bearingRead,
+  bearingSizes,
+} = await import("../api");
 
 const catalogue = catalogueFixture as BearingCatalogue;
 const advice = adviceFixture as MountingAdvice;
+const sizes = sizesFixture as SizeSearch;
 
 /** Les cas d'emploi du premier régime, tels que le catalogue les porte. */
 const OPTIONS: MountingOption[] = catalogue.cases
@@ -75,6 +86,12 @@ async function show() {
   vi.mocked(bearingOptions).mockResolvedValue(OPTIONS);
   vi.mocked(bearingAdvise).mockResolvedValue(advice);
   vi.mocked(bearingRead).mockResolvedValue(READINGS);
+  // Les quatre tailles de l'échantillon sont toutes à 50 mm : la liste des
+  // diamètres, elle, est dédoublonnée par le moteur.
+  vi.mocked(bearingBoreDiameters).mockResolvedValue([
+    ...new Set(sizes.sizes.map((size) => size.size.bore)),
+  ]);
+  vi.mocked(bearingSizes).mockResolvedValue(sizes);
   render(<Bearings />);
   await waitFor(() => expect(bearingCatalogue).toHaveBeenCalled());
 }
@@ -193,6 +210,30 @@ describe("écran des roulements", () => {
     expect(screen.getByText(advice.bearing_bore.characteristic)).toBeInTheDocument();
     expect(screen.getByText(advice.bearing_bore.range_label)).toBeInTheDocument();
     expect(screen.getByText("Normale")).toBeInTheDocument();
+  });
+
+  it("permet de partir de l'arbre, sans connaître la désignation", async () => {
+    await show();
+    await waitFor(() => expect(bearingBoreDiameters).toHaveBeenCalled());
+
+    // Le reproche d'usage auquel cet écran répond : exiger « 6210 » avant de
+    // rendre le moindre service, c'était demander la réponse pour poser la
+    // question.
+    expect(screen.getByText("Partir de l'arbre")).toBeInTheDocument();
+
+    await userEvent.click(screen.getByLabelText("Diamètre d'alésage (mm)"));
+    const listbox = await screen.findByRole("listbox");
+    await userEvent.click(within(listbox).getByText("50 mm"));
+    await waitFor(() => expect(bearingSizes).toHaveBeenCalledWith("50"));
+
+    // Les tailles sont celles du moteur, pas une liste écrite à la main.
+    for (const size of sizes.sizes) {
+      expect(screen.getByText(size.label)).toBeInTheDocument();
+    }
+
+    // Et l'écran dit pourquoi il ne rend pas la désignation complète : le
+    // symbole d'alésage ne désigne que l'alésage.
+    expect(screen.getByText(/ne désigne que/)).toBeInTheDocument();
   });
 
   it("porte le verdict par un libellé, pas seulement par une couleur", async () => {

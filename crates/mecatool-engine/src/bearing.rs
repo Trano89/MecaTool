@@ -49,6 +49,7 @@
 use mecatool_core::{
     Conclusion, FitKind, Length, Provenance, ReasoningStep, ToleranceClass, Verdict,
 };
+use mecatool_standards::iso15::{BoundarySize, BoundaryTable};
 use mecatool_standards::iso492::{BearingToleranceTable, Ring, RingTolerance};
 use mecatool_standards::roulements::{
     BearingFamily, BoreDesignation, LoadRegime, MountingCase, ShaftMountingTable,
@@ -204,12 +205,53 @@ pub struct MountingOption {
     pub unavailable: Option<String>,
 }
 
+/// Une taille normalisee, avec ce que la designation en dirait.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct StandardSize {
+    pub size: BoundarySize,
+    /// La taille en clair, par ex. `"50 × 90 × 20"`.
+    pub label: String,
+    /// Le symbole d'alesage, par ex. `"10"` pour 50 mm.
+    ///
+    /// # Pourquoi le symbole seul, et pas la designation complete
+    ///
+    /// Assembler une designation demanderait deux regles que MecaTool n'a PAS
+    /// en source : le chiffre du type — 6 pour une bille a gorge profonde, N
+    /// pour un rouleau cylindrique — et la facon dont la serie de dimensions
+    /// s'y ecrit, qui n'est pas uniforme. « 6210 » n'ecrit que le diametre de
+    /// la serie 02, mais « 6004 » n'ecrit aussi que le diametre de la serie
+    /// **10** : la largeur disparait dans les deux cas, alors qu'elle differe.
+    /// Un « 22210 », lui, ecrit sa serie 22 en entier.
+    ///
+    /// Une regle qui tombe juste sur 6210 et faux sur 6004 n'est pas une regle.
+    /// Le moteur rend donc les pieces qu'il tient de ses sources — serie de
+    /// diametres et symbole d'alesage — et laisse l'assemblage a qui detient la
+    /// convention du fabricant.
+    ///
+    /// Vaut `None` lorsque le diametre n'a pas de symbole d'alesage.
+    pub bore_code: Option<String>,
+}
+
+/// Ce qui existe a un diametre d'alesage donne.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SizeSearch {
+    pub bore: Length,
+    /// De la plus compacte a la plus encombrante.
+    pub sizes: Vec<StandardSize>,
+    /// Les alesages normalises qui encadrent, quand celui-ci n'existe pas.
+    pub nearest: Vec<Length>,
+    /// Ce qu'il faut dire d'un resultat vide, redige par le moteur.
+    pub note: Option<String>,
+    pub provenance: Provenance,
+}
+
 /// Le moteur du domaine roulements.
 #[derive(Debug)]
 pub struct BearingEngine {
     bore: &'static BoreDesignation,
     mounting: &'static ShaftMountingTable,
     tolerances: &'static BearingToleranceTable,
+    dimensions: &'static BoundaryTable,
     iso286: Iso286Engine,
 }
 
@@ -219,6 +261,7 @@ impl BearingEngine {
             bore: BoreDesignation::embedded()?,
             mounting: ShaftMountingTable::embedded()?,
             tolerances: BearingToleranceTable::embedded()?,
+            dimensions: BoundaryTable::embedded()?,
             iso286: Iso286Engine::new()?,
         })
     }
@@ -245,6 +288,90 @@ impl BearingEngine {
     /// Le diametre d'alesage que designe un symbole.
     pub fn bore_diameter(&self, code: &str) -> Result<Length> {
         Ok(self.bore.bore_diameter(code)?)
+    }
+
+    /// Tous les diametres d'alesage normalises, pour une liste de selection.
+    pub fn bore_diameters(&self) -> Vec<Length> {
+        self.dimensions.bore_diameters()
+    }
+
+    /// Les roulements normalises qui existent a un diametre d'alesage donne.
+    ///
+    /// # Le chemin que le domaine ne savait pas prendre
+    ///
+    /// Jusqu'ici, il fallait connaitre « 6210 » pour obtenir quoi que ce soit.
+    /// Personne ne part de la : on part d'un arbre, et on cherche ce qui va
+    /// dessus. Cette fonction repond a cette question-la.
+    pub fn sizes_for_bore(&self, bore: Length) -> SizeSearch {
+        let sizes: Vec<StandardSize> = self
+            .dimensions
+            .sizes_for_bore(bore)
+            .into_iter()
+            .map(|size| self.describe_size(size))
+            .collect();
+
+        // Quand rien n'existe a ce diametre, dire lesquels existent autour vaut
+        // mieux qu'une liste vide : c'est presque toujours la question suivante.
+        let nearest = if sizes.is_empty() {
+            self.nearest_bores(bore)
+        } else {
+            Vec::new()
+        };
+
+        SizeSearch {
+            bore,
+            note: self.search_note(bore, &sizes, &nearest),
+            sizes,
+            nearest,
+            provenance: Provenance::new()
+                .with(self.dimensions.standard().clone())
+                .with(self.bore.standard().clone()),
+        }
+    }
+
+    /// Les deux alesages normalises qui encadrent un diametre absent.
+    fn nearest_bores(&self, bore: Length) -> Vec<Length> {
+        let tous = self.dimensions.bore_diameters();
+        let dessous = tous.iter().rev().find(|d| **d < bore).copied();
+        let dessus = tous.iter().find(|d| **d > bore).copied();
+        dessous.into_iter().chain(dessus).collect()
+    }
+
+    /// Ce qu'il faut dire du resultat, redige ici et non a l'ecran.
+    fn search_note(
+        &self,
+        bore: Length,
+        sizes: &[StandardSize],
+        nearest: &[Length],
+    ) -> Option<String> {
+        if !sizes.is_empty() {
+            return None;
+        }
+        let voisins = nearest
+            .iter()
+            .map(|d| format!("{} mm", format::mm_trimmed(*d)))
+            .collect::<Vec<_>>()
+            .join(" et ");
+        Some(if voisins.is_empty() {
+            format!(
+                "{} mm n'est pas un alésage normalisé par l'ISO 15.",
+                format::mm_trimmed(bore)
+            )
+        } else {
+            format!(
+                "{} mm n'est pas un alésage normalisé par l'ISO 15. Les diamètres                  voisins qui le sont : {voisins}.",
+                format::mm_trimmed(bore)
+            )
+        })
+    }
+
+    /// Complete une taille par le symbole d'alesage qui lui correspond.
+    fn describe_size(&self, size: BoundarySize) -> StandardSize {
+        StandardSize {
+            label: size.label_fr(),
+            bore_code: self.bore.code_for(size.bore),
+            size,
+        }
     }
 
     /// Les lectures possibles d'une designation.
@@ -883,6 +1010,82 @@ mod tests {
         assert!(labels.contains(&"Écarts de la classe"));
         assert!(labels.contains(&"Tolérance de l'alésage"));
         assert!(labels.contains(&"Ajustement obtenu"));
+    }
+
+    #[test]
+    fn un_arbre_de_50_donne_ce_qui_existe_dessus() {
+        // Le chemin que le domaine ne savait pas prendre. Personne ne part de
+        // « 6210 » : on part d'un arbre.
+        let recherche = engine().sizes_for_bore(mm(50));
+        assert!(recherche.note.is_none(), "50 mm est un alésage normalisé");
+        assert!(
+            recherche.sizes.len() > 10,
+            "{} tailles",
+            recherche.sizes.len()
+        );
+
+        let taille = recherche
+            .sizes
+            .iter()
+            .find(|t| t.size.dimension_series == "02")
+            .expect("la série 02 existe à 50 mm");
+        assert_eq!(taille.label, "50 × 90 × 20");
+        assert_eq!(taille.size.diameter_series, "2");
+
+        // Et la provenance porte l'ISO 15, confrontee a la norme.
+        assert!(recherche
+            .provenance
+            .references
+            .iter()
+            .any(|r| r.id == "ISO 15"));
+    }
+
+    #[test]
+    fn un_diametre_absent_dit_lesquels_existent_autour() {
+        // 51 mm n'est pas un alesage normalise. Rendre une liste vide sans rien
+        // dire laisserait croire a une panne ; la question suivante est
+        // toujours « alors quoi, a cote ? ».
+        let recherche = engine().sizes_for_bore(mm(51));
+        assert!(recherche.sizes.is_empty());
+        assert_eq!(recherche.nearest, vec![mm(50), mm(55)]);
+        let note = recherche.note.expect("une absence doit se dire");
+        assert!(note.contains("50 mm") && note.contains("55 mm"), "{note}");
+    }
+
+    #[test]
+    fn le_symbole_dalesage_ne_designe_pas_un_roulement() {
+        // Pourquoi le moteur n'assemble PAS de designation. A 50 mm, le symbole
+        // d'alesage vaut « 10 » pour TOUTES les series — mais les roulements
+        // different : 6210 mesure 90 × 20, 6010 mesure 80 × 16. Le symbole ne
+        // designe que l'alesage.
+        //
+        // Et la facon dont la serie s'ecrit dans la designation n'est pas
+        // uniforme : « 6210 » n'ecrit que le diametre de la serie 02, « 6004 »
+        // n'ecrit aussi que le diametre de la serie 10. Une regle qui tombe
+        // juste sur l'un et faux sur l'autre n'est pas une regle — le moteur
+        // rend donc les pieces, pas l'assemblage.
+        let recherche = engine().sizes_for_bore(mm(50));
+        let series: Vec<&str> = recherche
+            .sizes
+            .iter()
+            .map(|t| t.size.dimension_series.as_str())
+            .collect();
+        assert!(series.contains(&"02"), "{series:?}");
+        assert!(series.contains(&"10"), "{series:?}");
+
+        for taille in &recherche.sizes {
+            assert_eq!(taille.bore_code.as_deref(), Some("10"));
+        }
+
+        let par_serie = |nom: &str| {
+            recherche
+                .sizes
+                .iter()
+                .find(|t| t.size.dimension_series == nom)
+                .map(|t| t.label.clone())
+        };
+        assert_eq!(par_serie("02").as_deref(), Some("50 × 90 × 20"));
+        assert_eq!(par_serie("10").as_deref(), Some("50 × 80 × 16"));
     }
 
     #[test]

@@ -24,7 +24,9 @@ import type {
   MeasureKind,
   MountingAdvice,
   MountingOption,
+  Nanometres,
   Report,
+  SizeSearch,
 } from "./types";
 
 /** Vrai lorsque l'application tourne dans la fenêtre Tauri. */
@@ -208,6 +210,21 @@ export function bearingCatalogue(): Promise<BearingCatalogue> {
  */
 export function bearingRead(designation: string): Promise<DesignationReading[]> {
   return call<DesignationReading[]>("bearing_read", { designation });
+}
+
+/**
+ * Les diamètres d'alésage normalisés, pour une liste de sélection.
+ *
+ * C'est ce qui permet de partir d'un arbre plutôt que d'une désignation qu'il
+ * faudrait déjà connaître.
+ */
+export function bearingBoreDiameters(): Promise<Nanometres[]> {
+  return call<Nanometres[]>("bearing_bore_diameters", {});
+}
+
+/** Les roulements normalisés qui existent à un diamètre d'alésage. */
+export function bearingSizes(boreMm: string): Promise<SizeSearch> {
+  return call<SizeSearch>("bearing_sizes", { boreMm });
 }
 
 /** Les cas d'emploi d'un régime, avec ce que chacun donnerait. */

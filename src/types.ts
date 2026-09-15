@@ -746,6 +746,56 @@ export interface MountingAdvice {
   provenance: Provenance;
 }
 
+/** Une taille normalisée, telle que l'ISO 15 la porte. */
+export interface BoundarySize {
+  /** La série de diamètres, par ex. `"2"`. */
+  diameter_series: string;
+  /** La série de dimensions, par ex. `"02"`. */
+  dimension_series: string;
+  /** Diamètre d'alésage `d`. */
+  bore: Nanometres;
+  /** Diamètre extérieur `D`. */
+  outside: Nanometres;
+  /** Largeur `B`. */
+  width: Nanometres;
+  /**
+   * Plus petit chanfrein simple `rs min`, quand le tableau en donne un.
+   *
+   * La norme avertit qu'il ne s'applique pas toujours — d'où un champ à part
+   * plutôt qu'une quatrième cote.
+   */
+  chamfer: Nanometres | null;
+  /** Le tableau d'où sort la ligne. */
+  table: string;
+}
+
+/** Une taille, avec ce que le symbole d'alésage en dit. */
+export interface StandardSize {
+  size: BoundarySize;
+  /** La taille en clair, par ex. `"50 × 90 × 20"`. */
+  label: string;
+  /**
+   * Le symbole d'alésage, par ex. `"10"` pour 50 mm — et non la désignation.
+   *
+   * Assembler « 6210 » demanderait le chiffre du type, que l'ISO 15 ne donne
+   * pas, et une règle d'écriture de la série qui n'est pas uniforme. Le moteur
+   * rend les pièces qu'il tient de ses sources.
+   */
+  bore_code: string | null;
+}
+
+/** Ce qui existe à un diamètre d'alésage donné. */
+export interface SizeSearch {
+  bore: Nanometres;
+  /** De la plus compacte à la plus encombrante. */
+  sizes: StandardSize[];
+  /** Les alésages normalisés qui encadrent, quand celui-ci n'existe pas. */
+  nearest: Nanometres[];
+  /** Ce qu'il faut dire d'un résultat vide, rédigé par le moteur. */
+  note: string | null;
+  provenance: Provenance;
+}
+
 /** La bague concernée par une tolérance ISO 492. */
 export type Ring = "inner" | "outer";
 

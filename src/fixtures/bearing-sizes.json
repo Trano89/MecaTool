@@ -1,0 +1,107 @@
+{
+  "bore": 50000000,
+  "sizes": [
+    {
+      "size": {
+        "diameter_series": "7",
+        "dimension_series": "17",
+        "bore": 50000000,
+        "outside": 62000000,
+        "width": 6000000,
+        "chamfer": 300000,
+        "table": "Tableau 1 — Série de diamètres 7"
+      },
+      "label": "50 × 62 × 6",
+      "bore_code": "10"
+    },
+    {
+      "size": {
+        "diameter_series": "7",
+        "dimension_series": "37",
+        "bore": 50000000,
+        "outside": 62000000,
+        "width": 10000000,
+        "chamfer": 300000,
+        "table": "Tableau 1 — Série de diamètres 7"
+      },
+      "label": "50 × 62 × 10",
+      "bore_code": "10"
+    },
+    {
+      "size": {
+        "diameter_series": "7",
+        "dimension_series": "47",
+        "bore": 50000000,
+        "outside": 62000000,
+        "width": 12000000,
+        "chamfer": 300000,
+        "table": "Tableau 1 — Série de diamètres 7"
+      },
+      "label": "50 × 62 × 12",
+      "bore_code": "10"
+    },
+    {
+      "size": {
+        "diameter_series": "8",
+        "dimension_series": "08",
+        "bore": 50000000,
+        "outside": 65000000,
+        "width": 5000000,
+        "chamfer": 300000,
+        "table": "Tableau 2 — Série de diamètres 8"
+      },
+      "label": "50 × 65 × 5",
+      "bore_code": "10"
+    }
+  ],
+  "nearest": [],
+  "note": null,
+  "provenance": {
+    "references": [
+      {
+        "id": "ISO 15",
+        "edition": "2011",
+        "title": "Roulements — Roulements radiaux — Dimensions d'encombrement, plan général",
+        "scope": "dimensions d'encombrement d, D, B et chanfrein rs min des roulements radiaux, séries de diamètres 7, 8, 9, 0, 1, 2, 3 et 4",
+        "source": "ISO 15:2011(E), tableaux 1 à 8. Exemplaire sous licence IHS fourni par l'utilisateur.",
+        "verification": {
+          "state": "verified",
+          "against": "ISO 15:2011(E), tableaux 1 à 8, lus dans la couche de texte de la norme par scripts/extract-iso15-tables.py",
+          "on": "2026-09-14"
+        },
+        "notes": [
+          "CE JEU REPOND A UN BLOCAGE D'USAGE. MecaTool ne savait partir que d'une désignation déjà connue — « 6210 ». Personne ne part de là : on part d'un arbre. Ces tableaux permettent le chemin inverse, du diamètre vers les roulements qui existent.",
+          "CHAQUE SÉRIE DE DIAMÈTRES A SA PROPRE FORME, et c'est le piège de cette norme. Les séries de dimensions diffèrent d'un tableau à l'autre (la série 4 n'en a que deux, 04 et 24 ; la série 2 en a huit), et le découpage de la colonne rs min aussi : une seule colonne pour la série 7, deux pour la plupart, TROIS pour la série 9 (09 | 19 à 39 | 49 à 69). Un analyseur supposant une forme unique aurait décalé des lignes entières sans rien signaler.",
+          "LE TABLEAU 8 EST IMPRIMÉ EN DEUX BLOCS CÔTE À CÔTE, chaque ligne portant deux roulements sans rapport. Lus à la file, les diamètres auraient paru désordonnés ; lus par bloc, ils croissent.",
+          "Au-delà de 1000 mm, la norme écrit « 1 030 » avec une espace ordinaire — la même qui sépare deux colonnes. La distinction se fait sur le NOMBRE d'espaces, et toute ligne restée ambiguë est rejetée plutôt que devinée. Le relevé final ne compte aucun rejet.",
+          "555 lignes relevées. Contrôle indépendant du découpage : sept roulements aux cotes universellement connues (6205 25×52×15, 6210 50×90×20, 6305 25×62×17, 6308 40×90×23, 6004 20×42×12, 6012 60×95×18, 6403 17×62×17) tombent juste, dont un du tableau 8 à deux blocs.",
+          "LE CHANFREIN rs min EST LE PLUS PETIT chanfrein simple. La norme avertit qu'il ne s'applique pas toujours : côté gorge de segment d'arrêt (ISO 464), côté épaulement rapporté et côté sans épaulement des roulements à rouleaux cylindriques (ISO 12043), côté non porteur des bagues extérieures à contact oblique (ISO 12044). Pour un alésage conique, il peut être plus petit. Le plus grand chanfrein simple correspondant est dans l'ISO 582, qui n'est pas ici.",
+          "LES ROULEMENTS À ROULEAUX CONIQUES NE SONT PAS COUVERTS : ils relèvent de l'ISO 355, absente. Une désignation en 3xxxx ne trouvera rien ici, et doit le dire plutôt que de rendre un résultat faux.",
+          "L'annexe A donne la règle d'extrapolation au-delà des tableaux (D = d + fD·d^0,9, facteur fD par série). Elle n'est pas transcrite : le domaine rend ce que les tableaux portent, et se tait au-delà.",
+          "LA DÉSIGNATION N'EST PAS DANS CETTE NORME. Ces tableaux donnent des dimensions, indexées par série de diamètres et série de dimensions. Le passage de « 6210 » à « série 62, alésage 50 » relève d'une pratique de désignation des fabricants, portée séparément et avec son propre état de source."
+        ]
+      },
+      {
+        "id": "Désignation d'alésage des roulements",
+        "edition": "",
+        "title": "Correspondance entre le symbole d'alésage d'une désignation de roulement et le diamètre d'alésage",
+        "scope": "règle de correspondance entre le symbole d'alésage et le diamètre d'alésage",
+        "source": "VSM, « Extrait de normes », édition 2014, § 4.14.2.1, page 234.",
+        "verification": {
+          "state": "secondary",
+          "from": "VSM « Extrait de normes » 2014, § 4.14.2.1, page 234",
+          "reproduces": "une pratique de désignation que le recueil place sous un titre citant l'ISO 15",
+          "on": "2026-09-11"
+        },
+        "notes": [
+          "ATTRIBUTION CORRIGÉE. Ce jeu portait l'identifiant « ISO 15 », parce que le recueil énonce la règle sous un titre citant cette norme. L'ISO 15:2011, lue depuis, ne contient AUCUN symbole d'alésage : ses tableaux donnent le diamètre d directement. La règle vient donc d'ailleurs — vraisemblablement d'une pratique de désignation reprise par le recueil, dont le § 4.14.1 cite par ailleurs la DIN 623-1. MecaTool ne lui attribue plus de norme.",
+          "La source énonce la règle en une phrase : « Le symbole d'alésage est égal au diamètre en mm jusqu'à un diamètre d'alésage d = 9 mm. Les diamètres d'alésage 10, 12, 15 et 17 mm correspondent aux symboles 00, 01, 02 et 03. De 20 à 480 mm, le symbole d'alésage est égal au 1/5 du diamètre d'alésage. »",
+          "C'est une RÈGLE et non une table : MecaTool l'applique au lieu de recopier 96 correspondances. Les quatre codes spéciaux sont la seule partie qui s'énumère, parce qu'ils échappent justement à la règle.",
+          "La règle ne couvre pas tous les roulements qui existent. Confrontée aux soixante-treize diamètres normalisés de l'ISO 15:2011, elle en laisse dix-huit sans symbole : 0,6 / 1,5 / 2,5 sous le domaine des symboles à un chiffre, 22 / 28 / 32 qui ne sont pas multiples de cinq, et tout ce qui dépasse 480 mm. Ce n'est pas une lacune de transcription mais une limite de la règle elle-même.",
+          "La règle ne dit PAS comment découper une désignation complète en série et symbole d'alésage. « 6203 » se lit série 62 + symbole 03, mais « 623 » se lit série 62 + symbole 3, et rien dans la phrase citée ne permet de trancher mécaniquement. MecaTool rend donc les lectures possibles au lieu d'en choisir une.",
+          "Au-delà du symbole 96, soit 480 mm, la source ne dit rien : MecaTool refuse de conclure plutôt que de prolonger la règle."
+        ]
+      }
+    ]
+  }
+}

@@ -30,6 +30,8 @@ pub fn run() {
             commands::domains,
             commands::tolerance_classes,
             commands::bearing_catalogue,
+            commands::bearing_bore_diameters,
+            commands::bearing_sizes,
             commands::bearing_read,
             commands::bearing_options,
             commands::bearing_advise
