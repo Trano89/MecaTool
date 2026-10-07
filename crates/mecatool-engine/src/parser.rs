@@ -15,9 +15,12 @@ use core::str::FromStr;
 
 use mecatool_core::{Deviations, Feature, Length, ToleranceClass, Unit};
 
-use crate::chain::{Link, LinkDirection};
+use crate::chain::{Link, LinkDirection, LinkSource};
 
 use crate::error::{EngineError, Result};
+use crate::iso2768::Iso2768Engine;
+use crate::iso286::Iso286Engine;
+use mecatool_standards::iso2768::{GeneralClass, GeneralDeviation, MeasureKind};
 
 /// Ce qu'une entree utilisateur peut designer.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -336,13 +339,74 @@ fn parse_link(raw: &str, index: usize) -> Result<Link> {
         split_leading_number(body).ok_or_else(|| unreadable("Cote nominale absente."))?;
     let nominal = Length::parse(number, Unit::Millimetre)?;
 
-    let deviations = parse_deviations(rest.trim(), raw)?;
     let label = match label {
         Some(name) if !name.is_empty() => name,
         _ => default_label(index),
     };
 
+    // Les ecarts sont ecrits, ou lus dans une norme : « h7 », « ISO 2768-m ».
+    // Une tolerance qui commence par une lettre n'est pas un nombre : on la
+    // cherche d'abord dans les normes, pour que l'utilisateur n'ait pas a
+    // recopier a la main des ecarts que le moteur connait.
+    let rest = rest.trim();
+    if rest.starts_with(|c: char| c.is_ascii_alphabetic()) {
+        let (deviations, source) = normative_deviations(rest, nominal, raw)?;
+        return Ok(Link::new(label, nominal, deviations, direction)?.with_source(source));
+    }
+
+    let deviations = parse_deviations(rest, raw)?;
     Link::new(label, nominal, deviations, direction)
+}
+
+/// Les ecarts d'un maillon lus dans une norme.
+///
+/// `h7` ou `H7` : classe ISO 286, calculee par le moteur des ajustements.
+/// `ISO 2768-m` : tolerance generale, lue dans les tables de l'ISO 2768-1. La
+/// norme doit etre citee : un « m » isole se confondrait avec une classe ISO 286
+/// incomplete, et le moteur ne devine pas.
+fn normative_deviations(
+    text: &str,
+    nominal: Length,
+    raw: &str,
+) -> Result<(Deviations, LinkSource)> {
+    let compact: String = text.split_whitespace().collect::<Vec<_>>().join(" ");
+    let lower = compact.to_ascii_lowercase();
+
+    if let Some(class_text) = lower
+        .strip_prefix("iso 2768")
+        .map(|tail| tail.trim_start_matches([' ', '-']))
+    {
+        let class = GeneralClass::parse(class_text)?;
+        let engine = Iso2768Engine::new()?;
+        let analysis = engine.general(MeasureKind::Linear, nominal, class)?;
+        let GeneralDeviation::Linear { magnitude } = analysis.lookup.deviation else {
+            unreachable!("une cote lineaire rend un ecart lineaire");
+        };
+        return Ok((
+            Deviations::symmetric(magnitude),
+            LinkSource {
+                designation: class.designation(),
+                provenance: analysis.provenance,
+            },
+        ));
+    }
+
+    let class = ToleranceClass::parse(&compact).map_err(|_| EngineError::Unparsable {
+        input: raw.to_string(),
+        hint: format!(
+            "« {compact} » n'est ni une classe ISO 286 (« h7 », « H8 »), ni une tolérance \
+             générale (« ISO 2768-m »), ni des écarts (« ±0.1 », « +0.1/-0.05 »)."
+        ),
+    })?;
+    let engine = Iso286Engine::new()?;
+    let analysis = engine.feature(nominal, class)?;
+    Ok((
+        analysis.tolerance.deviations,
+        LinkSource {
+            designation: class.to_string(),
+            provenance: analysis.provenance,
+        },
+    ))
 }
 
 /// Lit `"±0.1"`, `"+/-0.1"` ou `"+0.1/-0.05"`.
@@ -858,5 +922,56 @@ mod tests {
             parse("0 H7/g6"),
             Err(EngineError::Unparsable { .. })
         ));
+    }
+
+    #[test]
+    fn un_maillon_lit_ses_ecarts_dans_liso_286() {
+        // Personne n'a a recopier « -0.021/0 » : le moteur connait h7.
+        let links = parse_chain("A = 20 h7\n-B = 10 H8").unwrap();
+        assert_eq!(links[0].deviations.lower(), Length::from_micrometres(-21));
+        assert_eq!(links[0].deviations.upper(), Length::ZERO);
+        assert_eq!(links[0].source.as_ref().unwrap().designation, "h7");
+        assert_eq!(links[1].deviations.upper(), Length::from_micrometres(22));
+        assert_eq!(links[1].direction, LinkDirection::Decreasing);
+        assert!(links[1]
+            .source
+            .as_ref()
+            .unwrap()
+            .provenance
+            .is_fully_verified());
+    }
+
+    #[test]
+    fn un_maillon_lit_ses_ecarts_dans_liso_2768() {
+        let links = parse_chain("A = 50 ISO 2768-m\nB = 50 iso 2768 f").unwrap();
+        assert_eq!(
+            links[0].deviations.upper(),
+            Length::parse("0.3", Unit::Millimetre).unwrap()
+        );
+        assert_eq!(links[0].source.as_ref().unwrap().designation, "ISO 2768-m");
+        assert_eq!(
+            links[1].deviations.upper(),
+            Length::parse("0.15", Unit::Millimetre).unwrap()
+        );
+    }
+
+    #[test]
+    fn une_tolerance_normative_inconnue_dit_quoi_ecrire() {
+        let err = parse_chain("A = 20 bidule").unwrap_err().to_string();
+        assert!(err.contains("ISO 2768-m"), "{err}");
+        assert!(err.contains("h7"), "{err}");
+    }
+
+    #[test]
+    fn la_chaine_porte_la_provenance_de_ses_maillons() {
+        let links = parse_chain("A = 20 h7\nB = 10 ±0.1").unwrap();
+        let analysis = crate::chain::analyse_chain(&links, false).unwrap();
+        assert!(!analysis.provenance.references.is_empty());
+        let manual = parse_chain("A = 20 ±0.1").unwrap();
+        assert!(crate::chain::analyse_chain(&manual, false)
+            .unwrap()
+            .provenance
+            .references
+            .is_empty());
     }
 }
