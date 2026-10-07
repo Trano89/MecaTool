@@ -112,6 +112,16 @@ seul l'état « réserve » des trois domaines.
 - Une rugosité fine s'affichait arrondie au dixième de micromètre : Ra 0,025
   devenait « 0 ». Un formateur au nanomètre la remplace sur l'écran concerné.
 
+### Distribution
+
+- Compilation de l'application sur GitHub Actions pour **Windows x64**
+  (`.msi`, `.exe`) et **macOS Apple Silicon** (`.dmg`), à chaque pull request
+  et à chaque poussée sur `master` (workflow « Compilation »). Les
+  installeurs se téléchargent dans les artefacts du run.
+- L'application macOS reçoit une signature ad hoc, faute de certificat Apple :
+  elle s'ouvre par clic droit → Ouvrir au premier lancement.
+- La release ne construit plus que ces deux cibles.
+
 ## [0.1.1] — 2026-09-11
 
 ### Renommé

@@ -2,8 +2,8 @@ name: Release
 
 # Une release se declenche par un tag « vX.Y.Z », ou a la main en donnant la
 # version : le workflow cree alors lui-meme le tag sur le commit lance.
-# Chaque systeme construit son paquet d'installation et le joint a la meme
-# release GitHub.
+# Windows x64 et macOS Apple Silicon construisent chacun leur paquet
+# d'installation et le joignent a la meme release GitHub.
 on:
   push:
     tags: ["v*"]
@@ -44,6 +44,8 @@ jobs:
             const body = [
               "Voir le journal des modifications (CHANGELOG.md) pour le détail de cette version.",
               "",
+              "Paquets : Windows x64 (.msi, .exe) et macOS Apple Silicon (.dmg).",
+              "",
               "⚠️ Les domaines états de surface, soudure (hors symboles ISO 2553:2013), visserie et matières",
               "reposent sur des données non encore confrontées à leurs normes. Chaque écran l'affiche avant",
               "toute saisie. Ne pas s'en servir pour réceptionner un ouvrage avant cette confrontation.",
@@ -73,13 +75,19 @@ jobs:
             return data.id;
 
   paquet:
-    name: Paquet ${{ matrix.platform }}
+    name: Paquet ${{ matrix.name }}
     needs: release
     strategy:
       fail-fast: false
       matrix:
-        platform: [ubuntu-22.04, windows-latest, macos-latest]
-    runs-on: ${{ matrix.platform }}
+        include:
+          - name: Windows x64
+            runner: windows-latest
+            target: x86_64-pc-windows-msvc
+          - name: macOS Apple Silicon
+            runner: macos-latest
+            target: aarch64-apple-darwin
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -87,14 +95,12 @@ jobs:
           node-version: lts/*
           cache: npm
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: "./src-tauri -> target"
-      - name: Dependances systeme de Tauri
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+          key: ${{ matrix.target }}
       - run: npm ci
       # Le moteur est teste avant d'etre empaquete : une release ne part pas
       # d'un etat que l'integration continue refuserait.
@@ -105,13 +111,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           releaseId: ${{ needs.release.outputs.id }}
+          args: --target ${{ matrix.target }}
 
   publier:
     name: Publier la release
     needs: [release, paquet]
     runs-on: ubuntu-latest
     steps:
-      # La release reste en brouillon tant que les trois paquets ne sont pas
+      # La release reste en brouillon tant que les deux paquets ne sont pas
       # joints : personne ne telecharge une release a moitie construite.
       - uses: actions/github-script@v7
         with:
