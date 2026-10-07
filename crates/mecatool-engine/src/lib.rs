@@ -33,6 +33,7 @@ pub mod format;
 pub mod geometric;
 pub mod iso2768;
 pub mod iso286;
+pub mod materials;
 pub mod parser;
 pub mod requirement;
 pub mod search;
@@ -51,6 +52,7 @@ pub use geometric::{
 };
 pub use iso2768::{ClassComparison, ClassRow, GeneralAnalysis, Iso2768Engine};
 pub use iso286::{FeatureAnalysis, FitAnalysis, Iso286Engine};
+pub use materials::{MaterialsEngine, SteelReading, ThermalFit};
 pub use parser::{parse, ParsedInput};
 pub use requirement::{verify_clearance, ClearanceRequirement, Margins, Verification};
 pub use search::{find_fits, Basis, SearchOptions, SearchResult, Solution};

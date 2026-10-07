@@ -1,0 +1,33 @@
+{
+  "dataset": "proprietes-physiques",
+  "standard": {
+    "id": "Propriétés physiques par famille",
+    "edition": "",
+    "title": "Ordres de grandeur des propriétés physiques des familles de matériaux",
+    "scope": "module d'élasticité, coefficient de Poisson, masse volumique et coefficient de dilatation linéique, à température ambiante",
+    "source": "Valeurs d'usage courant des manuels, saisies sans document ouvert lors de la saisie. Aucune norme ne les fixe pour une famille entière.",
+    "verification": {
+      "state": "unverified",
+      "pending": "À confronter à un recueil de propriétés des matériaux (VSM « Extrait de normes », chapitre matériaux, ou fiches de nuances), puis à requalifier en « recommended » avec sa source."
+    },
+    "notes": [
+      "CE NE SONT PAS LES VALEURS D'UNE NUANCE. Ce sont des valeurs représentatives d'une famille : une nuance précise peut s'en écarter de plusieurs pour cent, une fonte grise de bien davantage selon sa classe.",
+      "Le coefficient de dilatation est donné entre 20 et 100 °C environ. Il varie avec la température ; au-delà, la valeur moyenne sur l'intervalle utile est à rechercher.",
+      "Les plastiques techniques sont donnés à titre d'alerte : leur dilatation est dix fois celle de l'acier, et leurs propriétés dépendent de l'humidité et de la température."
+    ]
+  },
+  "families": [
+    { "id": "steel", "name": "acier non allié ou faiblement allié", "e_gpa": 210, "poisson_milli": 300, "density": 7850, "alpha_tenths": 120 },
+    { "id": "stainless_austenitic", "name": "acier inoxydable austénitique", "e_gpa": 200, "poisson_milli": 300, "density": 7900, "alpha_tenths": 160 },
+    { "id": "stainless_ferritic", "name": "acier inoxydable ferritique ou martensitique", "e_gpa": 210, "poisson_milli": 300, "density": 7700, "alpha_tenths": 105 },
+    { "id": "grey_iron", "name": "fonte à graphite lamellaire", "e_gpa": 110, "poisson_milli": 260, "density": 7200, "alpha_tenths": 110 },
+    { "id": "ductile_iron", "name": "fonte à graphite sphéroïdal", "e_gpa": 170, "poisson_milli": 280, "density": 7100, "alpha_tenths": 125 },
+    { "id": "aluminium", "name": "alliage d'aluminium", "e_gpa": 70, "poisson_milli": 330, "density": 2700, "alpha_tenths": 230 },
+    { "id": "copper", "name": "cuivre", "e_gpa": 120, "poisson_milli": 340, "density": 8900, "alpha_tenths": 170 },
+    { "id": "brass", "name": "laiton", "e_gpa": 100, "poisson_milli": 340, "density": 8500, "alpha_tenths": 190 },
+    { "id": "bronze", "name": "bronze", "e_gpa": 110, "poisson_milli": 340, "density": 8800, "alpha_tenths": 180 },
+    { "id": "titanium", "name": "alliage de titane", "e_gpa": 110, "poisson_milli": 330, "density": 4500, "alpha_tenths": 86 },
+    { "id": "polyamide", "name": "polyamide (PA 6)", "e_gpa": 3, "poisson_milli": 390, "density": 1140, "alpha_tenths": 900 },
+    { "id": "acetal", "name": "polyacétal (POM)", "e_gpa": 3, "poisson_milli": 350, "density": 1410, "alpha_tenths": 1100 }
+  ]
+}

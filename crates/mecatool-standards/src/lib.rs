@@ -33,6 +33,7 @@ pub mod error;
 pub mod iso1101;
 pub mod iso2768;
 pub mod iso286;
+pub mod matieres;
 pub mod roulements;
 pub mod soudure;
 pub mod surface;
@@ -48,6 +49,10 @@ pub use iso2768::{
     GeneralClass, GeneralDeviation, GeneralLookup, GeneralRange, GeneralToleranceTable, MeasureKind,
 };
 pub use iso286::{DeviationSide, ItGradeTable, ItValue, ShaftDeviation, ShaftDeviationTable};
+pub use matieres::{
+    DesignationRules, GradeRow, GroupNumber, MaterialFamily, MaterialFamilyTable, StructuralGrade,
+    StructuralSteelTable, ThicknessBand, UseGroup,
+};
 pub use roulements::{
     BearingFamily, BoreDesignation, DiameterRange, LoadRegime, MountingCase, MountingRow,
     ShaftMountingTable,

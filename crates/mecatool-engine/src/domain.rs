@@ -32,6 +32,7 @@ use crate::fasteners::FastenerEngine;
 use crate::geometric::GeometricEngine;
 use crate::iso2768::Iso2768Engine;
 use crate::iso286::Iso286Engine;
+use crate::materials::MaterialsEngine;
 use crate::surface::SurfaceEngine;
 use crate::welding::WeldingEngine;
 
@@ -148,21 +149,6 @@ fn from_provenance(
     }
 }
 
-fn blocked(id: &str, name: &str, question: &str, group: DomainGroup, reason: &str) -> Domain {
-    Domain {
-        id: id.to_string(),
-        name: name.to_string(),
-        question: question.to_string(),
-        group,
-        group_label: group.label_fr().to_string(),
-        status: DomainStatus::Blocked,
-        sources: Vec::new(),
-        reserve: None,
-        unavailable: Some(reason.to_string()),
-        examples: Vec::new(),
-    }
-}
-
 /// Le registre complet, disponible et a venir.
 pub fn registry() -> Result<Vec<Domain>> {
     let iso286 = Iso286Engine::new()?;
@@ -172,6 +158,7 @@ pub fn registry() -> Result<Vec<Domain>> {
     let surface = SurfaceEngine::new()?;
     let welding = WeldingEngine::new()?;
     let fasteners = FastenerEngine::new()?;
+    let materials = MaterialsEngine::new()?;
 
     let dimensional = iso286.provenance();
 
@@ -258,12 +245,13 @@ pub fn registry() -> Result<Vec<Domain>> {
             &fasteners.provenance(),
             &["M10", "M12 x 1.5", "M8 8.8"],
         ),
-        blocked(
+        from_provenance(
             "materials",
             "Matières",
-            "Quelle nuance, et quelles propriétés ?",
+            "Quelle nuance, quelles propriétés, et que devient l'ajustement à chaud ?",
             DomainGroup::Materials,
-            "Source non encore relevée.",
+            &materials.provenance(),
+            &["S355J2", "42CrMo4", "X5CrNi18-10"],
         ),
     ])
 }
@@ -343,10 +331,10 @@ mod tests {
     }
 
     #[test]
-    fn les_trois_nouveaux_domaines_disent_que_leur_source_nest_pas_verifiee() {
+    fn les_nouveaux_domaines_disent_que_leur_source_nest_pas_verifiee() {
         // Saisies sans document ouvert : utilisables, mais jamais presentees
         // comme etablies. La reserve doit le dire en toutes lettres.
-        for id in ["surface", "welding", "fasteners"] {
+        for id in ["surface", "welding", "fasteners", "materials"] {
             let domain = by_id(id);
             assert_eq!(domain.status, DomainStatus::Reserved, "{id}");
             let reserve = domain.reserve.as_deref().unwrap();

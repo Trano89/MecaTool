@@ -1,0 +1,49 @@
+{
+  "dataset": "en10025-2.aciers-construction",
+  "standard": {
+    "id": "EN 10025-2",
+    "edition": "",
+    "title": "Produits laminés à chaud en aciers de construction — Partie 2 : aciers de construction non alliés",
+    "scope": "limite d'élasticité minimale et résistance à la traction selon l'épaisseur nominale, nuances S235, S275 et S355",
+    "source": "Saisi sans document normatif ouvert lors de la saisie.",
+    "verification": {
+      "state": "unverified",
+      "pending": "À confronter aux tableaux des caractéristiques mécaniques de l'EN 10025-2 (limite d'élasticité ReH et résistance Rm selon l'épaisseur), ou à leur relevé dans le VSM « Extrait de normes » (chapitre matériaux)."
+    },
+    "notes": [
+      "La limite d'élasticité DÉCROÎT quand l'épaisseur croît : S355 ne garantit 355 MPa que jusqu'à 16 mm. Le nombre de la désignation est la valeur de la plus petite épaisseur, d'où l'importance de choisir l'épaisseur réelle.",
+      "Le chargement vérifie cette décroissance, et que la première valeur de chaque nuance coïncide avec le nombre de sa désignation.",
+      "Seules trois nuances sont embarquées, au-delà de 3 mm pour la résistance. Une nuance absente n'est pas une nuance invalide.",
+      "Les qualités JR, J0, J2 et K2 ne changent pas ces valeurs : elles portent la résilience."
+    ]
+  },
+  "tensile_from_mm": 3,
+  "thickness_ranges": [
+    { "above": 0, "to": 16 },
+    { "above": 16, "to": 40 },
+    { "above": 40, "to": 63 },
+    { "above": 63, "to": 80 },
+    { "above": 80, "to": 100 },
+    { "above": 100, "to": 150 }
+  ],
+  "grades": [
+    {
+      "grade": "S235",
+      "qualities": ["JR", "J0", "J2"],
+      "yield_mpa": [235, 225, 215, 215, 215, 195],
+      "tensile_mpa": [[360, 510], [360, 510], [360, 510], [360, 510], [360, 510], [350, 500]]
+    },
+    {
+      "grade": "S275",
+      "qualities": ["JR", "J0", "J2"],
+      "yield_mpa": [275, 265, 255, 245, 235, 225],
+      "tensile_mpa": [[410, 560], [410, 560], [410, 560], [410, 560], [410, 560], [400, 540]]
+    },
+    {
+      "grade": "S355",
+      "qualities": ["JR", "J0", "J2", "K2"],
+      "yield_mpa": [355, 345, 335, 325, 315, 295],
+      "tensile_mpa": [[470, 630], [470, 630], [470, 630], [470, 630], [470, 630], [450, 600]]
+    }
+  ]
+}

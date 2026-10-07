@@ -1,0 +1,73 @@
+{
+  "dataset": "en10027-1.designation",
+  "standard": {
+    "id": "EN 10027-1",
+    "edition": "",
+    "title": "Systèmes de désignation des aciers — Partie 1 : désignation symbolique",
+    "scope": "règles de lecture des désignations symboliques : groupes d'emploi, résilience, teneurs des aciers non alliés, faiblement et fortement alliés, aciers rapides",
+    "source": "Saisi sans document normatif ouvert lors de la saisie. Ce sont des RÈGLES de lecture, appliquées par le moteur, et non une liste de nuances.",
+    "verification": {
+      "state": "unverified",
+      "pending": "À confronter à l'EN 10027-1 (désignation symbolique) : lettres de groupe, codes de résilience, facteurs de teneur des éléments d'alliage, ou à leur relevé dans le VSM « Extrait de normes » (chapitre matériaux)."
+    },
+    "notes": [
+      "UNE RÈGLE, PAS UNE TABLE. Comme le symbole d'alésage des roulements, une désignation d'acier se lit par règles : S355J2 se décompose, il ne se recherche pas dans une liste. MecaTool applique ces règles et ne prétend pas qu'une nuance lue existe dans une norme de produit.",
+      "Faiblement allié : le nombre qui suit les symboles chimiques est la teneur multipliée par un facteur — 4 pour Cr, Co, Mn, Ni, Si, W ; 10 pour Al, Be, Cu, Mo, Nb, Pb, Ta, Ti, V, Zr ; 100 pour Ce, N, P, S ; 1000 pour B. Les nombres s'appliquent aux éléments dans l'ordre ; un élément sans nombre est présent, sans teneur indiquée.",
+      "Fortement allié (X) : au moins un élément atteint 5 % ; les nombres sont les teneurs en pour cent, sans facteur.",
+      "Les teneurs lues sont des teneurs MOYENNES ARRONDIES, telles que la désignation les code. La composition garantie d'une nuance est dans sa norme de produit.",
+      "La désignation numérique de l'EN 10027-2 (1.4301) se reconnaît, mais la table des groupes d'aciers n'est pas embarquée : MecaTool ne dit pas ce qu'elle désigne."
+    ]
+  },
+  "use_groups": [
+    { "letter": "S", "name": "acier de construction", "number": "yield", "note": "Le nombre est la limite d'élasticité minimale, en MPa, pour la plus petite épaisseur." },
+    { "letter": "P", "name": "acier pour appareils à pression", "number": "yield", "note": "Le nombre est la limite d'élasticité minimale, en MPa, pour la plus petite épaisseur." },
+    { "letter": "L", "name": "acier pour tubes de conduites", "number": "yield", "note": "Le nombre est la limite d'élasticité minimale, en MPa, pour la plus petite épaisseur." },
+    { "letter": "E", "name": "acier de construction mécanique", "number": "yield", "note": "Le nombre est la limite d'élasticité minimale, en MPa, pour la plus petite épaisseur." },
+    { "letter": "B", "name": "acier pour béton armé", "number": "yield", "note": "Le nombre est la limite d'élasticité caractéristique, en MPa." },
+    { "letter": "Y", "name": "acier de précontrainte", "number": "tensile", "note": "Le nombre est la résistance à la traction nominale, en MPa." },
+    { "letter": "R", "name": "acier pour rails", "number": "hardness", "note": "Le nombre est la dureté Brinell minimale." }
+  ],
+  "impact": {
+    "energies": [
+      { "letter": "J", "joules": 27 },
+      { "letter": "K", "joules": 40 },
+      { "letter": "L", "joules": 60 }
+    ],
+    "temperatures": [
+      { "code": "R", "celsius": 20 },
+      { "code": "0", "celsius": 0 },
+      { "code": "2", "celsius": -20 },
+      { "code": "3", "celsius": -30 },
+      { "code": "4", "celsius": -40 },
+      { "code": "5", "celsius": -50 },
+      { "code": "6", "celsius": -60 }
+    ],
+    "note": "Une lettre d'énergie de rupture puis un code de température d'essai : J2 se lit 27 J à −20 °C."
+  },
+  "suffixes": [
+    { "code": "N", "meaning": "livré à l'état normalisé ou par laminage normalisant" },
+    { "code": "M", "meaning": "livré par laminage thermomécanique" },
+    { "code": "Q", "meaning": "trempé et revenu" },
+    { "code": "L", "meaning": "pour basses températures" },
+    { "code": "W", "meaning": "résistant à la corrosion atmosphérique" },
+    { "code": "H", "meaning": "profil creux" },
+    { "code": "C", "meaning": "à formage à froid particulier" },
+    { "code": "G", "meaning": "autres caractéristiques, suivies le cas échéant d'un chiffre" }
+  ],
+  "non_alloy_suffixes": [
+    { "code": "E", "meaning": "teneur maximale en soufre prescrite" },
+    { "code": "R", "meaning": "plage de teneur en soufre prescrite" },
+    { "code": "C", "meaning": "aptitude particulière au formage à froid" },
+    { "code": "D", "meaning": "pour tréfilage" },
+    { "code": "S", "meaning": "pour ressorts" },
+    { "code": "U", "meaning": "pour outils" },
+    { "code": "W", "meaning": "pour fil-électrode de soudage" }
+  ],
+  "alloy_factors": [
+    { "factor": 4, "elements": ["Cr", "Co", "Mn", "Ni", "Si", "W"] },
+    { "factor": 10, "elements": ["Al", "Be", "Cu", "Mo", "Nb", "Pb", "Ta", "Ti", "V", "Zr"] },
+    { "factor": 100, "elements": ["Ce", "N", "P", "S"] },
+    { "factor": 1000, "elements": ["B"] }
+  ],
+  "high_speed_order": ["W", "Mo", "V", "Co"]
+}
