@@ -3,9 +3,50 @@
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), et le
 projet adopte le [versionnage sémantique](https://semver.org/lang/fr/).
 
-## [Non publié]
+## [0.2.0] — 2026-10-07
 
-### Ajouté — trois domaines ouverts, sur données non vérifiées
+### Ajouté — matières
+
+Le dernier domaine prévu s'ouvre, sur données non vérifiées comme les trois
+précédents (`data/matieres/`).
+
+- **Désignation des aciers par règles** (EN 10027-1) : groupes d'emploi
+  (`S355J2`), résilience lue par règle (`J2` = 27 J à −20 °C), symboles
+  additionnels, aciers non alliés (`C45E`), faiblement alliés avec leurs
+  facteurs de teneur (`42CrMo4` : Cr = 4 / 4 = 1 %), fortement alliés
+  (`X5CrNi18-10`), aciers rapides (`HS6-5-2`), aciers moulés, état de livraison.
+  Un faiblement allié dont un élément atteindrait 5 % est signalé : il aurait
+  dû s'écrire en X.
+- **Aciers de construction** (EN 10025-2) : limite d'élasticité et résistance
+  selon l'épaisseur, S235, S275, S355. Le chargement vérifie que la limite
+  décroît avec l'épaisseur et que la première valeur est celle de la
+  désignation.
+- **Propriétés physiques** par famille, ordres de grandeur : E, ν, ρ, α.
+- **Ajustement à chaud** : alésage et arbre de matières différentes, la
+  variation du jeu se calcule en nanomètres entiers et l'ajustement ISO 286 est
+  repris à froid et à chaud. Un serrage qui disparaît ou un jeu qui devient
+  négatif est une faute.
+- Refus : une désignation bien formée n'est jamais dite exister ; la
+  désignation numérique (`1.4301`) se lit sans être devinée.
+
+### Ajouté — choisir plutôt que taper
+
+- Composant de choix par boutons, commun à tous les écrans, dont les options
+  viennent du moteur.
+- **Chaîne de cotes** : un maillon s'écrit `A = 20 h11` ou `A = 20 ISO 2768-m`,
+  et le moteur lit les écarts lui-même ; la chaîne porte la provenance de ses
+  maillons. Le composeur est ouvert d'office, et la tolérance d'un maillon s'y
+  choisit par boutons.
+- **États de surface** : symbole, paramètre, valeur (série des classes N),
+  règle, stries et procédé se composent par boutons.
+- **Visserie** : diamètre, pas (ceux du diamètre retenu) et classe de qualité
+  par boutons.
+- **Soudure** : le procédé se choisit dans la nomenclature embarquée.
+- Workflow de release : un tag `vX.Y.Z` construit les paquets Windows, macOS et
+  Linux et les joint à une release GitHub.
+
+
+### Ajouté — états de surface, soudure et visserie, sur données non vérifiées
 
 Les états de surface, la soudure et la visserie passent de « à venir » à
 **utilisables**. Leurs données ont été saisies **sans document normatif ouvert** :

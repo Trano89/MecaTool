@@ -35,8 +35,8 @@ Voir [docs/domaines.md](docs/domaines.md).
 > ouverture. La couverture reste partielle et le moteur refuse explicitement ce
 > qu'il n'a pas. Voir [docs/standards.md](docs/standards.md).
 >
-> 🟠 **États de surface, soudure et visserie : données non vérifiées.** Ces trois
-> domaines fonctionnent, mais leurs données ont été saisies sans document
+> 🟠 **États de surface, soudure, visserie et matières : données non vérifiées.**
+> Ces quatre domaines fonctionnent, mais leurs données ont été saisies sans document
 > normatif ouvert — à une exception près : le tableau des symboles de soudure,
 > lu dans l'ISO 2553:2013 elle-même. Les autres portent l'état `unverified`, que
 > chaque écran affiche avant toute saisie, et chaque fichier dit contre quoi le
@@ -61,7 +61,7 @@ qu'un jeu qui changerait de statut déplacerait le domaine sans que personne ait
 | **États de surface** | **Que dit cette indication, quel procédé l'obtient ?** | **ISO 21920-1, ISO 1302:1992, ordres de grandeur d'atelier** | **🟠 non vérifiée** |
 | **Soudure** | **Que dit ce symbole, que tolère son niveau de qualité ?** | **ISO 2553:2013 + cotation, 4063, 5817** | **✅ symboles confrontés + 🟠 le reste non vérifié** |
 | **Visserie** | **Quel filetage, quel trou de passage ?** | **ISO 261, 68-1, 273, 898-1 + ISO 286** | **🟠 non vérifiée + ✅ confrontée** |
-| Matières | Quelle nuance, quelles propriétés ? | — | ⏳ |
+| **Matières** | **Quelle nuance, quelles propriétés, et que devient l'ajustement à chaud ?** | **EN 10027-1, EN 10025-2, ordres de grandeur + ISO 286** | **🟠 non vérifiée + ✅ confrontée** |
 
 Un domaine sans source **reste visible**, désactivé, avec sa raison. Le masquer
 laisserait croire qu'il n'existe pas ; l'afficher sans réserve laisserait croire
@@ -228,6 +228,34 @@ source dans un même résultat, chacune avec son étiquette. Aucun effort
 admissible n'est calculé : la classe de qualité donne des valeurs nominales, et
 les minimums garantis de l'ISO 898-1 ne sont pas embarqués.
 
+## Matières, et l'ajustement à chaud
+
+Une désignation d'acier se **lit par règles** : `S355J2` donne un acier de
+construction, 355 MPa pour la plus petite épaisseur, 27 J à −20 °C ; `42CrMo4`
+donne 0,42 % de carbone et 1 % de chrome (4 / 4) ; `X5CrNi18-10` donne 18 % de
+chrome et 10 % de nickel, sans facteur. Pour un acier de construction embarqué,
+la limite d'élasticité se lit **pour l'épaisseur choisie** : S355 ne garantit
+355 MPa que jusqu'à 16 mm.
+
+Le domaine alimente ensuite celui des ajustements :
+
+```
+Logement aluminium, arbre acier, Ø50 H7/p6, ΔT = +80 K
+  jeu à froid   −42 µm à −1 µm    serré
+  jeu à chaud    +2 µm à +43 µm   avec jeu
+🔴 Le serrage peut disparaître : la pièce frettée peut tourner à cette température.
+```
+
+## Choisir plutôt que taper
+
+Une tolérance, une classe, un pas ou une valeur de rugosité se **choisissent**
+parmi ce que le moteur connaît, par boutons ou par listes. Un maillon de chaîne
+de cotes s'écrit `A = 20 h11` ou `A = 20 ISO 2768-m` : le moteur lit les écarts
+lui-même, et la chaîne dit d'où vient chacun. Restent saisis au clavier les
+diamètres et les exigences fonctionnelles — une liste de diamètres « usuels »
+serait une valeur inventée — et la valeur d'une tolérance géométrique, que
+l'ISO 1101 laisse au concepteur.
+
 ## Lancer l'application
 
 ```bash
@@ -251,7 +279,7 @@ cargo run -p mecatool-cli -- "Ø10 H7/g6"
 ```
 
 ```
-MECATOOL 0.1.1 — Ajustement Ø10 H7/g6
+MECATOOL 0.2.0 — Ajustement Ø10 H7/g6
 ================================================================
 
 ALÉSAGE H7
@@ -369,15 +397,16 @@ secondes d'arc. Les tolérances angulaires générales tombent donc juste.
 - Convertir une rugosité Rz en Ra, ou l'inverse.
 - Recommander un niveau de qualité de soudure.
 - Calculer un effort admissible à partir de valeurs nominales.
+- Affirmer qu'une nuance d'acier existe parce que sa désignation est bien formée.
 
 Chacun de ces refus est couvert par un test.
 
 ## Développement
 
 ```bash
-cargo test --workspace        # 445 tests : moteur
-cd src-tauri && cargo test    #  36 tests : frontiere Tauri + echantillons
-npm test                      # 103 tests : interface
+cargo test --workspace        # 476 tests : moteur
+cd src-tauri && cargo test    #  38 tests : frontiere Tauri + echantillons
+npm test                      # 116 tests : interface
 cargo clippy --workspace --all-targets
 cargo fmt --all
 ```

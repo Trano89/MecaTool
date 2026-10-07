@@ -1,0 +1,53 @@
+name: Release
+
+# Une release se declenche par un tag « vX.Y.Z ». Chaque systeme construit son
+# paquet d'installation et le joint a la meme release GitHub.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  paquet:
+    name: Paquet ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ubuntu-22.04, windows-latest, macos-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+      - name: Dependances systeme de Tauri
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+      - run: npm ci
+      # Le moteur est teste avant d'etre empaquete : une release ne part pas
+      # d'un etat que l'integration continue refuserait.
+      - name: Tests du moteur
+        run: cargo test --workspace
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: MecaTool ${{ github.ref_name }}
+          releaseBody: |
+            Voir le journal des modifications (CHANGELOG.md) pour le détail de cette version.
+
+            ⚠️ Les domaines états de surface, soudure (hors symboles ISO 2553:2013), visserie et matières
+            reposent sur des données non encore confrontées à leurs normes. Chaque écran l'affiche avant
+            toute saisie. Ne pas s'en servir pour réceptionner un ouvrage avant cette confrontation.
+          releaseDraft: false
+          prerelease: true

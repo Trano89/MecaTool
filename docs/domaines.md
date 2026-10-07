@@ -127,7 +127,7 @@ recueil, ou recommandation de fabricant.
 | **Roulements** | **Quel alésage, quelle tolérance de portée ?** | **ISO 15, fabricants** | **✅ construit** |
 | **Soudure** | **Que dit ce symbole, que tolère son niveau de qualité ?** | **ISO 2553:2013, 4063, 5817** | **🟠 construit ; symboles ✅ vérifiés, le reste non** |
 | **Visserie** | **Quel filetage, quel trou de passage ?** | **ISO 261, 68-1, 273, 898-1** | **🟠 construit, données non vérifiées** |
-| Matériaux | Quelle nuance, quelles propriétés ? | EN 10027 et suivantes | ⏳ à relever |
+| **Matières** | **Quelle nuance, quelles propriétés, et que devient l'ajustement à chaud ?** | **EN 10027-1, EN 10025-2** | **🟠 construit, données non vérifiées** |
 | **États de surface** | **Que dit cette indication, quel procédé l'obtient ?** | **ISO 21920-1, ISO 1302:1992** | **🟠 construit, données non vérifiées** |
 
 ## Ouvrir un domaine sur des données non vérifiées

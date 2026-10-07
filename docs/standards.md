@@ -60,6 +60,10 @@ data/
 │   ├── iso2553-2013.symbols.json                symboles — VÉRIFIÉS sur la norme
 │   ├── iso2553-2013.cotation.json               cotation, surcouche non vérifiée
 │   └── iso5817.niveaux-qualite.json             limites des niveaux B, C, D
+├── matieres/         non vérifiés
+│   ├── en10027-1.designation.json               règles de désignation des aciers
+│   ├── en10025-2.aciers-construction.json       ReH et Rm selon l'épaisseur
+│   └── proprietes-physiques.json                E, ν, ρ, α par famille
 └── visserie/         non vérifiés
     ├── iso261.filetages-metriques.json          diamètres et pas
     ├── iso68-1.profil.json                      profil de base, en fractions de H
@@ -173,6 +177,9 @@ nulle part.
 | Profil de base ISO 68-1 | 🟠 non vérifié | une règle : d2, d1, d3 en fractions de H | à confronter : ISO 68-1, et ISO 724 pour les valeurs |
 | Trous de passage ISO 273 | 🟠 non vérifié | 31 diamètres × 3 séries | à confronter : ISO 273 |
 | Classes de qualité ISO 898-1 | 🟠 non vérifié | 9 classes de vis, 5 d'écrous | à confronter : ISO 898-1 et 898-2 |
+| Désignation des aciers EN 10027-1 | 🟠 non vérifié | règles : groupes, résilience, facteurs de teneur | à confronter : EN 10027-1 |
+| Aciers de construction EN 10025-2 | 🟠 non vérifié | S235, S275, S355 × 6 échelons d'épaisseur | à confronter : EN 10025-2, tableaux des caractéristiques mécaniques |
+| Propriétés physiques par famille | 🟠 non vérifié, non normatif | 12 familles : E, ν, ρ, α | à confronter : recueil de propriétés des matériaux |
 
 **Non vérifié ne veut pas dire inventé, ni fiable.** Les jeux marqués 🟠 ont été
 saisis sans document normatif ouvert : leur champ `source` le dit tel quel, et
