@@ -1,0 +1,1900 @@
+{
+  "processes": [
+    {
+      "number": "1",
+      "name": "soudage à l'arc",
+      "aliases": [
+        "arc"
+      ]
+    },
+    {
+      "number": "11",
+      "name": "soudage à l'arc avec électrode fusible sans protection gazeuse",
+      "aliases": []
+    },
+    {
+      "number": "111",
+      "name": "soudage manuel à l'arc avec électrode enrobée",
+      "aliases": [
+        "électrode enrobée",
+        "electrode enrobee",
+        "mma",
+        "smaw",
+        "baguette"
+      ]
+    },
+    {
+      "number": "114",
+      "name": "soudage à l'arc avec fil fourré autoprotecteur",
+      "aliases": [
+        "fil fourré autoprotecteur",
+        "fil fourre autoprotecteur"
+      ]
+    },
+    {
+      "number": "12",
+      "name": "soudage à l'arc sous flux",
+      "aliases": [
+        "arc submergé",
+        "arc submerge",
+        "saw",
+        "sous flux"
+      ]
+    },
+    {
+      "number": "121",
+      "name": "soudage à l'arc sous flux avec un seul fil-électrode",
+      "aliases": []
+    },
+    {
+      "number": "13",
+      "name": "soudage à l'arc sous protection gazeuse avec fil-électrode fusible",
+      "aliases": [
+        "mig/mag",
+        "gmaw"
+      ]
+    },
+    {
+      "number": "131",
+      "name": "soudage MIG avec fil-électrode plein",
+      "aliases": [
+        "mig"
+      ]
+    },
+    {
+      "number": "132",
+      "name": "soudage MIG avec fil fourré de flux",
+      "aliases": [
+        "mig"
+      ]
+    },
+    {
+      "number": "133",
+      "name": "soudage MIG avec fil fourré de poudre métallique",
+      "aliases": [
+        "mig"
+      ]
+    },
+    {
+      "number": "135",
+      "name": "soudage MAG avec fil-électrode plein",
+      "aliases": [
+        "mag"
+      ]
+    },
+    {
+      "number": "136",
+      "name": "soudage MAG avec fil fourré de flux",
+      "aliases": [
+        "mag"
+      ]
+    },
+    {
+      "number": "138",
+      "name": "soudage MAG avec fil fourré de poudre métallique",
+      "aliases": [
+        "mag"
+      ]
+    },
+    {
+      "number": "14",
+      "name": "soudage à l'arc sous protection gazeuse avec électrode de tungstène",
+      "aliases": [
+        "gtaw"
+      ]
+    },
+    {
+      "number": "141",
+      "name": "soudage TIG avec fil d'apport plein",
+      "aliases": [
+        "tig"
+      ]
+    },
+    {
+      "number": "142",
+      "name": "soudage TIG sans métal d'apport",
+      "aliases": [
+        "tig"
+      ]
+    },
+    {
+      "number": "15",
+      "name": "soudage plasma",
+      "aliases": [
+        "plasma"
+      ]
+    },
+    {
+      "number": "2",
+      "name": "soudage par résistance",
+      "aliases": [
+        "résistance",
+        "resistance"
+      ]
+    },
+    {
+      "number": "21",
+      "name": "soudage par points",
+      "aliases": [
+        "par points",
+        "points"
+      ]
+    },
+    {
+      "number": "22",
+      "name": "soudage à la molette",
+      "aliases": [
+        "molette"
+      ]
+    },
+    {
+      "number": "23",
+      "name": "soudage par bossages",
+      "aliases": [
+        "bossages"
+      ]
+    },
+    {
+      "number": "24",
+      "name": "soudage par étincelage",
+      "aliases": [
+        "étincelage",
+        "etincelage"
+      ]
+    },
+    {
+      "number": "25",
+      "name": "soudage en bout par résistance pure",
+      "aliases": []
+    },
+    {
+      "number": "3",
+      "name": "soudage aux gaz",
+      "aliases": [
+        "gaz"
+      ]
+    },
+    {
+      "number": "31",
+      "name": "soudage oxygaz",
+      "aliases": [
+        "oxygaz"
+      ]
+    },
+    {
+      "number": "311",
+      "name": "soudage oxyacétylénique",
+      "aliases": [
+        "oxyacétylénique",
+        "oxyacetylenique",
+        "chalumeau"
+      ]
+    },
+    {
+      "number": "4",
+      "name": "soudage par pression",
+      "aliases": []
+    },
+    {
+      "number": "42",
+      "name": "soudage par friction",
+      "aliases": [
+        "friction"
+      ]
+    },
+    {
+      "number": "43",
+      "name": "soudage par friction-malaxage",
+      "aliases": [
+        "friction-malaxage",
+        "fsw"
+      ]
+    },
+    {
+      "number": "5",
+      "name": "soudage par faisceau",
+      "aliases": [
+        "faisceau"
+      ]
+    },
+    {
+      "number": "51",
+      "name": "soudage par faisceau d'électrons",
+      "aliases": [
+        "faisceau d'électrons",
+        "faisceau d'electrons",
+        "bombardement électronique"
+      ]
+    },
+    {
+      "number": "52",
+      "name": "soudage laser",
+      "aliases": [
+        "laser"
+      ]
+    },
+    {
+      "number": "7",
+      "name": "autres procédés de soudage",
+      "aliases": []
+    },
+    {
+      "number": "72",
+      "name": "soudage vertical sous laitier",
+      "aliases": [
+        "électroslag",
+        "electroslag",
+        "sous laitier"
+      ]
+    },
+    {
+      "number": "78",
+      "name": "soudage des goujons",
+      "aliases": [
+        "goujons",
+        "goujon"
+      ]
+    },
+    {
+      "number": "783",
+      "name": "soudage à l'arc des goujons avec bague en céramique ou gaz de protection",
+      "aliases": []
+    },
+    {
+      "number": "784",
+      "name": "soudage à l'arc des goujons à cycle court",
+      "aliases": []
+    },
+    {
+      "number": "786",
+      "name": "soudage des goujons par décharge de condensateur avec amorçage par pointe",
+      "aliases": []
+    },
+    {
+      "number": "8",
+      "name": "coupage et gougeage",
+      "aliases": [
+        "coupage"
+      ]
+    },
+    {
+      "number": "81",
+      "name": "oxycoupage",
+      "aliases": [
+        "oxycoupage"
+      ]
+    },
+    {
+      "number": "83",
+      "name": "coupage plasma",
+      "aliases": [
+        "coupage plasma"
+      ]
+    },
+    {
+      "number": "84",
+      "name": "coupage laser",
+      "aliases": [
+        "coupage laser"
+      ]
+    },
+    {
+      "number": "9",
+      "name": "brasage fort, brasage tendre et soudobrasage",
+      "aliases": [
+        "brasage"
+      ]
+    },
+    {
+      "number": "91",
+      "name": "brasage fort",
+      "aliases": [
+        "brasage fort"
+      ]
+    },
+    {
+      "number": "94",
+      "name": "brasage tendre",
+      "aliases": [
+        "brasage tendre"
+      ]
+    },
+    {
+      "number": "97",
+      "name": "soudobrasage",
+      "aliases": [
+        "soudobrasage"
+      ]
+    }
+  ],
+  "sizes": [
+    {
+      "letter": "a",
+      "name": "épaisseur de gorge",
+      "meaning": "Hauteur du plus grand triangle isocèle inscrit dans la section du cordon d'angle."
+    },
+    {
+      "letter": "z",
+      "name": "longueur du côté",
+      "meaning": "Longueur du côté du plus grand triangle isocèle inscrit dans la section du cordon d'angle."
+    },
+    {
+      "letter": "s",
+      "name": "épaisseur nominale de la soudure",
+      "meaning": "Profondeur de pénétration d'une soudure bout à bout. Sans cote, la pénétration est complète."
+    },
+    {
+      "letter": "d",
+      "name": "diamètre",
+      "meaning": "Diamètre du point, du bouchon ou du trou."
+    },
+    {
+      "letter": "c",
+      "name": "largeur",
+      "meaning": "Largeur de la soudure en ligne continue ou de l'entaille."
+    }
+  ],
+  "elementary": [
+    {
+      "id": "square_butt",
+      "name": "soudure bout à bout sur bords droits",
+      "both_sides_name": "soudure sur bords droits des deux côtés",
+      "family": "butt",
+      "sizes": [
+        "s"
+      ]
+    },
+    {
+      "id": "single_v",
+      "name": "soudure en V",
+      "both_sides_name": "soudure en X",
+      "family": "butt",
+      "sizes": [
+        "s"
+      ]
+    },
+    {
+      "id": "single_bevel",
+      "name": "soudure en demi-V",
+      "both_sides_name": "soudure en K",
+      "family": "butt",
+      "sizes": [
+        "s"
+      ]
+    },
+    {
+      "id": "single_y",
+      "name": "soudure en Y (V à méplat)",
+      "both_sides_name": "soudure en double Y",
+      "family": "butt",
+      "sizes": [
+        "s"
+      ]
+    },
+    {
+      "id": "single_u",
+      "name": "soudure en U",
+      "both_sides_name": "soudure en double U",
+      "family": "butt",
+      "sizes": [
+        "s"
+      ]
+    },
+    {
+      "id": "single_j",
+      "name": "soudure en J (demi-U)",
+      "both_sides_name": "soudure en double J",
+      "family": "butt",
+      "sizes": [
+        "s"
+      ]
+    },
+    {
+      "id": "fillet",
+      "name": "soudure d'angle",
+      "both_sides_name": "soudure d'angle des deux côtés",
+      "family": "fillet",
+      "sizes": [
+        "a",
+        "z"
+      ]
+    },
+    {
+      "id": "backing_run",
+      "name": "reprise à l'envers",
+      "both_sides_name": null,
+      "family": "other",
+      "sizes": []
+    },
+    {
+      "id": "plug",
+      "name": "soudure en bouchon ou en entaille",
+      "both_sides_name": null,
+      "family": "other",
+      "sizes": [
+        "d",
+        "c"
+      ]
+    },
+    {
+      "id": "spot",
+      "name": "soudure par points",
+      "both_sides_name": null,
+      "family": "other",
+      "sizes": [
+        "d"
+      ]
+    },
+    {
+      "id": "seam",
+      "name": "soudure en ligne continue",
+      "both_sides_name": null,
+      "family": "other",
+      "sizes": [
+        "c"
+      ]
+    },
+    {
+      "id": "edge",
+      "name": "soudure sur chant",
+      "both_sides_name": null,
+      "family": "other",
+      "sizes": []
+    },
+    {
+      "id": "surfacing",
+      "name": "rechargement",
+      "both_sides_name": null,
+      "family": "other",
+      "sizes": []
+    }
+  ],
+  "supplementary": [
+    {
+      "id": "flush",
+      "name": "plat",
+      "meaning": "Surface de la soudure arasée, à fleur de la pièce.",
+      "families": [
+        "butt"
+      ]
+    },
+    {
+      "id": "convex",
+      "name": "convexe",
+      "meaning": "Surface de la soudure bombée.",
+      "families": [
+        "butt",
+        "fillet"
+      ]
+    },
+    {
+      "id": "concave",
+      "name": "concave",
+      "meaning": "Surface de la soudure creuse.",
+      "families": [
+        "fillet"
+      ]
+    },
+    {
+      "id": "toes_blended",
+      "name": "raccordement progressif",
+      "meaning": "Bords de la soudure raccordés sans discontinuité au métal de base.",
+      "families": [
+        "butt",
+        "fillet"
+      ]
+    },
+    {
+      "id": "permanent_backing",
+      "name": "support envers permanent (M)",
+      "meaning": "Une latte support reste en place après soudage.",
+      "families": [
+        "butt"
+      ]
+    },
+    {
+      "id": "removable_backing",
+      "name": "support envers amovible (MR)",
+      "meaning": "Une latte support est retirée après soudage.",
+      "families": [
+        "butt"
+      ]
+    }
+  ],
+  "levels": [
+    {
+      "id": "B",
+      "name": "élevé",
+      "meaning": "Le niveau le plus exigeant."
+    },
+    {
+      "id": "C",
+      "name": "intermédiaire",
+      "meaning": "Le niveau courant de la construction soudée soignée."
+    },
+    {
+      "id": "D",
+      "name": "modéré",
+      "meaning": "Le niveau le moins exigeant."
+    }
+  ],
+  "variables": [
+    {
+      "symbol": "t",
+      "meaning": "épaisseur de paroi ou de tôle (dimension nominale)"
+    },
+    {
+      "symbol": "a",
+      "meaning": "épaisseur de gorge nominale d'une soudure d'angle"
+    },
+    {
+      "symbol": "s",
+      "meaning": "épaisseur nominale d'une soudure bout à bout"
+    },
+    {
+      "symbol": "b",
+      "meaning": "largeur de la surépaisseur ou de la pénétration"
+    }
+  ],
+  "imperfections": [
+    {
+      "reference": "1.1",
+      "iso6520": "100",
+      "name": "fissure",
+      "applies_to": "both",
+      "remark": null,
+      "rows": [
+        {
+          "thickness": {
+            "from": 500000,
+            "above": null,
+            "to": null
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "not_permitted"
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "not_permitted"
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "not_permitted"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "reference": "1.2",
+      "iso6520": "104",
+      "name": "fissure de cratère",
+      "applies_to": "both",
+      "remark": null,
+      "rows": [
+        {
+          "thickness": {
+            "from": 500000,
+            "above": null,
+            "to": null
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "not_permitted"
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "not_permitted"
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "permitted",
+                "condition": null
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "reference": "1.3",
+      "iso6520": "2017",
+      "name": "soufflure débouchante",
+      "applies_to": "both",
+      "remark": "Dimension maximale d'une soufflure isolée, rapportée à s pour une soudure bout à bout et à a pour une soudure d'angle.",
+      "rows": [
+        {
+          "thickness": {
+            "from": 500000,
+            "above": null,
+            "to": 3000000
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "not_permitted"
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "not_permitted"
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "bound",
+                "measure": "d",
+                "constant": 0,
+                "factor_hundredths": 30,
+                "of": "weld",
+                "max": null,
+                "short": false
+              }
+            }
+          ]
+        },
+        {
+          "thickness": {
+            "from": null,
+            "above": 3000000,
+            "to": null
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "not_permitted"
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "bound",
+                "measure": "d",
+                "constant": 0,
+                "factor_hundredths": 20,
+                "of": "weld",
+                "max": 2000000,
+                "short": false
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "bound",
+                "measure": "d",
+                "constant": 0,
+                "factor_hundredths": 30,
+                "of": "weld",
+                "max": 3000000,
+                "short": false
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "reference": "1.4",
+      "iso6520": "2025",
+      "name": "retassure de cratère",
+      "applies_to": "both",
+      "remark": null,
+      "rows": [
+        {
+          "thickness": {
+            "from": 500000,
+            "above": null,
+            "to": 3000000
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "not_permitted"
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "not_permitted"
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 0,
+                "factor_hundredths": 20,
+                "of": "t",
+                "max": null,
+                "short": false
+              }
+            }
+          ]
+        },
+        {
+          "thickness": {
+            "from": null,
+            "above": 3000000,
+            "to": null
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "not_permitted"
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 0,
+                "factor_hundredths": 10,
+                "of": "t",
+                "max": 1000000,
+                "short": false
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 0,
+                "factor_hundredths": 20,
+                "of": "t",
+                "max": 2000000,
+                "short": false
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "reference": "1.5",
+      "iso6520": "401",
+      "name": "manque de fusion",
+      "applies_to": "both",
+      "remark": null,
+      "rows": [
+        {
+          "thickness": {
+            "from": 500000,
+            "above": null,
+            "to": null
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "not_permitted"
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "not_permitted"
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "not_permitted"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "reference": "1.6",
+      "iso6520": "4021",
+      "name": "manque de pénétration à la racine",
+      "applies_to": "butt",
+      "remark": "Pour les soudures bout à bout exécutées d'un seul côté.",
+      "rows": [
+        {
+          "thickness": {
+            "from": 500000,
+            "above": null,
+            "to": null
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "not_permitted"
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "not_permitted"
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 0,
+                "factor_hundredths": 20,
+                "of": "t",
+                "max": 2000000,
+                "short": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "reference": "1.7",
+      "iso6520": "5011, 5012",
+      "name": "caniveau continu ou discontinu",
+      "applies_to": "both",
+      "remark": "Un raccordement progressif est exigé. Ce n'est pas considéré comme un défaut systématique.",
+      "rows": [
+        {
+          "thickness": {
+            "from": 500000,
+            "above": null,
+            "to": 3000000
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "not_permitted"
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 0,
+                "factor_hundredths": 10,
+                "of": "t",
+                "max": null,
+                "short": true
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 0,
+                "factor_hundredths": 20,
+                "of": "t",
+                "max": null,
+                "short": true
+              }
+            }
+          ]
+        },
+        {
+          "thickness": {
+            "from": null,
+            "above": 3000000,
+            "to": null
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 0,
+                "factor_hundredths": 5,
+                "of": "t",
+                "max": 500000,
+                "short": false
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 0,
+                "factor_hundredths": 10,
+                "of": "t",
+                "max": 500000,
+                "short": false
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 0,
+                "factor_hundredths": 20,
+                "of": "t",
+                "max": 1000000,
+                "short": false
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "reference": "1.9",
+      "iso6520": "502",
+      "name": "surépaisseur excessive",
+      "applies_to": "butt",
+      "remark": "Un raccordement progressif est exigé.",
+      "rows": [
+        {
+          "thickness": {
+            "from": 500000,
+            "above": null,
+            "to": null
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 1000000,
+                "factor_hundredths": 10,
+                "of": "b",
+                "max": 5000000,
+                "short": false
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 1000000,
+                "factor_hundredths": 15,
+                "of": "b",
+                "max": 7000000,
+                "short": false
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 1000000,
+                "factor_hundredths": 25,
+                "of": "b",
+                "max": 10000000,
+                "short": false
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "reference": "1.10",
+      "iso6520": "503",
+      "name": "convexité excessive",
+      "applies_to": "fillet",
+      "remark": null,
+      "rows": [
+        {
+          "thickness": {
+            "from": 500000,
+            "above": null,
+            "to": null
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 1000000,
+                "factor_hundredths": 10,
+                "of": "b",
+                "max": 3000000,
+                "short": false
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 1000000,
+                "factor_hundredths": 15,
+                "of": "b",
+                "max": 4000000,
+                "short": false
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 1000000,
+                "factor_hundredths": 25,
+                "of": "b",
+                "max": 5000000,
+                "short": false
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "reference": "1.11",
+      "iso6520": "504",
+      "name": "excès de pénétration",
+      "applies_to": "butt",
+      "remark": null,
+      "rows": [
+        {
+          "thickness": {
+            "from": 500000,
+            "above": null,
+            "to": 3000000
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 1000000,
+                "factor_hundredths": 10,
+                "of": "b",
+                "max": null,
+                "short": false
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 1000000,
+                "factor_hundredths": 30,
+                "of": "b",
+                "max": null,
+                "short": false
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 1000000,
+                "factor_hundredths": 60,
+                "of": "b",
+                "max": null,
+                "short": false
+              }
+            }
+          ]
+        },
+        {
+          "thickness": {
+            "from": null,
+            "above": 3000000,
+            "to": null
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 1000000,
+                "factor_hundredths": 20,
+                "of": "b",
+                "max": 3000000,
+                "short": false
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 1000000,
+                "factor_hundredths": 60,
+                "of": "b",
+                "max": 4000000,
+                "short": false
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 1000000,
+                "factor_hundredths": 100,
+                "of": "b",
+                "max": 5000000,
+                "short": false
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "reference": "1.12",
+      "iso6520": "505",
+      "name": "angle de raccordement incorrect, soudure bout à bout",
+      "applies_to": "butt",
+      "remark": "α est l'angle entre la surface de la tôle et le plan tangent au profil de la soudure.",
+      "rows": [
+        {
+          "thickness": {
+            "from": 500000,
+            "above": null,
+            "to": null
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "min_angle",
+                "degrees": 150
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "min_angle",
+                "degrees": 110
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "min_angle",
+                "degrees": 90
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "reference": "1.12",
+      "iso6520": "505",
+      "name": "angle de raccordement incorrect, soudure d'angle",
+      "applies_to": "fillet",
+      "remark": "α est l'angle entre la surface de la tôle et le plan tangent au profil de la soudure.",
+      "rows": [
+        {
+          "thickness": {
+            "from": 500000,
+            "above": null,
+            "to": null
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "min_angle",
+                "degrees": 110
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "min_angle",
+                "degrees": 100
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "min_angle",
+                "degrees": 90
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "reference": "1.13",
+      "iso6520": "506",
+      "name": "débordement",
+      "applies_to": "both",
+      "remark": null,
+      "rows": [
+        {
+          "thickness": {
+            "from": 500000,
+            "above": null,
+            "to": null
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "not_permitted"
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "not_permitted"
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 0,
+                "factor_hundredths": 20,
+                "of": "b",
+                "max": null,
+                "short": false
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "reference": "1.15",
+      "iso6520": "510",
+      "name": "trou",
+      "applies_to": "both",
+      "remark": null,
+      "rows": [
+        {
+          "thickness": {
+            "from": 500000,
+            "above": null,
+            "to": null
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "not_permitted"
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "not_permitted"
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "not_permitted"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "reference": "1.16",
+      "iso6520": "512",
+      "name": "défaut de symétrie excessif d'une soudure d'angle",
+      "applies_to": "fillet",
+      "remark": "Lorsqu'une soudure d'angle asymétrique n'a pas été prescrite.",
+      "rows": [
+        {
+          "thickness": {
+            "from": 500000,
+            "above": null,
+            "to": null
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 1500000,
+                "factor_hundredths": 15,
+                "of": "a",
+                "max": null,
+                "short": false
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 2000000,
+                "factor_hundredths": 15,
+                "of": "a",
+                "max": null,
+                "short": false
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 2000000,
+                "factor_hundredths": 20,
+                "of": "a",
+                "max": null,
+                "short": false
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "reference": "1.20",
+      "iso6520": "5213",
+      "name": "épaisseur de gorge insuffisante",
+      "applies_to": "fillet",
+      "remark": "Ne s'applique pas aux procédés dont la pénétration plus profonde est prouvée.",
+      "rows": [
+        {
+          "thickness": {
+            "from": 500000,
+            "above": null,
+            "to": 3000000
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "not_permitted"
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 200000,
+                "factor_hundredths": 0,
+                "of": null,
+                "max": null,
+                "short": true
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 200000,
+                "factor_hundredths": 10,
+                "of": "a",
+                "max": null,
+                "short": true
+              }
+            }
+          ]
+        },
+        {
+          "thickness": {
+            "from": null,
+            "above": 3000000,
+            "to": null
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "not_permitted"
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 300000,
+                "factor_hundredths": 10,
+                "of": "a",
+                "max": 1000000,
+                "short": true
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 300000,
+                "factor_hundredths": 10,
+                "of": "a",
+                "max": 2000000,
+                "short": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "reference": "1.21",
+      "iso6520": "5214",
+      "name": "épaisseur de gorge excessive",
+      "applies_to": "fillet",
+      "remark": "L'épaisseur de gorge réelle de la soudure d'angle est trop grande.",
+      "rows": [
+        {
+          "thickness": {
+            "from": 500000,
+            "above": null,
+            "to": null
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 1000000,
+                "factor_hundredths": 15,
+                "of": "a",
+                "max": 3000000,
+                "short": false
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 1000000,
+                "factor_hundredths": 20,
+                "of": "a",
+                "max": 4000000,
+                "short": false
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "permitted",
+                "condition": null
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "reference": "1.22",
+      "iso6520": "601",
+      "name": "coup d'arc",
+      "applies_to": "both",
+      "remark": null,
+      "rows": [
+        {
+          "thickness": {
+            "from": 500000,
+            "above": null,
+            "to": null
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "not_permitted"
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "not_permitted"
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "permitted",
+                "condition": "si les propriétés du métal de base ne sont pas affectées"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "reference": "3.1",
+      "iso6520": "507",
+      "name": "défaut d'alignement, tôles et soudures longitudinales",
+      "applies_to": "butt",
+      "remark": "Les limites se rapportent aux écarts par rapport à la position correcte.",
+      "rows": [
+        {
+          "thickness": {
+            "from": 500000,
+            "above": null,
+            "to": 3000000
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 200000,
+                "factor_hundredths": 10,
+                "of": "t",
+                "max": null,
+                "short": false
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 200000,
+                "factor_hundredths": 15,
+                "of": "t",
+                "max": null,
+                "short": false
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 200000,
+                "factor_hundredths": 25,
+                "of": "t",
+                "max": null,
+                "short": false
+              }
+            }
+          ]
+        },
+        {
+          "thickness": {
+            "from": null,
+            "above": 3000000,
+            "to": null
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 0,
+                "factor_hundredths": 10,
+                "of": "t",
+                "max": 3000000,
+                "short": false
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 0,
+                "factor_hundredths": 15,
+                "of": "t",
+                "max": 4000000,
+                "short": false
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 0,
+                "factor_hundredths": 25,
+                "of": "t",
+                "max": 5000000,
+                "short": false
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "reference": "3.1",
+      "iso6520": "507",
+      "name": "défaut d'alignement, soudures circulaires",
+      "applies_to": "butt",
+      "remark": "Les limites se rapportent aux écarts par rapport à la position correcte.",
+      "rows": [
+        {
+          "thickness": {
+            "from": 500000,
+            "above": null,
+            "to": null
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 0,
+                "factor_hundredths": 50,
+                "of": "t",
+                "max": 2000000,
+                "short": false
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 0,
+                "factor_hundredths": 50,
+                "of": "t",
+                "max": 3000000,
+                "short": false
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 0,
+                "factor_hundredths": 50,
+                "of": "t",
+                "max": 4000000,
+                "short": false
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "reference": "3.2",
+      "iso6520": "617",
+      "name": "jeu à la racine incorrect d'une soudure d'angle",
+      "applies_to": "fillet",
+      "remark": "Un jeu dépassant la limite peut, dans certains cas, être compensé par une augmentation correspondante de l'épaisseur de gorge.",
+      "rows": [
+        {
+          "thickness": {
+            "from": 500000,
+            "above": null,
+            "to": 3000000
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 200000,
+                "factor_hundredths": 10,
+                "of": "a",
+                "max": null,
+                "short": false
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 300000,
+                "factor_hundredths": 10,
+                "of": "a",
+                "max": null,
+                "short": false
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 500000,
+                "factor_hundredths": 10,
+                "of": "a",
+                "max": null,
+                "short": false
+              }
+            }
+          ]
+        },
+        {
+          "thickness": {
+            "from": null,
+            "above": 3000000,
+            "to": null
+          },
+          "limits": [
+            {
+              "level": "B",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 500000,
+                "factor_hundredths": 10,
+                "of": "a",
+                "max": 2000000,
+                "short": false
+              }
+            },
+            {
+              "level": "C",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 500000,
+                "factor_hundredths": 20,
+                "of": "a",
+                "max": 3000000,
+                "short": false
+              }
+            },
+            {
+              "level": "D",
+              "limit": {
+                "kind": "bound",
+                "measure": "h",
+                "constant": 1000000,
+                "factor_hundredths": 30,
+                "of": "a",
+                "max": 4000000,
+                "short": false
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "process_scope": {
+    "note": "La norme vise les assemblages soudés par fusion. Ce champ dit à quels groupes de l'ISO 4063 MecaTool l'applique, et pourquoi il écarte les autres. Il est saisi avec le reste du jeu, et partage sa réserve.",
+    "fusion": [
+      "1",
+      "3",
+      "72"
+    ],
+    "excluded": [
+      {
+        "prefix": "2",
+        "reason": "le soudage par résistance n'est pas un soudage par fusion au sens de la norme"
+      },
+      {
+        "prefix": "4",
+        "reason": "le soudage par pression n'est pas un soudage par fusion"
+      },
+      {
+        "prefix": "5",
+        "reason": "le soudage par faisceau relève de l'ISO 13919-1, et non de l'ISO 5817"
+      },
+      {
+        "prefix": "8",
+        "reason": "le coupage n'est pas un soudage"
+      },
+      {
+        "prefix": "9",
+        "reason": "le brasage n'est pas un soudage par fusion"
+      }
+    ]
+  },
+  "provenance": {
+    "references": [
+      {
+        "id": "ISO 2553",
+        "edition": "",
+        "title": "Soudage et techniques connexes — Représentations symboliques sur les dessins — Joints soudés",
+        "scope": "symboles élémentaires et supplémentaires, cotes principales, côté de la flèche",
+        "source": "Saisi sans document normatif ouvert lors de la saisie, à partir des règles de lecture d'usage courant.",
+        "verification": {
+          "state": "unverified",
+          "pending": "À confronter à l'ISO 2553, ou à son relevé dans le recueil (chapitre soudage du VSM « Extrait de normes ») : symboles, cotes autorisées par symbole, convention de côté."
+        },
+        "notes": [
+          "SÉLECTION. Seuls les symboles élémentaires les plus courants sont embarqués. Un symbole absent n'est pas un symbole invalide.",
+          "La norme connaît deux systèmes de lecture du côté. Système A : le symbole porté sur la ligne de référence continue désigne le côté de la flèche, celui porté sur la ligne d'identification en traits interrompus désigne l'autre côté. Système B : le symbole sous la ligne de référence désigne le côté de la flèche, au-dessus l'autre côté. MecaTool lit le côté tel que vous le déclarez ; il ne déduit pas le système d'un dessin.",
+          "En l'absence de cote, une soudure bout à bout s'entend à pleine pénétration. Une soudure d'angle, elle, se cote : sans épaisseur de gorge ni côté, rien ne dit ce qu'il faut déposer.",
+          "Le préfixe d'une cote d'angle se lit sans ambiguïté : a est l'épaisseur de gorge, z la longueur du côté. Les deux sont liées, pour un cordon à côtés égaux et à 90°, par z = a·√2 — une relation géométrique, pas une valeur de la norme."
+        ]
+      },
+      {
+        "id": "ISO 4063",
+        "edition": "",
+        "title": "Soudage, brasage fort, brasage tendre et coupage — Nomenclature et numérotation des procédés",
+        "scope": "numéros de référence des procédés les plus courants, et leur hiérarchie",
+        "source": "Saisi sans document normatif ouvert lors de la saisie. Les numéros retenus sont ceux d'usage courant sur les plans et dans les descriptifs de mode opératoire.",
+        "verification": {
+          "state": "unverified",
+          "pending": "À confronter numéro par numéro à l'ISO 4063, ou à son relevé dans le recueil (chapitre soudage du VSM « Extrait de normes »)."
+        },
+        "notes": [
+          "SÉLECTION, PAS NOMENCLATURE COMPLÈTE. La norme compte bien davantage de numéros ; seuls les plus courants sont embarqués. Un numéro absent n'est pas un numéro invalide : MecaTool dit qu'il ne le connaît pas, il ne dit pas qu'il n'existe pas.",
+          "La hiérarchie se lit dans les chiffres : un chiffre désigne un groupe, deux un sous-groupe, trois un procédé. 135 appartient au sous-groupe 13, qui appartient au groupe 1. Le chargement vérifie que chaque numéro a son parent.",
+          "Le millésime n'est pas renseigné : il n'a pas été lu sur un document. La numérotation à trois chiffres de MIG et MAG (131, 135, 136, 138) est celle des éditions récentes.",
+          "Les abréviations d'atelier — MIG, MAG, TIG — désignent chacune plusieurs numéros. MecaTool rend alors toutes les lectures, comme il le fait pour un symbole géométrique partagé, plutôt que d'en choisir une."
+        ]
+      },
+      {
+        "id": "ISO 5817",
+        "edition": "",
+        "title": "Soudage — Assemblages en acier, nickel, titane et leurs alliages soudés par fusion — Niveaux de qualité par rapport aux défauts",
+        "scope": "limites des défauts de surface et de géométrie du joint, pour les niveaux B, C et D",
+        "source": "Saisi sans document normatif ouvert lors de la saisie. Les limites reprennent la forme des lignes de la norme — « h ≤ 1 mm + 0,15 b, max. 7 mm » — sans avoir été relues sur elle.",
+        "verification": {
+          "state": "unverified",
+          "pending": "À confronter ligne par ligne au tableau des limites de l'ISO 5817, ou à son relevé dans le recueil (chapitre soudage du VSM « Extrait de normes »). Ne pas s'en servir pour réceptionner un ouvrage avant cette confrontation."
+        },
+        "notes": [
+          "SÉLECTION. Seules les lignes les plus courantes du tableau sont embarquées — défauts de surface et défauts de géométrie du joint. Les défauts internes (soufflures, inclusions, manques de fusion internes) et les défauts multiples ne le sont pas. Une imperfection absente n'est pas une imperfection admise.",
+          "Les numéros entre parenthèses renvoient à l'ISO 6520-1, qui classe et nomme les imperfections.",
+          "La norme s'applique aux épaisseurs de 0,5 mm et plus. En dessous, MecaTool refuse de conclure.",
+          "« Défauts courts » : un ou plusieurs défauts dont la longueur totale ne dépasse pas 25 mm sur toute longueur de 100 mm de soudure, ou 25 % de la longueur d'une soudure de moins de 100 mm.",
+          "LA NORME NE CHOISIT PAS LE NIVEAU. Le niveau de qualité est fixé par la norme d'application — par exemple la classe d'exécution d'une construction métallique — ou par le concepteur. MecaTool dit ce qu'un niveau tolère ; il ne recommande pas de niveau."
+        ]
+      }
+    ]
+  },
+  "warnings": [
+    "ISO 2553 (symboles élémentaires et supplémentaires, cotes principales, côté de la flèche) : Donnée normative non vérifiée. À confronter à l'ISO 2553, ou à son relevé dans le recueil (chapitre soudage du VSM « Extrait de normes ») : symboles, cotes autorisées par symbole, convention de côté.",
+    "ISO 4063 (numéros de référence des procédés les plus courants, et leur hiérarchie) : Donnée normative non vérifiée. À confronter numéro par numéro à l'ISO 4063, ou à son relevé dans le recueil (chapitre soudage du VSM « Extrait de normes »).",
+    "ISO 5817 (limites des défauts de surface et de géométrie du joint, pour les niveaux B, C et D) : Donnée normative non vérifiée. À confronter ligne par ligne au tableau des limites de l'ISO 5817, ou à son relevé dans le recueil (chapitre soudage du VSM « Extrait de normes »). Ne pas s'en servir pour réceptionner un ouvrage avant cette confrontation."
+  ]
+}

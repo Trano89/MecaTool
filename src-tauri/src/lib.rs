@@ -32,7 +32,14 @@ pub fn run() {
             commands::bearing_catalogue,
             commands::bearing_read,
             commands::bearing_options,
-            commands::bearing_advise
+            commands::bearing_advise,
+            commands::surface_catalogue,
+            commands::surface_read,
+            commands::welding_catalogue,
+            commands::welding_process,
+            commands::welding_read,
+            commands::fastener_catalogue,
+            commands::fastener_read
         ])
         .run(tauri::generate_context!())
         .expect("le lancement de MecaTool a échoué");

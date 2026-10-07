@@ -1,0 +1,471 @@
+{
+  "threads": [
+    {
+      "d": 1000000,
+      "choice": 1,
+      "coarse": 250000,
+      "fine": [
+        200000
+      ]
+    },
+    {
+      "d": 1200000,
+      "choice": 1,
+      "coarse": 250000,
+      "fine": [
+        200000
+      ]
+    },
+    {
+      "d": 1600000,
+      "choice": 1,
+      "coarse": 350000,
+      "fine": [
+        200000
+      ]
+    },
+    {
+      "d": 2000000,
+      "choice": 1,
+      "coarse": 400000,
+      "fine": [
+        250000
+      ]
+    },
+    {
+      "d": 2500000,
+      "choice": 1,
+      "coarse": 450000,
+      "fine": [
+        350000
+      ]
+    },
+    {
+      "d": 3000000,
+      "choice": 1,
+      "coarse": 500000,
+      "fine": [
+        350000
+      ]
+    },
+    {
+      "d": 3500000,
+      "choice": 2,
+      "coarse": 600000,
+      "fine": [
+        350000
+      ]
+    },
+    {
+      "d": 4000000,
+      "choice": 1,
+      "coarse": 700000,
+      "fine": [
+        500000
+      ]
+    },
+    {
+      "d": 5000000,
+      "choice": 1,
+      "coarse": 800000,
+      "fine": [
+        500000
+      ]
+    },
+    {
+      "d": 6000000,
+      "choice": 1,
+      "coarse": 1000000,
+      "fine": [
+        750000
+      ]
+    },
+    {
+      "d": 8000000,
+      "choice": 1,
+      "coarse": 1250000,
+      "fine": [
+        1000000,
+        750000
+      ]
+    },
+    {
+      "d": 10000000,
+      "choice": 1,
+      "coarse": 1500000,
+      "fine": [
+        1250000,
+        1000000,
+        750000
+      ]
+    },
+    {
+      "d": 12000000,
+      "choice": 1,
+      "coarse": 1750000,
+      "fine": [
+        1500000,
+        1250000,
+        1000000
+      ]
+    },
+    {
+      "d": 14000000,
+      "choice": 2,
+      "coarse": 2000000,
+      "fine": [
+        1500000,
+        1000000
+      ]
+    },
+    {
+      "d": 16000000,
+      "choice": 1,
+      "coarse": 2000000,
+      "fine": [
+        1500000,
+        1000000
+      ]
+    },
+    {
+      "d": 18000000,
+      "choice": 2,
+      "coarse": 2500000,
+      "fine": [
+        2000000,
+        1500000,
+        1000000
+      ]
+    },
+    {
+      "d": 20000000,
+      "choice": 1,
+      "coarse": 2500000,
+      "fine": [
+        2000000,
+        1500000,
+        1000000
+      ]
+    },
+    {
+      "d": 22000000,
+      "choice": 2,
+      "coarse": 2500000,
+      "fine": [
+        2000000,
+        1500000,
+        1000000
+      ]
+    },
+    {
+      "d": 24000000,
+      "choice": 1,
+      "coarse": 3000000,
+      "fine": [
+        2000000,
+        1500000,
+        1000000
+      ]
+    },
+    {
+      "d": 27000000,
+      "choice": 2,
+      "coarse": 3000000,
+      "fine": [
+        2000000,
+        1500000,
+        1000000
+      ]
+    },
+    {
+      "d": 30000000,
+      "choice": 1,
+      "coarse": 3500000,
+      "fine": [
+        2000000,
+        1500000,
+        1000000
+      ]
+    },
+    {
+      "d": 33000000,
+      "choice": 2,
+      "coarse": 3500000,
+      "fine": [
+        2000000,
+        1500000
+      ]
+    },
+    {
+      "d": 36000000,
+      "choice": 1,
+      "coarse": 4000000,
+      "fine": [
+        3000000,
+        2000000,
+        1500000
+      ]
+    },
+    {
+      "d": 39000000,
+      "choice": 2,
+      "coarse": 4000000,
+      "fine": [
+        3000000,
+        2000000,
+        1500000
+      ]
+    },
+    {
+      "d": 42000000,
+      "choice": 1,
+      "coarse": 4500000,
+      "fine": [
+        4000000,
+        3000000,
+        2000000,
+        1500000
+      ]
+    },
+    {
+      "d": 45000000,
+      "choice": 2,
+      "coarse": 4500000,
+      "fine": [
+        4000000,
+        3000000,
+        2000000,
+        1500000
+      ]
+    },
+    {
+      "d": 48000000,
+      "choice": 1,
+      "coarse": 5000000,
+      "fine": [
+        4000000,
+        3000000,
+        2000000,
+        1500000
+      ]
+    },
+    {
+      "d": 52000000,
+      "choice": 2,
+      "coarse": 5000000,
+      "fine": [
+        4000000,
+        3000000,
+        2000000,
+        1500000
+      ]
+    },
+    {
+      "d": 56000000,
+      "choice": 1,
+      "coarse": 5500000,
+      "fine": [
+        4000000,
+        3000000,
+        2000000,
+        1500000
+      ]
+    },
+    {
+      "d": 60000000,
+      "choice": 2,
+      "coarse": 5500000,
+      "fine": [
+        4000000,
+        3000000,
+        2000000,
+        1500000
+      ]
+    },
+    {
+      "d": 64000000,
+      "choice": 1,
+      "coarse": 6000000,
+      "fine": [
+        4000000,
+        3000000,
+        2000000,
+        1500000
+      ]
+    }
+  ],
+  "clearance_series": [
+    {
+      "id": "fine",
+      "name": "série fine",
+      "class": "H12"
+    },
+    {
+      "id": "medium",
+      "name": "série moyenne",
+      "class": "H13"
+    },
+    {
+      "id": "coarse",
+      "name": "série large",
+      "class": "H14"
+    }
+  ],
+  "bolt_classes": [
+    {
+      "class": "4.6",
+      "first": 4,
+      "second": 6,
+      "tensile_mpa": 400,
+      "yield_mpa": 240,
+      "max_d": null
+    },
+    {
+      "class": "4.8",
+      "first": 4,
+      "second": 8,
+      "tensile_mpa": 400,
+      "yield_mpa": 320,
+      "max_d": null
+    },
+    {
+      "class": "5.6",
+      "first": 5,
+      "second": 6,
+      "tensile_mpa": 500,
+      "yield_mpa": 300,
+      "max_d": null
+    },
+    {
+      "class": "5.8",
+      "first": 5,
+      "second": 8,
+      "tensile_mpa": 500,
+      "yield_mpa": 400,
+      "max_d": null
+    },
+    {
+      "class": "6.8",
+      "first": 6,
+      "second": 8,
+      "tensile_mpa": 600,
+      "yield_mpa": 480,
+      "max_d": null
+    },
+    {
+      "class": "8.8",
+      "first": 8,
+      "second": 8,
+      "tensile_mpa": 800,
+      "yield_mpa": 640,
+      "max_d": null
+    },
+    {
+      "class": "9.8",
+      "first": 9,
+      "second": 8,
+      "tensile_mpa": 900,
+      "yield_mpa": 720,
+      "max_d": 16
+    },
+    {
+      "class": "10.9",
+      "first": 10,
+      "second": 9,
+      "tensile_mpa": 1000,
+      "yield_mpa": 900,
+      "max_d": null
+    },
+    {
+      "class": "12.9",
+      "first": 12,
+      "second": 9,
+      "tensile_mpa": 1200,
+      "yield_mpa": 1080,
+      "max_d": null
+    }
+  ],
+  "nut_classes": [
+    5,
+    6,
+    8,
+    10,
+    12
+  ],
+  "provenance": {
+    "references": [
+      {
+        "id": "ISO 261",
+        "edition": "",
+        "title": "Filetages métriques ISO pour usages généraux — Vue d'ensemble",
+        "scope": "diamètres nominaux de premier et deuxième choix, pas gros et pas fins associés",
+        "source": "Saisi sans document normatif ouvert lors de la saisie. Les pas gros sont d'usage universel ; les pas fins retenus sont ceux du tableau d'ensemble, hors valeurs entre parenthèses.",
+        "verification": {
+          "state": "unverified",
+          "pending": "À confronter ligne par ligne au tableau d'ensemble de l'ISO 261, ou à son relevé dans le VSM « Extrait de normes » (chapitre éléments de fixation)."
+        },
+        "notes": [
+          "SÉLECTION. Seuls les diamètres de premier et de deuxième choix de M1 à M64 sont embarqués ; le troisième choix ne l'est pas. Un diamètre absent n'est pas un diamètre invalide.",
+          "Les pas que la norme met entre parenthèses — à éviter — ne sont pas embarqués, ni le M14 × 1,25 réservé aux bougies d'allumage.",
+          "Le pas gros s'omet dans la désignation : M10 désigne le pas de 1,5 mm. Un pas fin s'écrit toujours : M10 × 1,25.",
+          "Le premier choix est à préférer au deuxième ; la norme ne l'impose pas, elle l'ordonne."
+        ]
+      },
+      {
+        "id": "ISO 68-1",
+        "edition": "",
+        "title": "Filetages ISO pour usages généraux — Profil de base — Filetages métriques",
+        "scope": "triangle générateur et diamètres de base exprimés en fractions de H",
+        "source": "Saisi sans document normatif ouvert lors de la saisie. Les fractions découlent de la géométrie du profil de base : triangle équilatéral de hauteur H, tronqué de H/8 au sommet et de H/4 au fond.",
+        "verification": {
+          "state": "unverified",
+          "pending": "À confronter au profil de base de l'ISO 68-1, et les diamètres calculés aux tableaux de l'ISO 724."
+        },
+        "notes": [
+          "UNE RÈGLE, PAS UNE TABLE. H = (√3/2)·P, et chaque diamètre de base se déduit du diamètre nominal en retranchant une fraction de H. MecaTool applique la règle au lieu de recopier les tableaux de l'ISO 724.",
+          "√3 n'est pas un nombre décimal : les diamètres obtenus ne sont pas exacts. MecaTool les calcule au femtomètre près, puis les annonce arrondis au micromètre — l'arrondi des tableaux de l'ISO 724.",
+          "d3, diamètre à fond de filet de la vis, n'appartient pas au profil de base : il tient compte du rayon à fond de filet (d3 = d1 − H/6). Il est retenu ici parce que la section résistante de l'ISO 898-1 l'emploie."
+        ]
+      },
+      {
+        "id": "ISO 273",
+        "edition": "",
+        "title": "Éléments de fixation — Trous de passage pour boulons et vis",
+        "scope": "diamètres des trous de passage en séries fine, moyenne et large, et leur classe de tolérance",
+        "source": "Saisi sans document normatif ouvert lors de la saisie.",
+        "verification": {
+          "state": "unverified",
+          "pending": "À confronter ligne par ligne au tableau de l'ISO 273, ou à son relevé dans le VSM « Extrait de normes » (chapitre éléments de fixation)."
+        },
+        "notes": [
+          "Trois séries : fine, moyenne et large. La série moyenne est celle des constructions courantes ; la fine sert quand le positionnement compte ; la large laisse du jeu au montage.",
+          "Chaque série porte sa classe de tolérance d'alésage : H12, H13 et H14. MecaTool la passe au moteur ISO 286, qui en calcule les écarts réels — le trou de passage devient une cote tolérancée, comme une portée de roulement.",
+          "Les diamètres embarqués couvrent les mêmes filetages que l'ISO 261 embarquée ; le chargement vérifie que chaque filetage a ses trous."
+        ]
+      },
+      {
+        "id": "ISO 898-1",
+        "edition": "",
+        "title": "Caractéristiques mécaniques des éléments de fixation en acier au carbone et en acier allié — Partie 1 : vis, goujons et tiges filetées",
+        "scope": "règle de lecture du symbole de classe de qualité, classes des vis et des écrous associés",
+        "source": "Saisi sans document normatif ouvert lors de la saisie.",
+        "verification": {
+          "state": "unverified",
+          "pending": "À confronter à l'ISO 898-1 (symbole et liste des classes) et à l'ISO 898-2 (classes d'écrous et associations)."
+        },
+        "notes": [
+          "UNE RÈGLE DE LECTURE. Le premier nombre vaut le centième de la résistance à la traction nominale en MPa ; le second vaut dix fois le rapport entre limite d'élasticité nominale et résistance nominale. 8.8 se lit Rm = 800 MPa, Re = 0,8 × 800 = 640 MPa.",
+          "Ce sont des valeurs NOMINALES. Les minimums garantis — Rm,min, Rp0,2,min, charges d'épreuve et de rupture — sont tabulés dans l'ISO 898-1 et diffèrent parfois des nominales (8.8 au-delà de M16, par exemple). MecaTool ne les embarque pas et ne calcule donc aucun effort admissible.",
+          "La classe 9.8 n'est définie que jusqu'à M16.",
+          "Écrous (ISO 898-2) : un écrou se choisit de classe au moins égale au premier nombre de la classe de la vis. Un écrou de classe supérieure peut toujours remplacer un écrou de classe inférieure."
+        ]
+      }
+    ]
+  },
+  "warnings": [
+    "ISO 261 (diamètres nominaux de premier et deuxième choix, pas gros et pas fins associés) : Donnée normative non vérifiée. À confronter ligne par ligne au tableau d'ensemble de l'ISO 261, ou à son relevé dans le VSM « Extrait de normes » (chapitre éléments de fixation).",
+    "ISO 68-1 (triangle générateur et diamètres de base exprimés en fractions de H) : Donnée normative non vérifiée. À confronter au profil de base de l'ISO 68-1, et les diamètres calculés aux tableaux de l'ISO 724.",
+    "ISO 273 (diamètres des trous de passage en séries fine, moyenne et large, et leur classe de tolérance) : Donnée normative non vérifiée. À confronter ligne par ligne au tableau de l'ISO 273, ou à son relevé dans le VSM « Extrait de normes » (chapitre éléments de fixation).",
+    "ISO 898-1 (règle de lecture du symbole de classe de qualité, classes des vis et des écrous associés) : Donnée normative non vérifiée. À confronter à l'ISO 898-1 (symbole et liste des classes) et à l'ISO 898-2 (classes d'écrous et associations)."
+  ]
+}

@@ -1,0 +1,538 @@
+{
+  "designation": {
+    "d": 10000000,
+    "pitch": 1500000,
+    "pitch_kind": "coarse",
+    "explicit_pitch": false,
+    "tolerance_class": null,
+    "strength_class": "8.8",
+    "input": "M10 8.8"
+  },
+  "normalised": "M10",
+  "thread": {
+    "d": 10000000,
+    "choice": 1,
+    "coarse": 1500000,
+    "fine": [
+      1250000,
+      1000000,
+      750000
+    ]
+  },
+  "h": {
+    "symbol": "H",
+    "name": "hauteur du triangle générateur",
+    "value": 1299000,
+    "label": "H = 1.299 mm",
+    "formula": "H = (√3/2)·P"
+  },
+  "dimensions": [
+    {
+      "symbol": "d2",
+      "name": "diamètre sur flancs (d2 = D2)",
+      "value": 9026000,
+      "label": "d2 = 9.026 mm",
+      "formula": "d − 3/4·H"
+    },
+    {
+      "symbol": "d1",
+      "name": "diamètre intérieur de base (d1 = D1)",
+      "value": 8376000,
+      "label": "d1 = 8.376 mm",
+      "formula": "d − 5/4·H"
+    },
+    {
+      "symbol": "d3",
+      "name": "diamètre à fond de filet de la vis",
+      "value": 8160000,
+      "label": "d3 = 8.160 mm",
+      "formula": "d − 17/12·H"
+    }
+  ],
+  "stress_area_hundredths_mm2": 5799,
+  "stress_area_label": "As ≈ 58.0 mm²",
+  "tap_drill": 8500000,
+  "tap_drill_label": "Ø8.5 mm",
+  "clearance_holes": [
+    {
+      "series": "fine",
+      "series_name": "série fine",
+      "diameter": 10500000,
+      "class": "H12",
+      "designation": "Ø10.5 H12",
+      "tolerance": {
+        "tolerance": {
+          "feature": "hole",
+          "class": {
+            "feature": "hole",
+            "letter": "H",
+            "grade": "IT12"
+          },
+          "nominal": 10500000,
+          "deviations": {
+            "lower": 0,
+            "upper": 180000
+          },
+          "limits": {
+            "min": 10500000,
+            "max": 10680000
+          },
+          "it": 180000,
+          "size_range": {
+            "above": 10000000,
+            "up_to": 18000000
+          },
+          "fundamental_deviation": 0
+        },
+        "steps": [
+          {
+            "label": "Degré IT12",
+            "expression": "table ISO 286-1, échelon au-dessus de 10 jusqu'à 18",
+            "value": "180 µm"
+          },
+          {
+            "label": "Écart fondamental EI (H)",
+            "expression": "EI = -es(h) : règle générale de dérivation des alésages",
+            "value": "-(0) = 0"
+          },
+          {
+            "label": "Écart supérieur ES",
+            "expression": "ES = EI + IT",
+            "value": "0 + 180 µm = +180 µm"
+          },
+          {
+            "label": "Dimensions limites",
+            "expression": "nominal + écarts",
+            "value": "10.500 .. 10.680 mm"
+          }
+        ],
+        "provenance": {
+          "references": [
+            {
+              "id": "ISO 286-1",
+              "edition": "2010",
+              "title": "Spécification géométrique des produits (GPS) — Système de codification ISO pour les tolérances sur les tailles linéaires — Partie 1 : Base des tolérances, écarts et ajustements",
+              "scope": "degrés de tolérance normalisés IT",
+              "source": "ISO 286-2:2010, tableau 1 « Values of standard tolerance grades for nominal sizes up to 3 150 mm », qui reproduit le tableau de l'ISO 286-1:2010.",
+              "verification": {
+                "state": "verified",
+                "against": "ISO 286-2:2010(E), tableau 1, page 5 — les 260 cases (20 degrés × 13 échelons) comparées automatiquement par scripts/verify-iso286-tables.py",
+                "on": "2026-09-10"
+              },
+              "notes": [
+                "Toutes les valeurs sont exprimées en micromètres.",
+                "Les échelons de dimensions nominales sont donnés en millimètres, borne basse exclusive et borne haute incluse : la valeur 10 appartient à l'échelon 6..10.",
+                "Ce jeu de données couvre les dimensions nominales jusqu'à 500 mm. Les échelons au-delà de 500 mm ne sont pas saisis : toute demande hors plage doit être refusée, jamais extrapolée.",
+                "ISO 286-1 précise que les degrés IT14 à IT18 ne s'appliquent pas aux dimensions nominales inférieures ou égales à 1 mm. Le moteur applique cette restriction.",
+                "Le premier échelon couvre les dimensions nominales supérieures à 0 et jusqu'à 3 mm inclus.",
+                "Les valeurs publiées résultent d'un arrondi vers des nombres normalisés et ne sont pas reproductibles exactement par la formule du facteur de tolérance i = 0,45 × racine cubique(D) + 0,001 × D. La table fait foi, la formule ne sert que de contrôle de vraisemblance."
+              ]
+            },
+            {
+              "id": "ISO 286-1",
+              "edition": "2010",
+              "title": "Spécification géométrique des produits (GPS) — Système de codification ISO pour les tolérances sur les tailles linéaires — Partie 1 : Base des tolérances, écarts et ajustements",
+              "scope": "écarts fondamentaux des arbres",
+              "source": "ISO 286-2:2010, tableaux 18 à 26, « Limit deviations for shafts ». L'écart fondamental est celui qui ne varie pas avec le degré : l'écart supérieur pour d, e, f, g, h ; l'écart inférieur pour k, m, n, p.",
+              "verification": {
+                "state": "verified",
+                "against": "ISO 286-2:2010(E), tableaux 18 à 26 — 104 cases (8 lettres × 13 échelons) comparées automatiquement par scripts/verify-iso286-tables.py ; k confronté au tableau 24 par lecture directe (écart nul hors des degrés IT4 à IT7, ce que la ligne des écarts inférieurs confirme colonne par colonne) ; js relève de la règle ± IT/2, vérifiée par les tests du moteur et non tabulée comme écart fondamental",
+                "on": "2026-09-10"
+              },
+              "notes": [
+                "Toutes les valeurs sont exprimées en micromètres, et désignent l'écart fondamental : celui des deux écarts que la lettre fixe.",
+                "Lettres a..h : la lettre fixe l'écart supérieur es, négatif ou nul. L'écart inférieur s'en déduit : ei = es - IT.",
+                "Lettres j..zc : la lettre fixe l'écart inférieur ei, positif ou nul. L'écart supérieur s'en déduit : es = ei + IT.",
+                "js : zone symétrique ± IT/2, calculée et non tabulée. Lorsque IT est un nombre impair de micromètres, la demi-valeur tombe sur un demi-micromètre, représenté exactement par le moteur.",
+                "COUVERTURE PARTIELLE. Ce jeu ne contient que les lettres dont les valeurs se répartissent sur les 13 échelons standards : d, e, f, g, h, js, k, m, n, p. Elles couvrent les ajustements avec jeu, incertains et à serrage léger.",
+                "LETTRES ABSENTES ET POURQUOI. Les lettres a, b, c d'une part, et r à zc d'autre part, emploient des échelons de dimensions nominales PLUS FINS que les 13 échelons standards : la plage 30..50 y est scindée en 30..40 et 40..50, la plage 50..80 en 50..65 et 65..80, etc. Les saisir sur les 13 échelons standards produirait des valeurs fausses. Elles seront ajoutées avec leurs propres échelons après vérification sur source primaire.",
+                "La lettre k ne prend sa valeur tabulée que pour les degrés IT4 à IT7 ; pour tous les autres degrés, l'écart fondamental de k est nul.",
+                "Les valeurs publiées résultent d'un arrondi vers des nombres normalisés et ne sont pas reproductibles exactement par les formules d'écart fondamental. La table fait foi."
+              ]
+            }
+          ]
+        }
+      },
+      "unavailable": null
+    },
+    {
+      "series": "medium",
+      "series_name": "série moyenne",
+      "diameter": 11000000,
+      "class": "H13",
+      "designation": "Ø11 H13",
+      "tolerance": {
+        "tolerance": {
+          "feature": "hole",
+          "class": {
+            "feature": "hole",
+            "letter": "H",
+            "grade": "IT13"
+          },
+          "nominal": 11000000,
+          "deviations": {
+            "lower": 0,
+            "upper": 270000
+          },
+          "limits": {
+            "min": 11000000,
+            "max": 11270000
+          },
+          "it": 270000,
+          "size_range": {
+            "above": 10000000,
+            "up_to": 18000000
+          },
+          "fundamental_deviation": 0
+        },
+        "steps": [
+          {
+            "label": "Degré IT13",
+            "expression": "table ISO 286-1, échelon au-dessus de 10 jusqu'à 18",
+            "value": "270 µm"
+          },
+          {
+            "label": "Écart fondamental EI (H)",
+            "expression": "EI = -es(h) : règle générale de dérivation des alésages",
+            "value": "-(0) = 0"
+          },
+          {
+            "label": "Écart supérieur ES",
+            "expression": "ES = EI + IT",
+            "value": "0 + 270 µm = +270 µm"
+          },
+          {
+            "label": "Dimensions limites",
+            "expression": "nominal + écarts",
+            "value": "11.000 .. 11.270 mm"
+          }
+        ],
+        "provenance": {
+          "references": [
+            {
+              "id": "ISO 286-1",
+              "edition": "2010",
+              "title": "Spécification géométrique des produits (GPS) — Système de codification ISO pour les tolérances sur les tailles linéaires — Partie 1 : Base des tolérances, écarts et ajustements",
+              "scope": "degrés de tolérance normalisés IT",
+              "source": "ISO 286-2:2010, tableau 1 « Values of standard tolerance grades for nominal sizes up to 3 150 mm », qui reproduit le tableau de l'ISO 286-1:2010.",
+              "verification": {
+                "state": "verified",
+                "against": "ISO 286-2:2010(E), tableau 1, page 5 — les 260 cases (20 degrés × 13 échelons) comparées automatiquement par scripts/verify-iso286-tables.py",
+                "on": "2026-09-10"
+              },
+              "notes": [
+                "Toutes les valeurs sont exprimées en micromètres.",
+                "Les échelons de dimensions nominales sont donnés en millimètres, borne basse exclusive et borne haute incluse : la valeur 10 appartient à l'échelon 6..10.",
+                "Ce jeu de données couvre les dimensions nominales jusqu'à 500 mm. Les échelons au-delà de 500 mm ne sont pas saisis : toute demande hors plage doit être refusée, jamais extrapolée.",
+                "ISO 286-1 précise que les degrés IT14 à IT18 ne s'appliquent pas aux dimensions nominales inférieures ou égales à 1 mm. Le moteur applique cette restriction.",
+                "Le premier échelon couvre les dimensions nominales supérieures à 0 et jusqu'à 3 mm inclus.",
+                "Les valeurs publiées résultent d'un arrondi vers des nombres normalisés et ne sont pas reproductibles exactement par la formule du facteur de tolérance i = 0,45 × racine cubique(D) + 0,001 × D. La table fait foi, la formule ne sert que de contrôle de vraisemblance."
+              ]
+            },
+            {
+              "id": "ISO 286-1",
+              "edition": "2010",
+              "title": "Spécification géométrique des produits (GPS) — Système de codification ISO pour les tolérances sur les tailles linéaires — Partie 1 : Base des tolérances, écarts et ajustements",
+              "scope": "écarts fondamentaux des arbres",
+              "source": "ISO 286-2:2010, tableaux 18 à 26, « Limit deviations for shafts ». L'écart fondamental est celui qui ne varie pas avec le degré : l'écart supérieur pour d, e, f, g, h ; l'écart inférieur pour k, m, n, p.",
+              "verification": {
+                "state": "verified",
+                "against": "ISO 286-2:2010(E), tableaux 18 à 26 — 104 cases (8 lettres × 13 échelons) comparées automatiquement par scripts/verify-iso286-tables.py ; k confronté au tableau 24 par lecture directe (écart nul hors des degrés IT4 à IT7, ce que la ligne des écarts inférieurs confirme colonne par colonne) ; js relève de la règle ± IT/2, vérifiée par les tests du moteur et non tabulée comme écart fondamental",
+                "on": "2026-09-10"
+              },
+              "notes": [
+                "Toutes les valeurs sont exprimées en micromètres, et désignent l'écart fondamental : celui des deux écarts que la lettre fixe.",
+                "Lettres a..h : la lettre fixe l'écart supérieur es, négatif ou nul. L'écart inférieur s'en déduit : ei = es - IT.",
+                "Lettres j..zc : la lettre fixe l'écart inférieur ei, positif ou nul. L'écart supérieur s'en déduit : es = ei + IT.",
+                "js : zone symétrique ± IT/2, calculée et non tabulée. Lorsque IT est un nombre impair de micromètres, la demi-valeur tombe sur un demi-micromètre, représenté exactement par le moteur.",
+                "COUVERTURE PARTIELLE. Ce jeu ne contient que les lettres dont les valeurs se répartissent sur les 13 échelons standards : d, e, f, g, h, js, k, m, n, p. Elles couvrent les ajustements avec jeu, incertains et à serrage léger.",
+                "LETTRES ABSENTES ET POURQUOI. Les lettres a, b, c d'une part, et r à zc d'autre part, emploient des échelons de dimensions nominales PLUS FINS que les 13 échelons standards : la plage 30..50 y est scindée en 30..40 et 40..50, la plage 50..80 en 50..65 et 65..80, etc. Les saisir sur les 13 échelons standards produirait des valeurs fausses. Elles seront ajoutées avec leurs propres échelons après vérification sur source primaire.",
+                "La lettre k ne prend sa valeur tabulée que pour les degrés IT4 à IT7 ; pour tous les autres degrés, l'écart fondamental de k est nul.",
+                "Les valeurs publiées résultent d'un arrondi vers des nombres normalisés et ne sont pas reproductibles exactement par les formules d'écart fondamental. La table fait foi."
+              ]
+            }
+          ]
+        }
+      },
+      "unavailable": null
+    },
+    {
+      "series": "coarse",
+      "series_name": "série large",
+      "diameter": 12000000,
+      "class": "H14",
+      "designation": "Ø12 H14",
+      "tolerance": {
+        "tolerance": {
+          "feature": "hole",
+          "class": {
+            "feature": "hole",
+            "letter": "H",
+            "grade": "IT14"
+          },
+          "nominal": 12000000,
+          "deviations": {
+            "lower": 0,
+            "upper": 430000
+          },
+          "limits": {
+            "min": 12000000,
+            "max": 12430000
+          },
+          "it": 430000,
+          "size_range": {
+            "above": 10000000,
+            "up_to": 18000000
+          },
+          "fundamental_deviation": 0
+        },
+        "steps": [
+          {
+            "label": "Degré IT14",
+            "expression": "table ISO 286-1, échelon au-dessus de 10 jusqu'à 18",
+            "value": "430 µm"
+          },
+          {
+            "label": "Écart fondamental EI (H)",
+            "expression": "EI = -es(h) : règle générale de dérivation des alésages",
+            "value": "-(0) = 0"
+          },
+          {
+            "label": "Écart supérieur ES",
+            "expression": "ES = EI + IT",
+            "value": "0 + 430 µm = +430 µm"
+          },
+          {
+            "label": "Dimensions limites",
+            "expression": "nominal + écarts",
+            "value": "12.000 .. 12.430 mm"
+          }
+        ],
+        "provenance": {
+          "references": [
+            {
+              "id": "ISO 286-1",
+              "edition": "2010",
+              "title": "Spécification géométrique des produits (GPS) — Système de codification ISO pour les tolérances sur les tailles linéaires — Partie 1 : Base des tolérances, écarts et ajustements",
+              "scope": "degrés de tolérance normalisés IT",
+              "source": "ISO 286-2:2010, tableau 1 « Values of standard tolerance grades for nominal sizes up to 3 150 mm », qui reproduit le tableau de l'ISO 286-1:2010.",
+              "verification": {
+                "state": "verified",
+                "against": "ISO 286-2:2010(E), tableau 1, page 5 — les 260 cases (20 degrés × 13 échelons) comparées automatiquement par scripts/verify-iso286-tables.py",
+                "on": "2026-09-10"
+              },
+              "notes": [
+                "Toutes les valeurs sont exprimées en micromètres.",
+                "Les échelons de dimensions nominales sont donnés en millimètres, borne basse exclusive et borne haute incluse : la valeur 10 appartient à l'échelon 6..10.",
+                "Ce jeu de données couvre les dimensions nominales jusqu'à 500 mm. Les échelons au-delà de 500 mm ne sont pas saisis : toute demande hors plage doit être refusée, jamais extrapolée.",
+                "ISO 286-1 précise que les degrés IT14 à IT18 ne s'appliquent pas aux dimensions nominales inférieures ou égales à 1 mm. Le moteur applique cette restriction.",
+                "Le premier échelon couvre les dimensions nominales supérieures à 0 et jusqu'à 3 mm inclus.",
+                "Les valeurs publiées résultent d'un arrondi vers des nombres normalisés et ne sont pas reproductibles exactement par la formule du facteur de tolérance i = 0,45 × racine cubique(D) + 0,001 × D. La table fait foi, la formule ne sert que de contrôle de vraisemblance."
+              ]
+            },
+            {
+              "id": "ISO 286-1",
+              "edition": "2010",
+              "title": "Spécification géométrique des produits (GPS) — Système de codification ISO pour les tolérances sur les tailles linéaires — Partie 1 : Base des tolérances, écarts et ajustements",
+              "scope": "écarts fondamentaux des arbres",
+              "source": "ISO 286-2:2010, tableaux 18 à 26, « Limit deviations for shafts ». L'écart fondamental est celui qui ne varie pas avec le degré : l'écart supérieur pour d, e, f, g, h ; l'écart inférieur pour k, m, n, p.",
+              "verification": {
+                "state": "verified",
+                "against": "ISO 286-2:2010(E), tableaux 18 à 26 — 104 cases (8 lettres × 13 échelons) comparées automatiquement par scripts/verify-iso286-tables.py ; k confronté au tableau 24 par lecture directe (écart nul hors des degrés IT4 à IT7, ce que la ligne des écarts inférieurs confirme colonne par colonne) ; js relève de la règle ± IT/2, vérifiée par les tests du moteur et non tabulée comme écart fondamental",
+                "on": "2026-09-10"
+              },
+              "notes": [
+                "Toutes les valeurs sont exprimées en micromètres, et désignent l'écart fondamental : celui des deux écarts que la lettre fixe.",
+                "Lettres a..h : la lettre fixe l'écart supérieur es, négatif ou nul. L'écart inférieur s'en déduit : ei = es - IT.",
+                "Lettres j..zc : la lettre fixe l'écart inférieur ei, positif ou nul. L'écart supérieur s'en déduit : es = ei + IT.",
+                "js : zone symétrique ± IT/2, calculée et non tabulée. Lorsque IT est un nombre impair de micromètres, la demi-valeur tombe sur un demi-micromètre, représenté exactement par le moteur.",
+                "COUVERTURE PARTIELLE. Ce jeu ne contient que les lettres dont les valeurs se répartissent sur les 13 échelons standards : d, e, f, g, h, js, k, m, n, p. Elles couvrent les ajustements avec jeu, incertains et à serrage léger.",
+                "LETTRES ABSENTES ET POURQUOI. Les lettres a, b, c d'une part, et r à zc d'autre part, emploient des échelons de dimensions nominales PLUS FINS que les 13 échelons standards : la plage 30..50 y est scindée en 30..40 et 40..50, la plage 50..80 en 50..65 et 65..80, etc. Les saisir sur les 13 échelons standards produirait des valeurs fausses. Elles seront ajoutées avec leurs propres échelons après vérification sur source primaire.",
+                "La lettre k ne prend sa valeur tabulée que pour les degrés IT4 à IT7 ; pour tous les autres degrés, l'écart fondamental de k est nul.",
+                "Les valeurs publiées résultent d'un arrondi vers des nombres normalisés et ne sont pas reproductibles exactement par les formules d'écart fondamental. La table fait foi."
+              ]
+            }
+          ]
+        }
+      },
+      "unavailable": null
+    }
+  ],
+  "strength": {
+    "class": {
+      "class": "8.8",
+      "first": 8,
+      "second": 8,
+      "tensile_mpa": 800,
+      "yield_mpa": 640,
+      "max_d": null
+    },
+    "nut_class": 8,
+    "explanation": "8.8 : Rm nominale = 8 × 100 = 800 MPa ; Re nominale = 8 × 8 × 10 = 640 MPa. Valeurs nominales : les minimums garantis sont tabulés dans l'ISO 898-1, non embarquée."
+  },
+  "findings": [],
+  "conclusion": {
+    "verdict": "caution",
+    "detail": "M10 — pas gros de 1.5 mm. Trou de passage moyen Ø11 H13 ; perçage avant taraudage Ø8.5 mm par la règle d'atelier D − P.",
+    "why": [
+      {
+        "label": "Pas",
+        "expression": "pas gros",
+        "value": "P = 1.5 mm"
+      },
+      {
+        "label": "Triangle générateur",
+        "expression": "H = (√3/2)·P",
+        "value": "H = 1.299 mm — arrondi au micromètre, comme les tableaux de l'ISO 724"
+      },
+      {
+        "label": "Diamètre sur flancs (d2 = D2)",
+        "expression": "d − 3/4·H",
+        "value": "d2 = 9.026 mm"
+      },
+      {
+        "label": "Diamètre intérieur de base (d1 = D1)",
+        "expression": "d − 5/4·H",
+        "value": "d1 = 8.376 mm"
+      },
+      {
+        "label": "Diamètre à fond de filet de la vis",
+        "expression": "d − 17/12·H",
+        "value": "d3 = 8.160 mm"
+      },
+      {
+        "label": "Section résistante",
+        "expression": "As = π/4 · ((d2 + d3)/2)²",
+        "value": "As ≈ 58.0 mm², arrondie au dixième"
+      },
+      {
+        "label": "Perçage avant taraudage",
+        "expression": "D − P",
+        "value": "8.5 mm — règle d'atelier, sans caractère normatif. Le foret retenu est le plus proche disponible."
+      },
+      {
+        "label": "Trous de passage",
+        "expression": "ISO 273, puis ISO 286",
+        "value": "Le diamètre et la classe viennent de l'ISO 273 ; les écarts de la classe, du moteur ISO 286."
+      }
+    ],
+    "warnings": [
+      "ISO 261 (diamètres nominaux de premier et deuxième choix, pas gros et pas fins associés) : Donnée normative non vérifiée. À confronter ligne par ligne au tableau d'ensemble de l'ISO 261, ou à son relevé dans le VSM « Extrait de normes » (chapitre éléments de fixation).",
+      "ISO 68-1 (triangle générateur et diamètres de base exprimés en fractions de H) : Donnée normative non vérifiée. À confronter au profil de base de l'ISO 68-1, et les diamètres calculés aux tableaux de l'ISO 724.",
+      "ISO 273 (diamètres des trous de passage en séries fine, moyenne et large, et leur classe de tolérance) : Donnée normative non vérifiée. À confronter ligne par ligne au tableau de l'ISO 273, ou à son relevé dans le VSM « Extrait de normes » (chapitre éléments de fixation).",
+      "ISO 898-1 (règle de lecture du symbole de classe de qualité, classes des vis et des écrous associés) : Donnée normative non vérifiée. À confronter à l'ISO 898-1 (symbole et liste des classes) et à l'ISO 898-2 (classes d'écrous et associations)."
+    ]
+  },
+  "provenance": {
+    "references": [
+      {
+        "id": "ISO 261",
+        "edition": "",
+        "title": "Filetages métriques ISO pour usages généraux — Vue d'ensemble",
+        "scope": "diamètres nominaux de premier et deuxième choix, pas gros et pas fins associés",
+        "source": "Saisi sans document normatif ouvert lors de la saisie. Les pas gros sont d'usage universel ; les pas fins retenus sont ceux du tableau d'ensemble, hors valeurs entre parenthèses.",
+        "verification": {
+          "state": "unverified",
+          "pending": "À confronter ligne par ligne au tableau d'ensemble de l'ISO 261, ou à son relevé dans le VSM « Extrait de normes » (chapitre éléments de fixation)."
+        },
+        "notes": [
+          "SÉLECTION. Seuls les diamètres de premier et de deuxième choix de M1 à M64 sont embarqués ; le troisième choix ne l'est pas. Un diamètre absent n'est pas un diamètre invalide.",
+          "Les pas que la norme met entre parenthèses — à éviter — ne sont pas embarqués, ni le M14 × 1,25 réservé aux bougies d'allumage.",
+          "Le pas gros s'omet dans la désignation : M10 désigne le pas de 1,5 mm. Un pas fin s'écrit toujours : M10 × 1,25.",
+          "Le premier choix est à préférer au deuxième ; la norme ne l'impose pas, elle l'ordonne."
+        ]
+      },
+      {
+        "id": "ISO 68-1",
+        "edition": "",
+        "title": "Filetages ISO pour usages généraux — Profil de base — Filetages métriques",
+        "scope": "triangle générateur et diamètres de base exprimés en fractions de H",
+        "source": "Saisi sans document normatif ouvert lors de la saisie. Les fractions découlent de la géométrie du profil de base : triangle équilatéral de hauteur H, tronqué de H/8 au sommet et de H/4 au fond.",
+        "verification": {
+          "state": "unverified",
+          "pending": "À confronter au profil de base de l'ISO 68-1, et les diamètres calculés aux tableaux de l'ISO 724."
+        },
+        "notes": [
+          "UNE RÈGLE, PAS UNE TABLE. H = (√3/2)·P, et chaque diamètre de base se déduit du diamètre nominal en retranchant une fraction de H. MecaTool applique la règle au lieu de recopier les tableaux de l'ISO 724.",
+          "√3 n'est pas un nombre décimal : les diamètres obtenus ne sont pas exacts. MecaTool les calcule au femtomètre près, puis les annonce arrondis au micromètre — l'arrondi des tableaux de l'ISO 724.",
+          "d3, diamètre à fond de filet de la vis, n'appartient pas au profil de base : il tient compte du rayon à fond de filet (d3 = d1 − H/6). Il est retenu ici parce que la section résistante de l'ISO 898-1 l'emploie."
+        ]
+      },
+      {
+        "id": "ISO 273",
+        "edition": "",
+        "title": "Éléments de fixation — Trous de passage pour boulons et vis",
+        "scope": "diamètres des trous de passage en séries fine, moyenne et large, et leur classe de tolérance",
+        "source": "Saisi sans document normatif ouvert lors de la saisie.",
+        "verification": {
+          "state": "unverified",
+          "pending": "À confronter ligne par ligne au tableau de l'ISO 273, ou à son relevé dans le VSM « Extrait de normes » (chapitre éléments de fixation)."
+        },
+        "notes": [
+          "Trois séries : fine, moyenne et large. La série moyenne est celle des constructions courantes ; la fine sert quand le positionnement compte ; la large laisse du jeu au montage.",
+          "Chaque série porte sa classe de tolérance d'alésage : H12, H13 et H14. MecaTool la passe au moteur ISO 286, qui en calcule les écarts réels — le trou de passage devient une cote tolérancée, comme une portée de roulement.",
+          "Les diamètres embarqués couvrent les mêmes filetages que l'ISO 261 embarquée ; le chargement vérifie que chaque filetage a ses trous."
+        ]
+      },
+      {
+        "id": "ISO 898-1",
+        "edition": "",
+        "title": "Caractéristiques mécaniques des éléments de fixation en acier au carbone et en acier allié — Partie 1 : vis, goujons et tiges filetées",
+        "scope": "règle de lecture du symbole de classe de qualité, classes des vis et des écrous associés",
+        "source": "Saisi sans document normatif ouvert lors de la saisie.",
+        "verification": {
+          "state": "unverified",
+          "pending": "À confronter à l'ISO 898-1 (symbole et liste des classes) et à l'ISO 898-2 (classes d'écrous et associations)."
+        },
+        "notes": [
+          "UNE RÈGLE DE LECTURE. Le premier nombre vaut le centième de la résistance à la traction nominale en MPa ; le second vaut dix fois le rapport entre limite d'élasticité nominale et résistance nominale. 8.8 se lit Rm = 800 MPa, Re = 0,8 × 800 = 640 MPa.",
+          "Ce sont des valeurs NOMINALES. Les minimums garantis — Rm,min, Rp0,2,min, charges d'épreuve et de rupture — sont tabulés dans l'ISO 898-1 et diffèrent parfois des nominales (8.8 au-delà de M16, par exemple). MecaTool ne les embarque pas et ne calcule donc aucun effort admissible.",
+          "La classe 9.8 n'est définie que jusqu'à M16.",
+          "Écrous (ISO 898-2) : un écrou se choisit de classe au moins égale au premier nombre de la classe de la vis. Un écrou de classe supérieure peut toujours remplacer un écrou de classe inférieure."
+        ]
+      },
+      {
+        "id": "ISO 286-1",
+        "edition": "2010",
+        "title": "Spécification géométrique des produits (GPS) — Système de codification ISO pour les tolérances sur les tailles linéaires — Partie 1 : Base des tolérances, écarts et ajustements",
+        "scope": "degrés de tolérance normalisés IT",
+        "source": "ISO 286-2:2010, tableau 1 « Values of standard tolerance grades for nominal sizes up to 3 150 mm », qui reproduit le tableau de l'ISO 286-1:2010.",
+        "verification": {
+          "state": "verified",
+          "against": "ISO 286-2:2010(E), tableau 1, page 5 — les 260 cases (20 degrés × 13 échelons) comparées automatiquement par scripts/verify-iso286-tables.py",
+          "on": "2026-09-10"
+        },
+        "notes": [
+          "Toutes les valeurs sont exprimées en micromètres.",
+          "Les échelons de dimensions nominales sont donnés en millimètres, borne basse exclusive et borne haute incluse : la valeur 10 appartient à l'échelon 6..10.",
+          "Ce jeu de données couvre les dimensions nominales jusqu'à 500 mm. Les échelons au-delà de 500 mm ne sont pas saisis : toute demande hors plage doit être refusée, jamais extrapolée.",
+          "ISO 286-1 précise que les degrés IT14 à IT18 ne s'appliquent pas aux dimensions nominales inférieures ou égales à 1 mm. Le moteur applique cette restriction.",
+          "Le premier échelon couvre les dimensions nominales supérieures à 0 et jusqu'à 3 mm inclus.",
+          "Les valeurs publiées résultent d'un arrondi vers des nombres normalisés et ne sont pas reproductibles exactement par la formule du facteur de tolérance i = 0,45 × racine cubique(D) + 0,001 × D. La table fait foi, la formule ne sert que de contrôle de vraisemblance."
+        ]
+      },
+      {
+        "id": "ISO 286-1",
+        "edition": "2010",
+        "title": "Spécification géométrique des produits (GPS) — Système de codification ISO pour les tolérances sur les tailles linéaires — Partie 1 : Base des tolérances, écarts et ajustements",
+        "scope": "écarts fondamentaux des arbres",
+        "source": "ISO 286-2:2010, tableaux 18 à 26, « Limit deviations for shafts ». L'écart fondamental est celui qui ne varie pas avec le degré : l'écart supérieur pour d, e, f, g, h ; l'écart inférieur pour k, m, n, p.",
+        "verification": {
+          "state": "verified",
+          "against": "ISO 286-2:2010(E), tableaux 18 à 26 — 104 cases (8 lettres × 13 échelons) comparées automatiquement par scripts/verify-iso286-tables.py ; k confronté au tableau 24 par lecture directe (écart nul hors des degrés IT4 à IT7, ce que la ligne des écarts inférieurs confirme colonne par colonne) ; js relève de la règle ± IT/2, vérifiée par les tests du moteur et non tabulée comme écart fondamental",
+          "on": "2026-09-10"
+        },
+        "notes": [
+          "Toutes les valeurs sont exprimées en micromètres, et désignent l'écart fondamental : celui des deux écarts que la lettre fixe.",
+          "Lettres a..h : la lettre fixe l'écart supérieur es, négatif ou nul. L'écart inférieur s'en déduit : ei = es - IT.",
+          "Lettres j..zc : la lettre fixe l'écart inférieur ei, positif ou nul. L'écart supérieur s'en déduit : es = ei + IT.",
+          "js : zone symétrique ± IT/2, calculée et non tabulée. Lorsque IT est un nombre impair de micromètres, la demi-valeur tombe sur un demi-micromètre, représenté exactement par le moteur.",
+          "COUVERTURE PARTIELLE. Ce jeu ne contient que les lettres dont les valeurs se répartissent sur les 13 échelons standards : d, e, f, g, h, js, k, m, n, p. Elles couvrent les ajustements avec jeu, incertains et à serrage léger.",
+          "LETTRES ABSENTES ET POURQUOI. Les lettres a, b, c d'une part, et r à zc d'autre part, emploient des échelons de dimensions nominales PLUS FINS que les 13 échelons standards : la plage 30..50 y est scindée en 30..40 et 40..50, la plage 50..80 en 50..65 et 65..80, etc. Les saisir sur les 13 échelons standards produirait des valeurs fausses. Elles seront ajoutées avec leurs propres échelons après vérification sur source primaire.",
+          "La lettre k ne prend sa valeur tabulée que pour les degrés IT4 à IT7 ; pour tous les autres degrés, l'écart fondamental de k est nul.",
+          "Les valeurs publiées résultent d'un arrondi vers des nombres normalisés et ne sont pas reproductibles exactement par les formules d'écart fondamental. La table fait foi."
+        ]
+      }
+    ]
+  }
+}

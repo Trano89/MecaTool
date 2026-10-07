@@ -1,0 +1,119 @@
+[
+  {
+    "process": {
+      "number": "135",
+      "name": "soudage MAG avec fil-électrode plein",
+      "aliases": [
+        "mag"
+      ]
+    },
+    "lineage": [
+      {
+        "number": "1",
+        "name": "soudage à l'arc",
+        "aliases": [
+          "arc"
+        ]
+      },
+      {
+        "number": "13",
+        "name": "soudage à l'arc sous protection gazeuse avec fil-électrode fusible",
+        "aliases": [
+          "mig/mag",
+          "gmaw"
+        ]
+      },
+      {
+        "number": "135",
+        "name": "soudage MAG avec fil-électrode plein",
+        "aliases": [
+          "mag"
+        ]
+      }
+    ],
+    "is_group": false,
+    "children": [],
+    "quality_scope": {
+      "kind": "in_scope"
+    },
+    "explanation": "135 — soudage MAG avec fil-électrode plein, qui relève de 13 (soudage à l'arc sous protection gazeuse avec fil-électrode fusible), puis de 1 (soudage à l'arc)."
+  },
+  {
+    "process": {
+      "number": "136",
+      "name": "soudage MAG avec fil fourré de flux",
+      "aliases": [
+        "mag"
+      ]
+    },
+    "lineage": [
+      {
+        "number": "1",
+        "name": "soudage à l'arc",
+        "aliases": [
+          "arc"
+        ]
+      },
+      {
+        "number": "13",
+        "name": "soudage à l'arc sous protection gazeuse avec fil-électrode fusible",
+        "aliases": [
+          "mig/mag",
+          "gmaw"
+        ]
+      },
+      {
+        "number": "136",
+        "name": "soudage MAG avec fil fourré de flux",
+        "aliases": [
+          "mag"
+        ]
+      }
+    ],
+    "is_group": false,
+    "children": [],
+    "quality_scope": {
+      "kind": "in_scope"
+    },
+    "explanation": "136 — soudage MAG avec fil fourré de flux, qui relève de 13 (soudage à l'arc sous protection gazeuse avec fil-électrode fusible), puis de 1 (soudage à l'arc)."
+  },
+  {
+    "process": {
+      "number": "138",
+      "name": "soudage MAG avec fil fourré de poudre métallique",
+      "aliases": [
+        "mag"
+      ]
+    },
+    "lineage": [
+      {
+        "number": "1",
+        "name": "soudage à l'arc",
+        "aliases": [
+          "arc"
+        ]
+      },
+      {
+        "number": "13",
+        "name": "soudage à l'arc sous protection gazeuse avec fil-électrode fusible",
+        "aliases": [
+          "mig/mag",
+          "gmaw"
+        ]
+      },
+      {
+        "number": "138",
+        "name": "soudage MAG avec fil fourré de poudre métallique",
+        "aliases": [
+          "mag"
+        ]
+      }
+    ],
+    "is_group": false,
+    "children": [],
+    "quality_scope": {
+      "kind": "in_scope"
+    },
+    "explanation": "138 — soudage MAG avec fil fourré de poudre métallique, qui relève de 13 (soudage à l'arc sous protection gazeuse avec fil-électrode fusible), puis de 1 (soudage à l'arc)."
+  }
+]

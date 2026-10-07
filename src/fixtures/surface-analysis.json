@@ -1,0 +1,1147 @@
+{
+  "indication": {
+    "requirement": "removal_required",
+    "parameter": "Ra",
+    "value": 800,
+    "limit": "upper",
+    "max_rule": false,
+    "lay": "⊥",
+    "process": "milling",
+    "grade": null,
+    "input": "MRR Ra 0.8 ⊥ fraisé"
+  },
+  "designation": "MRR Ra 0.8 ⊥ (fraisage)",
+  "requirement": {
+    "id": "removal_required",
+    "code": "MRR",
+    "name": "enlèvement de matière exigé",
+    "meaning": "La surface doit être obtenue par enlèvement de matière — tournage, fraisage, rectification…"
+  },
+  "parameter": {
+    "symbol": "Ra",
+    "name": "écart moyen arithmétique",
+    "definition": "Moyenne arithmétique des valeurs absolues des ordonnées du profil de rugosité. Le paramètre le plus répandu : il lisse les accidents isolés, et c'est à la fois sa force et sa limite.",
+    "note": null
+  },
+  "lay": {
+    "symbol": "⊥",
+    "aliases": [
+      "perp",
+      "perpendiculaire"
+    ],
+    "name": "perpendiculaires",
+    "meaning": "Stries perpendiculaires au plan de projection de la vue sur laquelle le symbole est porté."
+  },
+  "grade": {
+    "grade": "N6",
+    "ra": 800
+  },
+  "processes": [
+    {
+      "process": {
+        "id": "sawing",
+        "name": "sciage",
+        "aliases": [
+          "sciage",
+          "scie",
+          "scié"
+        ],
+        "removal": true,
+        "usual": {
+          "finest": 1600,
+          "coarsest": 25000
+        },
+        "possible": {
+          "finest": 800,
+          "coarsest": 50000
+        }
+      },
+      "reach": "possible",
+      "reach_label": "atteinte avec des soins particuliers",
+      "excluded": null
+    },
+    {
+      "process": {
+        "id": "planing",
+        "name": "rabotage, mortaisage",
+        "aliases": [
+          "rabotage",
+          "raboté",
+          "mortaisage",
+          "mortaisé"
+        ],
+        "removal": true,
+        "usual": {
+          "finest": 1600,
+          "coarsest": 12500
+        },
+        "possible": {
+          "finest": 800,
+          "coarsest": 25000
+        }
+      },
+      "reach": "possible",
+      "reach_label": "atteinte avec des soins particuliers",
+      "excluded": null
+    },
+    {
+      "process": {
+        "id": "drilling",
+        "name": "perçage",
+        "aliases": [
+          "perçage",
+          "percage",
+          "percé",
+          "perce"
+        ],
+        "removal": true,
+        "usual": {
+          "finest": 1600,
+          "coarsest": 6300
+        },
+        "possible": {
+          "finest": 800,
+          "coarsest": 12500
+        }
+      },
+      "reach": "possible",
+      "reach_label": "atteinte avec des soins particuliers",
+      "excluded": null
+    },
+    {
+      "process": {
+        "id": "edm",
+        "name": "électroérosion",
+        "aliases": [
+          "électroérosion",
+          "electroerosion",
+          "érosion",
+          "erosion"
+        ],
+        "removal": true,
+        "usual": {
+          "finest": 1600,
+          "coarsest": 6300
+        },
+        "possible": {
+          "finest": 800,
+          "coarsest": 12500
+        }
+      },
+      "reach": "possible",
+      "reach_label": "atteinte avec des soins particuliers",
+      "excluded": null
+    },
+    {
+      "process": {
+        "id": "milling",
+        "name": "fraisage",
+        "aliases": [
+          "fraisage",
+          "fraisé",
+          "fraise"
+        ],
+        "removal": true,
+        "usual": {
+          "finest": 800,
+          "coarsest": 6300
+        },
+        "possible": {
+          "finest": 200,
+          "coarsest": 25000
+        }
+      },
+      "reach": "usual",
+      "reach_label": "atteinte d'ordinaire",
+      "excluded": null
+    },
+    {
+      "process": {
+        "id": "turning",
+        "name": "tournage, alésage à l'outil",
+        "aliases": [
+          "tournage",
+          "tourné",
+          "tourne",
+          "chariotage"
+        ],
+        "removal": true,
+        "usual": {
+          "finest": 400,
+          "coarsest": 6300
+        },
+        "possible": {
+          "finest": 100,
+          "coarsest": 25000
+        }
+      },
+      "reach": "usual",
+      "reach_label": "atteinte d'ordinaire",
+      "excluded": null
+    },
+    {
+      "process": {
+        "id": "reaming",
+        "name": "alésage à l'alésoir",
+        "aliases": [
+          "alésoir",
+          "alesoir",
+          "alésage",
+          "alesage",
+          "alésé",
+          "alese"
+        ],
+        "removal": true,
+        "usual": {
+          "finest": 800,
+          "coarsest": 3200
+        },
+        "possible": {
+          "finest": 400,
+          "coarsest": 6300
+        }
+      },
+      "reach": "usual",
+      "reach_label": "atteinte d'ordinaire",
+      "excluded": null
+    },
+    {
+      "process": {
+        "id": "broaching",
+        "name": "brochage",
+        "aliases": [
+          "brochage",
+          "broché",
+          "broche"
+        ],
+        "removal": true,
+        "usual": {
+          "finest": 800,
+          "coarsest": 3200
+        },
+        "possible": {
+          "finest": 400,
+          "coarsest": 6300
+        }
+      },
+      "reach": "usual",
+      "reach_label": "atteinte d'ordinaire",
+      "excluded": null
+    },
+    {
+      "process": {
+        "id": "grinding",
+        "name": "rectification",
+        "aliases": [
+          "rectification",
+          "rectifié",
+          "rectifie",
+          "meulage"
+        ],
+        "removal": true,
+        "usual": {
+          "finest": 100,
+          "coarsest": 1600
+        },
+        "possible": {
+          "finest": 25,
+          "coarsest": 6300
+        }
+      },
+      "reach": "usual",
+      "reach_label": "atteinte d'ordinaire",
+      "excluded": null
+    },
+    {
+      "process": {
+        "id": "honing",
+        "name": "pierrage",
+        "aliases": [
+          "pierrage",
+          "pierré",
+          "pierre",
+          "honing"
+        ],
+        "removal": true,
+        "usual": {
+          "finest": 100,
+          "coarsest": 800
+        },
+        "possible": {
+          "finest": 25,
+          "coarsest": 1600
+        }
+      },
+      "reach": "usual",
+      "reach_label": "atteinte d'ordinaire",
+      "excluded": null
+    },
+    {
+      "process": {
+        "id": "polishing",
+        "name": "polissage",
+        "aliases": [
+          "polissage",
+          "poli"
+        ],
+        "removal": true,
+        "usual": {
+          "finest": 100,
+          "coarsest": 400
+        },
+        "possible": {
+          "finest": 25,
+          "coarsest": 800
+        }
+      },
+      "reach": "finer",
+      "reach_label": "atteinte sans effort — procédé plus fin que nécessaire",
+      "excluded": null
+    },
+    {
+      "process": {
+        "id": "lapping",
+        "name": "rodage",
+        "aliases": [
+          "rodage",
+          "rodé",
+          "rode",
+          "lapping"
+        ],
+        "removal": true,
+        "usual": {
+          "finest": 50,
+          "coarsest": 400
+        },
+        "possible": {
+          "finest": 25,
+          "coarsest": 800
+        }
+      },
+      "reach": "finer",
+      "reach_label": "atteinte sans effort — procédé plus fin que nécessaire",
+      "excluded": null
+    },
+    {
+      "process": {
+        "id": "superfinishing",
+        "name": "superfinition",
+        "aliases": [
+          "superfinition",
+          "superfini"
+        ],
+        "removal": true,
+        "usual": {
+          "finest": 25,
+          "coarsest": 200
+        },
+        "possible": {
+          "finest": 25,
+          "coarsest": 800
+        }
+      },
+      "reach": "finer",
+      "reach_label": "atteinte sans effort — procédé plus fin que nécessaire",
+      "excluded": null
+    },
+    {
+      "process": {
+        "id": "roller_burnishing",
+        "name": "galetage",
+        "aliases": [
+          "galetage",
+          "galeté",
+          "galete"
+        ],
+        "removal": false,
+        "usual": {
+          "finest": 200,
+          "coarsest": 800
+        },
+        "possible": {
+          "finest": 100,
+          "coarsest": 1600
+        }
+      },
+      "reach": "usual",
+      "reach_label": "atteinte d'ordinaire",
+      "excluded": "Le symbole exige un enlèvement de matière : un procédé de mise en forme n'y répond pas."
+    },
+    {
+      "process": {
+        "id": "sand_casting",
+        "name": "moulage en sable",
+        "aliases": [
+          "moulage en sable",
+          "sable",
+          "fonderie sable"
+        ],
+        "removal": false,
+        "usual": {
+          "finest": 12500,
+          "coarsest": 25000
+        },
+        "possible": {
+          "finest": 6300,
+          "coarsest": 50000
+        }
+      },
+      "reach": "out_of_reach",
+      "reach_label": "hors d'atteinte",
+      "excluded": "Le symbole exige un enlèvement de matière : un procédé de mise en forme n'y répond pas."
+    },
+    {
+      "process": {
+        "id": "permanent_mould",
+        "name": "moulage en coquille",
+        "aliases": [
+          "coquille",
+          "moulage en coquille"
+        ],
+        "removal": false,
+        "usual": {
+          "finest": 1600,
+          "coarsest": 3200
+        },
+        "possible": {
+          "finest": 800,
+          "coarsest": 6300
+        }
+      },
+      "reach": "possible",
+      "reach_label": "atteinte avec des soins particuliers",
+      "excluded": "Le symbole exige un enlèvement de matière : un procédé de mise en forme n'y répond pas."
+    },
+    {
+      "process": {
+        "id": "die_casting",
+        "name": "moulage sous pression",
+        "aliases": [
+          "sous pression",
+          "moulage sous pression",
+          "injection"
+        ],
+        "removal": false,
+        "usual": {
+          "finest": 800,
+          "coarsest": 1600
+        },
+        "possible": {
+          "finest": 400,
+          "coarsest": 3200
+        }
+      },
+      "reach": "usual",
+      "reach_label": "atteinte d'ordinaire",
+      "excluded": "Le symbole exige un enlèvement de matière : un procédé de mise en forme n'y répond pas."
+    },
+    {
+      "process": {
+        "id": "investment_casting",
+        "name": "moulage à la cire perdue",
+        "aliases": [
+          "cire perdue",
+          "moulage à la cire perdue",
+          "microfusion"
+        ],
+        "removal": false,
+        "usual": {
+          "finest": 1600,
+          "coarsest": 3200
+        },
+        "possible": {
+          "finest": 400,
+          "coarsest": 6300
+        }
+      },
+      "reach": "possible",
+      "reach_label": "atteinte avec des soins particuliers",
+      "excluded": "Le symbole exige un enlèvement de matière : un procédé de mise en forme n'y répond pas."
+    },
+    {
+      "process": {
+        "id": "forging",
+        "name": "forgeage",
+        "aliases": [
+          "forgeage",
+          "forgé",
+          "forge",
+          "matriçage",
+          "matricé"
+        ],
+        "removal": false,
+        "usual": {
+          "finest": 3200,
+          "coarsest": 12500
+        },
+        "possible": {
+          "finest": 1600,
+          "coarsest": 25000
+        }
+      },
+      "reach": "out_of_reach",
+      "reach_label": "hors d'atteinte",
+      "excluded": "Le symbole exige un enlèvement de matière : un procédé de mise en forme n'y répond pas."
+    },
+    {
+      "process": {
+        "id": "hot_rolling",
+        "name": "laminage à chaud",
+        "aliases": [
+          "laminage à chaud",
+          "lamine a chaud",
+          "laminé à chaud"
+        ],
+        "removal": false,
+        "usual": {
+          "finest": 12500,
+          "coarsest": 25000
+        },
+        "possible": {
+          "finest": 6300,
+          "coarsest": 50000
+        }
+      },
+      "reach": "out_of_reach",
+      "reach_label": "hors d'atteinte",
+      "excluded": "Le symbole exige un enlèvement de matière : un procédé de mise en forme n'y répond pas."
+    },
+    {
+      "process": {
+        "id": "cold_rolling",
+        "name": "laminage à froid, étirage",
+        "aliases": [
+          "laminage à froid",
+          "laminé à froid",
+          "étirage",
+          "etirage",
+          "étiré",
+          "etire"
+        ],
+        "removal": false,
+        "usual": {
+          "finest": 800,
+          "coarsest": 3200
+        },
+        "possible": {
+          "finest": 200,
+          "coarsest": 6300
+        }
+      },
+      "reach": "usual",
+      "reach_label": "atteinte d'ordinaire",
+      "excluded": "Le symbole exige un enlèvement de matière : un procédé de mise en forme n'y répond pas."
+    },
+    {
+      "process": {
+        "id": "extrusion",
+        "name": "filage, extrusion",
+        "aliases": [
+          "filage",
+          "filé",
+          "extrusion",
+          "extrudé",
+          "extrude"
+        ],
+        "removal": false,
+        "usual": {
+          "finest": 800,
+          "coarsest": 3200
+        },
+        "possible": {
+          "finest": 400,
+          "coarsest": 6300
+        }
+      },
+      "reach": "usual",
+      "reach_label": "atteinte d'ordinaire",
+      "excluded": "Le symbole exige un enlèvement de matière : un procédé de mise en forme n'y répond pas."
+    }
+  ],
+  "process_note": null,
+  "stated_process": {
+    "process": {
+      "id": "milling",
+      "name": "fraisage",
+      "aliases": [
+        "fraisage",
+        "fraisé",
+        "fraise"
+      ],
+      "removal": true,
+      "usual": {
+        "finest": 800,
+        "coarsest": 6300
+      },
+      "possible": {
+        "finest": 200,
+        "coarsest": 25000
+      }
+    },
+    "reach": "usual",
+    "reach_label": "atteinte d'ordinaire",
+    "excluded": null
+  },
+  "findings": [],
+  "chart": {
+    "width": 720.0,
+    "height": 492.0,
+    "origin": 190.0,
+    "columns": [
+      {
+        "grade": "N1",
+        "ra_label": "0.025",
+        "x": 190.0,
+        "width": 44.166666666666664
+      },
+      {
+        "grade": "N2",
+        "ra_label": "0.05",
+        "x": 234.16666666666666,
+        "width": 44.166666666666664
+      },
+      {
+        "grade": "N3",
+        "ra_label": "0.1",
+        "x": 278.3333333333333,
+        "width": 44.166666666666664
+      },
+      {
+        "grade": "N4",
+        "ra_label": "0.2",
+        "x": 322.5,
+        "width": 44.166666666666664
+      },
+      {
+        "grade": "N5",
+        "ra_label": "0.4",
+        "x": 366.66666666666663,
+        "width": 44.166666666666664
+      },
+      {
+        "grade": "N6",
+        "ra_label": "0.8",
+        "x": 410.8333333333333,
+        "width": 44.166666666666664
+      },
+      {
+        "grade": "N7",
+        "ra_label": "1.6",
+        "x": 455.0,
+        "width": 44.166666666666664
+      },
+      {
+        "grade": "N8",
+        "ra_label": "3.2",
+        "x": 499.16666666666663,
+        "width": 44.166666666666664
+      },
+      {
+        "grade": "N9",
+        "ra_label": "6.3",
+        "x": 543.3333333333333,
+        "width": 44.166666666666664
+      },
+      {
+        "grade": "N10",
+        "ra_label": "12.5",
+        "x": 587.5,
+        "width": 44.166666666666664
+      },
+      {
+        "grade": "N11",
+        "ra_label": "25",
+        "x": 631.6666666666666,
+        "width": 44.166666666666664
+      },
+      {
+        "grade": "N12",
+        "ra_label": "50",
+        "x": 675.8333333333333,
+        "width": 44.166666666666664
+      }
+    ],
+    "rows": [
+      {
+        "id": "sawing",
+        "name": "sciage",
+        "removal": true,
+        "y": 4.0,
+        "height": 14.0,
+        "usual": {
+          "x": 455.0,
+          "width": 220.83333333333331
+        },
+        "possible": {
+          "x": 410.8333333333333,
+          "width": 309.16666666666663
+        },
+        "reach": "possible",
+        "excluded": false
+      },
+      {
+        "id": "planing",
+        "name": "rabotage, mortaisage",
+        "removal": true,
+        "y": 26.0,
+        "height": 14.0,
+        "usual": {
+          "x": 455.0,
+          "width": 176.66666666666666
+        },
+        "possible": {
+          "x": 410.8333333333333,
+          "width": 265.0
+        },
+        "reach": "possible",
+        "excluded": false
+      },
+      {
+        "id": "drilling",
+        "name": "perçage",
+        "removal": true,
+        "y": 48.0,
+        "height": 14.0,
+        "usual": {
+          "x": 455.0,
+          "width": 132.5
+        },
+        "possible": {
+          "x": 410.8333333333333,
+          "width": 220.83333333333331
+        },
+        "reach": "possible",
+        "excluded": false
+      },
+      {
+        "id": "edm",
+        "name": "électroérosion",
+        "removal": true,
+        "y": 70.0,
+        "height": 14.0,
+        "usual": {
+          "x": 455.0,
+          "width": 132.5
+        },
+        "possible": {
+          "x": 410.8333333333333,
+          "width": 220.83333333333331
+        },
+        "reach": "possible",
+        "excluded": false
+      },
+      {
+        "id": "milling",
+        "name": "fraisage",
+        "removal": true,
+        "y": 92.0,
+        "height": 14.0,
+        "usual": {
+          "x": 410.8333333333333,
+          "width": 176.66666666666666
+        },
+        "possible": {
+          "x": 322.5,
+          "width": 353.3333333333333
+        },
+        "reach": "usual",
+        "excluded": false
+      },
+      {
+        "id": "turning",
+        "name": "tournage, alésage à l'outil",
+        "removal": true,
+        "y": 114.0,
+        "height": 14.0,
+        "usual": {
+          "x": 366.66666666666663,
+          "width": 220.83333333333331
+        },
+        "possible": {
+          "x": 278.3333333333333,
+          "width": 397.5
+        },
+        "reach": "usual",
+        "excluded": false
+      },
+      {
+        "id": "reaming",
+        "name": "alésage à l'alésoir",
+        "removal": true,
+        "y": 136.0,
+        "height": 14.0,
+        "usual": {
+          "x": 410.8333333333333,
+          "width": 132.5
+        },
+        "possible": {
+          "x": 366.66666666666663,
+          "width": 220.83333333333331
+        },
+        "reach": "usual",
+        "excluded": false
+      },
+      {
+        "id": "broaching",
+        "name": "brochage",
+        "removal": true,
+        "y": 158.0,
+        "height": 14.0,
+        "usual": {
+          "x": 410.8333333333333,
+          "width": 132.5
+        },
+        "possible": {
+          "x": 366.66666666666663,
+          "width": 220.83333333333331
+        },
+        "reach": "usual",
+        "excluded": false
+      },
+      {
+        "id": "grinding",
+        "name": "rectification",
+        "removal": true,
+        "y": 180.0,
+        "height": 14.0,
+        "usual": {
+          "x": 278.3333333333333,
+          "width": 220.83333333333331
+        },
+        "possible": {
+          "x": 190.0,
+          "width": 397.5
+        },
+        "reach": "usual",
+        "excluded": false
+      },
+      {
+        "id": "honing",
+        "name": "pierrage",
+        "removal": true,
+        "y": 202.0,
+        "height": 14.0,
+        "usual": {
+          "x": 278.3333333333333,
+          "width": 176.66666666666666
+        },
+        "possible": {
+          "x": 190.0,
+          "width": 309.16666666666663
+        },
+        "reach": "usual",
+        "excluded": false
+      },
+      {
+        "id": "polishing",
+        "name": "polissage",
+        "removal": true,
+        "y": 224.0,
+        "height": 14.0,
+        "usual": {
+          "x": 278.3333333333333,
+          "width": 132.5
+        },
+        "possible": {
+          "x": 190.0,
+          "width": 265.0
+        },
+        "reach": "finer",
+        "excluded": false
+      },
+      {
+        "id": "lapping",
+        "name": "rodage",
+        "removal": true,
+        "y": 246.0,
+        "height": 14.0,
+        "usual": {
+          "x": 234.16666666666666,
+          "width": 176.66666666666666
+        },
+        "possible": {
+          "x": 190.0,
+          "width": 265.0
+        },
+        "reach": "finer",
+        "excluded": false
+      },
+      {
+        "id": "superfinishing",
+        "name": "superfinition",
+        "removal": true,
+        "y": 268.0,
+        "height": 14.0,
+        "usual": {
+          "x": 190.0,
+          "width": 176.66666666666666
+        },
+        "possible": {
+          "x": 190.0,
+          "width": 265.0
+        },
+        "reach": "finer",
+        "excluded": false
+      },
+      {
+        "id": "roller_burnishing",
+        "name": "galetage",
+        "removal": false,
+        "y": 290.0,
+        "height": 14.0,
+        "usual": {
+          "x": 322.5,
+          "width": 132.5
+        },
+        "possible": {
+          "x": 278.3333333333333,
+          "width": 220.83333333333331
+        },
+        "reach": "usual",
+        "excluded": true
+      },
+      {
+        "id": "sand_casting",
+        "name": "moulage en sable",
+        "removal": false,
+        "y": 312.0,
+        "height": 14.0,
+        "usual": {
+          "x": 587.5,
+          "width": 88.33333333333333
+        },
+        "possible": {
+          "x": 543.3333333333333,
+          "width": 176.66666666666666
+        },
+        "reach": "out_of_reach",
+        "excluded": true
+      },
+      {
+        "id": "permanent_mould",
+        "name": "moulage en coquille",
+        "removal": false,
+        "y": 334.0,
+        "height": 14.0,
+        "usual": {
+          "x": 455.0,
+          "width": 88.33333333333333
+        },
+        "possible": {
+          "x": 410.8333333333333,
+          "width": 176.66666666666666
+        },
+        "reach": "possible",
+        "excluded": true
+      },
+      {
+        "id": "die_casting",
+        "name": "moulage sous pression",
+        "removal": false,
+        "y": 356.0,
+        "height": 14.0,
+        "usual": {
+          "x": 410.8333333333333,
+          "width": 88.33333333333333
+        },
+        "possible": {
+          "x": 366.66666666666663,
+          "width": 176.66666666666666
+        },
+        "reach": "usual",
+        "excluded": true
+      },
+      {
+        "id": "investment_casting",
+        "name": "moulage à la cire perdue",
+        "removal": false,
+        "y": 378.0,
+        "height": 14.0,
+        "usual": {
+          "x": 455.0,
+          "width": 88.33333333333333
+        },
+        "possible": {
+          "x": 366.66666666666663,
+          "width": 220.83333333333331
+        },
+        "reach": "possible",
+        "excluded": true
+      },
+      {
+        "id": "forging",
+        "name": "forgeage",
+        "removal": false,
+        "y": 400.0,
+        "height": 14.0,
+        "usual": {
+          "x": 499.16666666666663,
+          "width": 132.5
+        },
+        "possible": {
+          "x": 455.0,
+          "width": 220.83333333333331
+        },
+        "reach": "out_of_reach",
+        "excluded": true
+      },
+      {
+        "id": "hot_rolling",
+        "name": "laminage à chaud",
+        "removal": false,
+        "y": 422.0,
+        "height": 14.0,
+        "usual": {
+          "x": 587.5,
+          "width": 88.33333333333333
+        },
+        "possible": {
+          "x": 543.3333333333333,
+          "width": 176.66666666666666
+        },
+        "reach": "out_of_reach",
+        "excluded": true
+      },
+      {
+        "id": "cold_rolling",
+        "name": "laminage à froid, étirage",
+        "removal": false,
+        "y": 444.0,
+        "height": 14.0,
+        "usual": {
+          "x": 410.8333333333333,
+          "width": 132.5
+        },
+        "possible": {
+          "x": 322.5,
+          "width": 265.0
+        },
+        "reach": "usual",
+        "excluded": true
+      },
+      {
+        "id": "extrusion",
+        "name": "filage, extrusion",
+        "removal": false,
+        "y": 466.0,
+        "height": 14.0,
+        "usual": {
+          "x": 410.8333333333333,
+          "width": 132.5
+        },
+        "possible": {
+          "x": 366.66666666666663,
+          "width": 220.83333333333331
+        },
+        "reach": "usual",
+        "excluded": true
+      }
+    ],
+    "marker": {
+      "x": 432.91666666666663,
+      "label": "Ra 0.8"
+    },
+    "caption": "Plage usuelle en trait plein, plage atteignable avec des soins particuliers en trait clair. Chaque colonne est une classe N : l'échelle double d'une colonne à la suivante. Ordres de grandeur, non normatifs."
+  },
+  "conclusion": {
+    "verdict": "caution",
+    "detail": "MRR Ra 0.8 ⊥ (fraisage) — le procédé indiqué (fraisage) : atteinte d'ordinaire.",
+    "why": [
+      {
+        "label": "Symbole",
+        "expression": "MRR — enlèvement de matière exigé",
+        "value": "La surface doit être obtenue par enlèvement de matière — tournage, fraisage, rectification…"
+      },
+      {
+        "label": "Paramètre",
+        "expression": "Ra — écart moyen arithmétique",
+        "value": "Moyenne arithmétique des valeurs absolues des ordonnées du profil de rugosité. Le paramètre le plus répandu : il lisse les accidents isolés, et c'est à la fois sa force et sa limite."
+      },
+      {
+        "label": "Limite",
+        "expression": "supérieure : la surface ne doit pas être plus rugueuse",
+        "value": "Ra 0.8 µm"
+      },
+      {
+        "label": "Classe N équivalente",
+        "expression": "ISO 1302:1992, retirée",
+        "value": "N6 = Ra 0.8 µm"
+      },
+      {
+        "label": "Règle d'acceptation",
+        "expression": "non indiquée",
+        "value": "La règle par défaut relève de la norme de spécification appliquée. MecaTool ne l'embarque pas et ne la tranche pas."
+      },
+      {
+        "label": "Procédés du tableau",
+        "expression": "22 procédés examinés",
+        "value": "6 d'ordinaire, 4 avec des soins, 3 plus fins que nécessaire, 0 hors d'atteinte, 9 écartés par le symbole"
+      },
+      {
+        "label": "Ce que MecaTool ne fournit pas",
+        "expression": "longueur de base, filtre, règle par défaut",
+        "value": "Ils diffèrent entre l'ISO 4288 et l'ISO 21920-3 : le module ne porte que ce que les deux générations ont en commun."
+      }
+    ],
+    "warnings": [
+      "ISO 21920-1 (symboles graphiques, sens des stries et paramètres d'amplitude du profil de rugosité) : Donnée normative non vérifiée. À confronter à l'ISO 21920-1 et -2, ou à leur relevé dans le VSM « Extrait de normes » 2022, § 2.9, pages 204 à 211 : symboles, sens des stries et définition des paramètres.",
+      "ISO 1302:1992 (classes de rugosité N1 à N12 et leur valeur Ra) : Donnée normative non vérifiée. À confronter au tableau des classes de rugosité de l'ISO 1302:1992, ou à un recueil qui le reproduit.",
+      "Rugosité par procédé (plages de Ra courantes et plages atteignables avec des soins particuliers) : Donnée normative non vérifiée. À confronter au tableau « Procédés d'usinage et rugosité » du VSM « Extrait de normes » 2022, § 2.9, page 211, puis à requalifier en « recommended » avec sa source."
+    ]
+  },
+  "provenance": {
+    "references": [
+      {
+        "id": "ISO 21920-1",
+        "edition": "",
+        "title": "Spécification géométrique des produits (GPS) — État de surface : profil — Indication des états de surface",
+        "scope": "symboles graphiques, sens des stries et paramètres d'amplitude du profil de rugosité",
+        "source": "Saisi sans document normatif ouvert lors de la saisie, à partir des notions communes à l'ISO 1302:2002 et à l'ISO 21920. Rien n'a été recopié d'une table.",
+        "verification": {
+          "state": "unverified",
+          "pending": "À confronter à l'ISO 21920-1 et -2, ou à leur relevé dans le VSM « Extrait de normes » 2022, § 2.9, pages 204 à 211 : symboles, sens des stries et définition des paramètres."
+        },
+        "notes": [
+          "UNE SEULE GÉNÉRATION. Le recueil disponible existe en deux éditions : celle de 2022 suit l'ISO 21920, celle de 2014 l'ISO 4287 et l'ISO 1302. Les deux générations ne sont pas interchangeables. Ce module ne retient que ce qu'elles ont en commun — les trois variantes du symbole, les sept symboles de sens des stries, la signification des paramètres d'amplitude — et refuse ce qui les distingue.",
+          "Ce qui distingue les générations n'est PAS embarqué : longueurs de base et filtres par défaut (ISO 4288 d'un côté, ISO 21920-3 de l'autre), règle d'acceptation par défaut, bandes de transmission. MecaTool ne les devine pas et le dit à l'écran.",
+          "Le millésime de l'ISO 21920-1 n'est pas renseigné : il n'a pas été lu sur un document. MecaTool ne complète pas une citation normative par mémoire.",
+          "Aucune conversion entre Ra et Rz n'est proposée : les deux paramètres mesurent des choses différentes, et aucune relation fixe ne les lie. Un rapport « Rz ≈ 4 à 7 Ra » circule dans les ateliers ; il dépend du procédé et n'a rien de normatif."
+        ]
+      },
+      {
+        "id": "ISO 1302",
+        "edition": "1992",
+        "title": "Dessins techniques — Méthode d'indication des états de surface",
+        "scope": "classes de rugosité N1 à N12 et leur valeur Ra",
+        "source": "Saisi sans document normatif ouvert lors de la saisie. La correspondance est d'usage courant en atelier ; elle n'a pas été relue sur la norme.",
+        "verification": {
+          "state": "unverified",
+          "pending": "À confronter au tableau des classes de rugosité de l'ISO 1302:1992, ou à un recueil qui le reproduit."
+        },
+        "notes": [
+          "NORME RETIRÉE. Les classes N ont disparu de l'ISO 1302 à l'édition 2002 : elles ne doivent plus figurer sur un plan neuf, où l'on inscrit la valeur Ra elle-même. MecaTool les lit parce qu'elles abondent sur les plans existants, et le rappelle à chaque lecture.",
+          "La correspondance est une simple table : une classe vaut une valeur Ra maximale. Elle ne dit rien du procédé, de la longueur de base ni de la règle d'acceptation.",
+          "Les valeurs doublent d'une classe à la suivante, arrondies : 3,2 puis 6,3 puis 12,5. Le chargement vérifie ce doublement, à l'arrondi près, pour repérer une faute de frappe."
+        ]
+      },
+      {
+        "id": "Rugosité par procédé",
+        "edition": "",
+        "title": "Rugosité Ra usuellement obtenue selon le procédé de fabrication",
+        "scope": "plages de Ra courantes et plages atteignables avec des soins particuliers",
+        "source": "Ordres de grandeur d'atelier, saisis sans document ouvert lors de la saisie. Les plages varient d'un manuel à l'autre ; aucune norme ne les fixe.",
+        "verification": {
+          "state": "unverified",
+          "pending": "À confronter au tableau « Procédés d'usinage et rugosité » du VSM « Extrait de normes » 2022, § 2.9, page 211, puis à requalifier en « recommended » avec sa source."
+        },
+        "notes": [
+          "CE N'EST PAS UNE NORME. Ces plages sont des ordres de grandeur : elles disent ce qu'un procédé donne d'ordinaire, pas ce qu'il garantit. La machine, l'outil, la matière et les conditions de coupe déplacent les valeurs dans les deux sens.",
+          "Deux plages par procédé. La plage usuelle est celle d'une fabrication courante ; la plage atteignable demande des conditions particulières — outil affûté, passes de finition, machine rigide — et se paie en temps.",
+          "Toutes les bornes tombent sur les valeurs des classes N1 à N12, ce que le chargement vérifie : une borne hors de cette série serait une faute de saisie, ou une précision que la donnée n'a pas.",
+          "Le tableau est exprimé en Ra seulement. MecaTool ne le convertit pas en Rz : aucune relation fixe ne lie les deux paramètres.",
+          "Le classement « avec ou sans enlèvement de matière » sert à confronter le tableau au symbole : un procédé de mise en forme ne répond pas à une exigence MRR, un usinage ne répond pas à une exigence NMR."
+        ]
+      }
+    ]
+  }
+}
