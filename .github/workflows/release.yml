@@ -48,6 +48,18 @@ jobs:
               "reposent sur des données non encore confrontées à leurs normes. Chaque écran l'affiche avant",
               "toute saisie. Ne pas s'en servir pour réceptionner un ouvrage avant cette confrontation.",
             ].join("\n");
+            // Une release creee a la main depuis GitHub, tag compris, est
+            // reprise telle quelle : on y joint les paquets sans la doubler.
+            try {
+              const { data } = await github.rest.repos.getReleaseByTag({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag,
+              });
+              return data.id;
+            } catch (error) {
+              if (error.status !== 404) throw error;
+            }
             const { data } = await github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
