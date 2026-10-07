@@ -1,0 +1,194 @@
+{
+  "input": "S355J2",
+  "kind": "use_group",
+  "kind_label": "désignée par son emploi et ses caractéristiques",
+  "cast": false,
+  "parts": [
+    {
+      "text": "S",
+      "meaning": "acier de construction"
+    },
+    {
+      "text": "355",
+      "meaning": "limite d'élasticité minimale : 355 MPa"
+    },
+    {
+      "text": "J2",
+      "meaning": "résilience : 27 J à -20 °C"
+    }
+  ],
+  "group": {
+    "letter": "S",
+    "name": "acier de construction",
+    "number": "yield",
+    "note": "Le nombre est la limite d'élasticité minimale, en MPa, pour la plus petite épaisseur."
+  },
+  "group_value": 355,
+  "group_value_label": "355 MPa — limite d'élasticité minimale",
+  "impact": {
+    "code": "J2",
+    "joules": 27,
+    "celsius": -20,
+    "label": "27 J à -20 °C"
+  },
+  "suffixes": [],
+  "carbon": null,
+  "elements": [],
+  "structural": {
+    "grade": "S355",
+    "qualities": [
+      "JR",
+      "J0",
+      "J2",
+      "K2"
+    ],
+    "rows": [
+      {
+        "band": {
+          "above": 0,
+          "to": 16000000
+        },
+        "yield_mpa": 355,
+        "tensile_min_mpa": 470,
+        "tensile_max_mpa": 630
+      },
+      {
+        "band": {
+          "above": 16000000,
+          "to": 40000000
+        },
+        "yield_mpa": 345,
+        "tensile_min_mpa": 470,
+        "tensile_max_mpa": 630
+      },
+      {
+        "band": {
+          "above": 40000000,
+          "to": 63000000
+        },
+        "yield_mpa": 335,
+        "tensile_min_mpa": 470,
+        "tensile_max_mpa": 630
+      },
+      {
+        "band": {
+          "above": 63000000,
+          "to": 80000000
+        },
+        "yield_mpa": 325,
+        "tensile_min_mpa": 470,
+        "tensile_max_mpa": 630
+      },
+      {
+        "band": {
+          "above": 80000000,
+          "to": 100000000
+        },
+        "yield_mpa": 315,
+        "tensile_min_mpa": 470,
+        "tensile_max_mpa": 630
+      },
+      {
+        "band": {
+          "above": 100000000,
+          "to": 150000000
+        },
+        "yield_mpa": 295,
+        "tensile_min_mpa": 450,
+        "tensile_max_mpa": 600
+      }
+    ]
+  },
+  "family": {
+    "id": "steel",
+    "name": "acier non allié ou faiblement allié",
+    "e_gpa": 210,
+    "poisson_milli": 300,
+    "density": 7850,
+    "alpha_tenths": 120
+  },
+  "family_reason": "Un acier de construction est un acier non inoxydable.",
+  "findings": [
+    {
+      "code": "existence_not_claimed",
+      "severity": "note",
+      "message": "Une désignation bien formée se lit ; rien ne dit qu'une norme de produit définit cette nuance."
+    }
+  ],
+  "conclusion": {
+    "verdict": "caution",
+    "detail": "S355J2 — désignée par son emploi et ses caractéristiques.",
+    "why": [
+      {
+        "label": "Catégorie",
+        "expression": "désignée par son emploi et ses caractéristiques",
+        "value": "S : acier de construction ; 355 : limite d'élasticité minimale : 355 MPa ; J2 : résilience : 27 J à -20 °C"
+      },
+      {
+        "label": "Famille",
+        "expression": "acier non allié ou faiblement allié",
+        "value": "Un acier de construction est un acier non inoxydable."
+      }
+    ],
+    "warnings": [
+      "EN 10027-1 (règles de lecture des désignations symboliques : groupes d'emploi, résilience, teneurs des aciers non alliés, faiblement et fortement alliés, aciers rapides) : Donnée normative non vérifiée. À confronter à l'EN 10027-1 (désignation symbolique) : lettres de groupe, codes de résilience, facteurs de teneur des éléments d'alliage, ou à leur relevé dans le VSM « Extrait de normes » (chapitre matériaux).",
+      "EN 10025-2 (limite d'élasticité minimale et résistance à la traction selon l'épaisseur nominale, nuances S235, S275 et S355) : Donnée normative non vérifiée. À confronter aux tableaux des caractéristiques mécaniques de l'EN 10025-2 (limite d'élasticité ReH et résistance Rm selon l'épaisseur), ou à leur relevé dans le VSM « Extrait de normes » (chapitre matériaux).",
+      "Propriétés physiques par famille (module d'élasticité, coefficient de Poisson, masse volumique et coefficient de dilatation linéique, à température ambiante) : Donnée normative non vérifiée. À confronter à un recueil de propriétés des matériaux (VSM « Extrait de normes », chapitre matériaux, ou fiches de nuances), puis à requalifier en « recommended » avec sa source."
+    ]
+  },
+  "provenance": {
+    "references": [
+      {
+        "id": "EN 10027-1",
+        "edition": "",
+        "title": "Systèmes de désignation des aciers — Partie 1 : désignation symbolique",
+        "scope": "règles de lecture des désignations symboliques : groupes d'emploi, résilience, teneurs des aciers non alliés, faiblement et fortement alliés, aciers rapides",
+        "source": "Saisi sans document normatif ouvert lors de la saisie. Ce sont des RÈGLES de lecture, appliquées par le moteur, et non une liste de nuances.",
+        "verification": {
+          "state": "unverified",
+          "pending": "À confronter à l'EN 10027-1 (désignation symbolique) : lettres de groupe, codes de résilience, facteurs de teneur des éléments d'alliage, ou à leur relevé dans le VSM « Extrait de normes » (chapitre matériaux)."
+        },
+        "notes": [
+          "UNE RÈGLE, PAS UNE TABLE. Comme le symbole d'alésage des roulements, une désignation d'acier se lit par règles : S355J2 se décompose, il ne se recherche pas dans une liste. MecaTool applique ces règles et ne prétend pas qu'une nuance lue existe dans une norme de produit.",
+          "Faiblement allié : le nombre qui suit les symboles chimiques est la teneur multipliée par un facteur — 4 pour Cr, Co, Mn, Ni, Si, W ; 10 pour Al, Be, Cu, Mo, Nb, Pb, Ta, Ti, V, Zr ; 100 pour Ce, N, P, S ; 1000 pour B. Les nombres s'appliquent aux éléments dans l'ordre ; un élément sans nombre est présent, sans teneur indiquée.",
+          "Fortement allié (X) : au moins un élément atteint 5 % ; les nombres sont les teneurs en pour cent, sans facteur.",
+          "Les teneurs lues sont des teneurs MOYENNES ARRONDIES, telles que la désignation les code. La composition garantie d'une nuance est dans sa norme de produit.",
+          "La désignation numérique de l'EN 10027-2 (1.4301) se reconnaît, mais la table des groupes d'aciers n'est pas embarquée : MecaTool ne dit pas ce qu'elle désigne."
+        ]
+      },
+      {
+        "id": "EN 10025-2",
+        "edition": "",
+        "title": "Produits laminés à chaud en aciers de construction — Partie 2 : aciers de construction non alliés",
+        "scope": "limite d'élasticité minimale et résistance à la traction selon l'épaisseur nominale, nuances S235, S275 et S355",
+        "source": "Saisi sans document normatif ouvert lors de la saisie.",
+        "verification": {
+          "state": "unverified",
+          "pending": "À confronter aux tableaux des caractéristiques mécaniques de l'EN 10025-2 (limite d'élasticité ReH et résistance Rm selon l'épaisseur), ou à leur relevé dans le VSM « Extrait de normes » (chapitre matériaux)."
+        },
+        "notes": [
+          "La limite d'élasticité DÉCROÎT quand l'épaisseur croît : S355 ne garantit 355 MPa que jusqu'à 16 mm. Le nombre de la désignation est la valeur de la plus petite épaisseur, d'où l'importance de choisir l'épaisseur réelle.",
+          "Le chargement vérifie cette décroissance, et que la première valeur de chaque nuance coïncide avec le nombre de sa désignation.",
+          "Seules trois nuances sont embarquées, au-delà de 3 mm pour la résistance. Une nuance absente n'est pas une nuance invalide.",
+          "Les qualités JR, J0, J2 et K2 ne changent pas ces valeurs : elles portent la résilience."
+        ]
+      },
+      {
+        "id": "Propriétés physiques par famille",
+        "edition": "",
+        "title": "Ordres de grandeur des propriétés physiques des familles de matériaux",
+        "scope": "module d'élasticité, coefficient de Poisson, masse volumique et coefficient de dilatation linéique, à température ambiante",
+        "source": "Valeurs d'usage courant des manuels, saisies sans document ouvert lors de la saisie. Aucune norme ne les fixe pour une famille entière.",
+        "verification": {
+          "state": "unverified",
+          "pending": "À confronter à un recueil de propriétés des matériaux (VSM « Extrait de normes », chapitre matériaux, ou fiches de nuances), puis à requalifier en « recommended » avec sa source."
+        },
+        "notes": [
+          "CE NE SONT PAS LES VALEURS D'UNE NUANCE. Ce sont des valeurs représentatives d'une famille : une nuance précise peut s'en écarter de plusieurs pour cent, une fonte grise de bien davantage selon sa classe.",
+          "Le coefficient de dilatation est donné entre 20 et 100 °C environ. Il varie avec la température ; au-delà, la valeur moyenne sur l'intervalle utile est à rechercher.",
+          "Les plastiques techniques sont donnés à titre d'alerte : leur dilatation est dix fois celle de l'acier, et leurs propriétés dépendent de l'humidité et de la température."
+        ]
+      }
+    ]
+  }
+}

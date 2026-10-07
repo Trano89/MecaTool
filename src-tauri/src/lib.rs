@@ -39,7 +39,10 @@ pub fn run() {
             commands::welding_process,
             commands::welding_read,
             commands::fastener_catalogue,
-            commands::fastener_read
+            commands::fastener_read,
+            commands::materials_catalogue,
+            commands::materials_read,
+            commands::thermal_fit
         ])
         .run(tauri::generate_context!())
         .expect("le lancement de MecaTool a échoué");

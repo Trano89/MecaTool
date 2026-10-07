@@ -203,6 +203,28 @@
       "grade": "IT7"
     }
   ],
+  "general": [
+    {
+      "symbol": "f",
+      "name": "fin",
+      "designation": "ISO 2768-f"
+    },
+    {
+      "symbol": "m",
+      "name": "moyen",
+      "designation": "ISO 2768-m"
+    },
+    {
+      "symbol": "c",
+      "name": "grossier",
+      "designation": "ISO 2768-c"
+    },
+    {
+      "symbol": "v",
+      "name": "très grossier",
+      "designation": "ISO 2768-v"
+    }
+  ],
   "grades": [
     "IT01",
     "IT0",

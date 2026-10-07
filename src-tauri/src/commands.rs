@@ -23,6 +23,7 @@ use mecatool_engine::iso2768::{ClassComparison, Iso2768Engine};
 use mecatool_engine::iso286::{
     classification_conclusion, FeatureAnalysis, FitAnalysis, Iso286Engine,
 };
+use mecatool_engine::materials::{MaterialsEngine, SteelReading, ThermalFit};
 use mecatool_engine::parser::{
     parse, parse_chain, parse_clearance_window, parse_comparison, ParsedInput,
 };
@@ -32,6 +33,7 @@ use mecatool_engine::surface::{RoughnessChart, SurfaceAnalysis, SurfaceEngine};
 use mecatool_engine::welding::{ProcessReading, WeldReading, WeldRequest, WeldingEngine};
 use mecatool_engine::EngineError;
 use mecatool_standards::iso2768::MeasureKind;
+use mecatool_standards::matieres::{MaterialFamily, StructuralGrade, UseGroup};
 use mecatool_standards::roulements::{BearingFamily, LoadRegime, MountingCase};
 use mecatool_standards::soudure::{
     ElementarySymbol, Imperfection, ProcessScope, QualityLevel, QualityVariable, SizeLetter,
@@ -248,9 +250,23 @@ pub struct ClassOption {
 pub struct ClassCatalogue {
     pub hole: Vec<ClassOption>,
     pub shaft: Vec<ClassOption>,
+    /// Les classes de tolerance generale de l'ISO 2768-1, du plus fin au plus
+    /// grossier : pour qu'une cote sans tolerance se choisisse, elle aussi.
+    pub general: Vec<GeneralClassOption>,
     /// Les degres seuls, du plus fin au plus large.
     pub grades: Vec<String>,
     pub provenance: Provenance,
+}
+
+/// Une classe de tolerance generale proposable.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GeneralClassOption {
+    /// `m`.
+    pub symbol: String,
+    /// `moyen`.
+    pub name: String,
+    /// `ISO 2768-m`, telle que la chaine de cotes la lit.
+    pub designation: String,
 }
 
 #[tauri::command]
@@ -277,6 +293,14 @@ pub fn tolerance_classes() -> Result<ClassCatalogue, AppError> {
     Ok(ClassCatalogue {
         hole: options(mecatool_core::Feature::Hole),
         shaft: options(mecatool_core::Feature::Shaft),
+        general: mecatool_standards::iso2768::ALL_CLASSES
+            .iter()
+            .map(|class| GeneralClassOption {
+                symbol: class.symbol().to_string(),
+                name: class.name_fr().to_string(),
+                designation: class.designation(),
+            })
+            .collect(),
         grades: mecatool_core::Grade::all()
             .map(|grade| grade.name().to_string())
             .collect(),
@@ -482,6 +506,82 @@ pub fn fastener_catalogue() -> Result<FastenerCatalogue, AppError> {
 #[tauri::command]
 pub fn fastener_read(input: String) -> Result<ThreadReport, AppError> {
     Ok(FastenerEngine::new()?.read(&input)?)
+}
+
+/// Ce qu'il faut pour peupler l'ecran des matieres avant toute saisie.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MaterialsCatalogue {
+    pub use_groups: Vec<UseGroup>,
+    /// Les nuances d'aciers de construction embarquees, et leurs qualites.
+    pub structural_grades: Vec<StructuralGrade>,
+    pub families: Vec<MaterialFamily>,
+    pub provenance: Provenance,
+    pub warnings: Vec<String>,
+}
+
+#[tauri::command]
+pub fn materials_catalogue() -> Result<MaterialsCatalogue, AppError> {
+    let engine = MaterialsEngine::new()?;
+    let provenance = engine.provenance();
+    Ok(MaterialsCatalogue {
+        use_groups: engine.rules().use_groups().to_vec(),
+        structural_grades: engine.structural_grades().to_vec(),
+        families: engine.families().to_vec(),
+        warnings: provenance.warnings_fr(),
+        provenance,
+    })
+}
+
+/// Decompose une designation d'acier : `S355J2`, `42CrMo4`, `X5CrNi18-10`.
+#[tauri::command]
+pub fn materials_read(input: String) -> Result<SteelReading, AppError> {
+    Ok(MaterialsEngine::new()?.read(&input)?)
+}
+
+/// Ce que devient un ajustement quand la temperature change.
+///
+/// Les classes sont facultatives : sans elles, seule la variation du jeu est
+/// rendue. Les grandeurs arrivent en texte, et c'est le moteur qui les lit.
+#[tauri::command]
+pub fn thermal_fit(
+    nominal_mm: String,
+    delta_t: String,
+    hole_family: String,
+    shaft_family: String,
+    hole_class: Option<String>,
+    shaft_class: Option<String>,
+) -> Result<ThermalFit, AppError> {
+    let nominal =
+        Length::parse(nominal_mm.trim(), Unit::Millimetre).map_err(|source| AppError {
+            message: format!("Diamètre illisible : « {nominal_mm} »."),
+            hint: Some(source.to_string()),
+        })?;
+    let delta: i32 = delta_t.trim().parse().map_err(|_| AppError {
+        message: format!("Écart de température illisible : « {delta_t} »."),
+        hint: Some("Un nombre entier de kelvins, par exemple « 80 » ou « -40 ».".into()),
+    })?;
+    let present = |text: Option<String>| text.filter(|t| !t.trim().is_empty());
+    let classes = match (present(hole_class), present(shaft_class)) {
+        (Some(hole), Some(shaft)) => Some((
+            mecatool_core::ToleranceClass::parse(&hole).map_err(EngineError::from)?,
+            mecatool_core::ToleranceClass::parse(&shaft).map_err(EngineError::from)?,
+        )),
+        (None, None) => None,
+        _ => {
+            return Err(AppError::simple(
+                "Un ajustement demande les deux classes, alésage et arbre — ou aucune.",
+            ))
+        }
+    };
+    Ok(
+        MaterialsEngine::new()?.thermal_fit(
+            nominal,
+            delta,
+            &hole_family,
+            &shaft_family,
+            classes,
+        )?,
+    )
 }
 
 /// Le resultat d'une chaine de cotes.
@@ -1081,6 +1181,32 @@ mod tests {
             serde_json::to_string_pretty(&fastener_catalogue().unwrap()).expect("sérialisation"),
         );
         write(
+            "materials-catalogue.json",
+            serde_json::to_string_pretty(&materials_catalogue().unwrap()).expect("sérialisation"),
+        );
+        write(
+            "steel-reading.json",
+            serde_json::to_string_pretty(&materials_read("S355J2".into()).unwrap())
+                .expect("sérialisation"),
+        );
+        // Un logement aluminium sur un arbre acier, Ø50 H7/p6 a +80 K : le
+        // serrage disparait. L'echantillon porte le cas qui fait conclure.
+        write(
+            "thermal-fit.json",
+            serde_json::to_string_pretty(
+                &thermal_fit(
+                    "50".into(),
+                    "80".into(),
+                    "aluminium".into(),
+                    "steel".into(),
+                    Some("H7".into()),
+                    Some("p6".into()),
+                )
+                .unwrap(),
+            )
+            .expect("sérialisation"),
+        );
+        write(
             "thread-report.json",
             serde_json::to_string_pretty(&fastener_read("M10 8.8".into()).unwrap())
                 .expect("sérialisation"),
@@ -1152,6 +1278,37 @@ mod tests {
     }
 
     #[test]
+    fn une_nuance_et_un_ajustement_a_chaud_traversent_la_frontiere() {
+        let reading = materials_read("42CrMo4".into()).unwrap();
+        assert_eq!(reading.elements.len(), 2);
+        let thermal = thermal_fit(
+            "50".into(),
+            "80".into(),
+            "aluminium".into(),
+            "steel".into(),
+            None,
+            None,
+        )
+        .unwrap();
+        assert_eq!(thermal.clearance_shift_label, "+44 µm");
+        assert_eq!(materials_catalogue().unwrap().warnings.len(), 3);
+    }
+
+    #[test]
+    fn une_seule_classe_est_refusee() {
+        let err = thermal_fit(
+            "50".into(),
+            "80".into(),
+            "aluminium".into(),
+            "steel".into(),
+            Some("H7".into()),
+            None,
+        )
+        .unwrap_err();
+        assert!(err.message.contains("les deux classes"));
+    }
+
+    #[test]
     fn les_nouveaux_domaines_ne_chargent_pas_le_bandeau_global() {
         // Leurs reserves s'affichent sur leur ecran. Le bandeau general reste
         // celui des donnees de l'ajustement, confrontees a leur source.
@@ -1194,9 +1351,10 @@ mod tests {
         assert!(registry.len() >= 10);
 
         // Un domaine bloqué doit arriver avec sa raison : la navigation
-        // l'affichera grisé, mais elle doit pouvoir dire pourquoi.
+        // l'affichera grisé, mais elle doit pouvoir dire pourquoi. Tous les
+        // domaines du registre sont ouverts aujourd'hui ; la règle tient pour
+        // le prochain.
         let bloques: Vec<_> = registry.iter().filter(|d| !d.is_available()).collect();
-        assert!(!bloques.is_empty());
         for domain in bloques {
             assert!(domain.unavailable.is_some(), "{}", domain.id);
         }

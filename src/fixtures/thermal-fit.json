@@ -1,20 +1,99 @@
 {
-  "app_version": "0.2.0",
-  "available_letters": [
-    "d",
-    "e",
-    "f",
-    "g",
-    "h",
-    "js",
-    "k",
-    "m",
-    "n",
-    "p"
+  "nominal": 50000000,
+  "delta_t": 80,
+  "hole_family": {
+    "id": "aluminium",
+    "name": "alliage d'aluminium",
+    "e_gpa": 70,
+    "poisson_milli": 330,
+    "density": 2700,
+    "alpha_tenths": 230
+  },
+  "shaft_family": {
+    "id": "steel",
+    "name": "acier non allié ou faiblement allié",
+    "e_gpa": 210,
+    "poisson_milli": 300,
+    "density": 7850,
+    "alpha_tenths": 120
+  },
+  "hole_growth": 92000,
+  "shaft_growth": 48000,
+  "clearance_shift": 44000,
+  "clearance_shift_label": "+44 µm",
+  "fit": {
+    "designation": "Ø50 H7/p6",
+    "cold_min": -42000,
+    "cold_max": -1000,
+    "cold_kind": "interference",
+    "hot_min": 2000,
+    "hot_max": 43000,
+    "hot_kind": "clearance"
+  },
+  "findings": [
+    {
+      "code": "fit_kind_changes",
+      "severity": "caution",
+      "message": "L'ajustement change de nature : serré à froid, avec jeu à ΔT = 80 K."
+    },
+    {
+      "code": "interference_lost",
+      "severity": "error",
+      "message": "Le serrage peut disparaître : la pièce frettée peut tourner ou glisser à cette température."
+    },
+    {
+      "code": "nominal_basis",
+      "severity": "note",
+      "message": "Calculé sur le diamètre nominal, pièces à température uniforme. L'écart dû aux dimensions réelles est du second ordre."
+    }
   ],
-  "max_nominal_mm": "500",
+  "conclusion": {
+    "verdict": "incompatible",
+    "detail": "Le serrage peut disparaître : la pièce frettée peut tourner ou glisser à cette température.",
+    "why": [
+      {
+        "label": "Dilatation de l'alésage",
+        "expression": "Ø × α × ΔT = 50 mm × 23 µm/(m·K) × 80 K",
+        "value": "+92 µm (alliage d'aluminium)"
+      },
+      {
+        "label": "Dilatation de l'arbre",
+        "expression": "Ø × α × ΔT = 50 mm × 12 µm/(m·K) × 80 K",
+        "value": "+48 µm (acier non allié ou faiblement allié)"
+      },
+      {
+        "label": "Variation du jeu",
+        "expression": "dilatation de l'alésage − dilatation de l'arbre",
+        "value": "+44 µm"
+      },
+      {
+        "label": "Jeu à chaud",
+        "expression": "jeu à froid + variation",
+        "value": "+2 µm à +43 µm"
+      }
+    ],
+    "warnings": [
+      "Propriétés physiques par famille (module d'élasticité, coefficient de Poisson, masse volumique et coefficient de dilatation linéique, à température ambiante) : Donnée normative non vérifiée. À confronter à un recueil de propriétés des matériaux (VSM « Extrait de normes », chapitre matériaux, ou fiches de nuances), puis à requalifier en « recommended » avec sa source."
+    ]
+  },
   "provenance": {
     "references": [
+      {
+        "id": "Propriétés physiques par famille",
+        "edition": "",
+        "title": "Ordres de grandeur des propriétés physiques des familles de matériaux",
+        "scope": "module d'élasticité, coefficient de Poisson, masse volumique et coefficient de dilatation linéique, à température ambiante",
+        "source": "Valeurs d'usage courant des manuels, saisies sans document ouvert lors de la saisie. Aucune norme ne les fixe pour une famille entière.",
+        "verification": {
+          "state": "unverified",
+          "pending": "À confronter à un recueil de propriétés des matériaux (VSM « Extrait de normes », chapitre matériaux, ou fiches de nuances), puis à requalifier en « recommended » avec sa source."
+        },
+        "notes": [
+          "CE NE SONT PAS LES VALEURS D'UNE NUANCE. Ce sont des valeurs représentatives d'une famille : une nuance précise peut s'en écarter de plusieurs pour cent, une fonte grise de bien davantage selon sa classe.",
+          "Le coefficient de dilatation est donné entre 20 et 100 °C environ. Il varie avec la température ; au-delà, la valeur moyenne sur l'intervalle utile est à rechercher.",
+          "Les plastiques techniques sont donnés à titre d'alerte : leur dilatation est dix fois celle de l'acier, et leurs propriétés dépendent de l'humidité et de la température."
+        ]
+      },
       {
         "id": "ISO 286-1",
         "edition": "2010",
@@ -58,6 +137,5 @@
         ]
       }
     ]
-  },
-  "warnings": []
+  }
 }

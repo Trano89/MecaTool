@@ -9,7 +9,8 @@
             "lower": -100000,
             "upper": 100000
           },
-          "direction": "increasing"
+          "direction": "increasing",
+          "source": null
         },
         "tolerance": 200000,
         "share_per_mille": 588,
@@ -24,7 +25,8 @@
             "lower": -50000,
             "upper": 50000
           },
-          "direction": "increasing"
+          "direction": "increasing",
+          "source": null
         },
         "tolerance": 100000,
         "share_per_mille": 294,
@@ -39,7 +41,8 @@
             "lower": -20000,
             "upper": 20000
           },
-          "direction": "decreasing"
+          "direction": "decreasing",
+          "source": null
         },
         "tolerance": 40000,
         "share_per_mille": 118,
@@ -97,7 +100,10 @@
         "value": "0.340 mm"
       }
     ],
-    "dominant": "A"
+    "dominant": "A",
+    "provenance": {
+      "references": []
+    }
   },
   "chart": {
     "width": 640.0,
