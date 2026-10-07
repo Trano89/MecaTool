@@ -128,7 +128,7 @@ export function App() {
         domains={catalogue}
         screen={screen}
         onNavigate={navigate}
-        version={info?.app_version ?? "0.2.0"}
+        version={info?.app_version ?? "0.3.0"}
         themeControl={themeControl}
       />
 

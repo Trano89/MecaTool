@@ -1,24 +1,23 @@
 //! Soudure : procedes (ISO 4063), symboles (ISO 2553), niveaux de qualite
 //! (ISO 5817).
 //!
-//! # Trois jeux, une meme reserve
+//! # Ce qui a ete lu dans la norme
 //!
-//! Les trois jeux sont saisis sans document source ouvert, et portent donc
-//! [`VerificationStatus::Unverified`]. Ce sont des **selections** : un numero de
-//! procede, un symbole ou une imperfection absents ne sont pas invalides, ils
-//! ne sont pas embarques — et le moteur le dit dans ces termes.
+//! La nomenclature ISO 4063 est complete et lue dans la norme (ISO 4063:2009,
+//! version corrigee 2010) : un numero absent n'appartient pas a la norme.
+//! L'etat de verification de chaque autre jeu est porte par son fichier.
 //!
 //! # Ce que la validation garantit
 //!
-//! * chaque numero de procede a son parent : `135` suppose `13`, qui suppose
-//!   `1` — la hierarchie se lit dans les chiffres, elle ne doit pas se rompre ;
+//! * chaque numero de procede releve d'un groupe principal embarque : `135`
+//!   suppose `1` — la hierarchie se lit dans les chiffres ;
+//! * un numero de l'Annexe A (remplace ou depasse) n'est jamais aussi en
+//!   usage ;
 //! * chaque imperfection couvre les epaisseurs de 0,5 mm a l'infini, sans trou
 //!   ni recouvrement ;
 //! * **un niveau plus exigeant ne tolere jamais davantage** : B ≤ C ≤ D sur
 //!   chaque ligne, constante, coefficient et plafond compris. C'est le controle
 //!   le plus utile : une valeur saisie dans la mauvaise colonne le fait tomber.
-//!
-//! [`VerificationStatus::Unverified`]: mecatool_core::VerificationStatus::Unverified
 
 use std::collections::BTreeSet;
 use std::sync::OnceLock;
@@ -34,15 +33,39 @@ use crate::value::length_from_json;
 /*  Procedes — ISO 4063                                                */
 /* ------------------------------------------------------------------ */
 
-/// Un procede, un sous-groupe ou un groupe de la nomenclature.
+/// Un procede, un groupe ou un groupe principal de la nomenclature.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct WeldingProcess {
     /// Le numero de reference : `135`.
     pub number: String,
+    /// Le terme prefere de la norme.
     pub name: String,
+    /// Les synonymes que la norme donne a la suite du terme prefere.
+    #[serde(default)]
+    pub synonyms: Vec<String>,
     /// Abreviations et noms d'atelier, en minuscules. Un meme alias peut
-    /// designer plusieurs numeros : `mag` designe 135, 136 et 138.
+    /// designer plusieurs numeros : `mag` designe 135, 136 et 138. Ce sont
+    /// des cles de recherche, pas des termes de la norme.
     pub aliases: Vec<String>,
+    /// Les designations americaines que l'Annexe B donne pour exactement
+    /// equivalentes : `SMAW` pour 111.
+    #[serde(default)]
+    pub us_designations: Vec<String>,
+}
+
+/// Une lettre de variante : mode de transfert (Tableau 1) ou element
+/// additionnel (Tableau 2).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct VariantLetter {
+    pub letter: String,
+    pub name: String,
+}
+
+/// Un numero que l'Annexe A donne pour remplace ou depasse.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ReplacedProcess {
+    pub number: String,
+    pub name: String,
 }
 
 /// La nomenclature embarquee.
@@ -50,7 +73,10 @@ pub struct WeldingProcess {
 pub struct WeldingProcessTable {
     dataset: String,
     standard: StandardReference,
+    transfer_modes: Vec<VariantLetter>,
+    additional_items: Vec<VariantLetter>,
     processes: Vec<WeldingProcess>,
+    replaced: Vec<ReplacedProcess>,
 }
 
 const PROCESSES_EMBEDDED: &str = include_str!("../../../data/soudure/iso4063.procedes.json");
@@ -96,16 +122,52 @@ impl WeldingProcessTable {
                     return Err(bad(format!("alias non normalise : {alias}")));
                 }
             }
-        }
-        // La hierarchie se lit dans les chiffres : chaque numero suppose son
-        // parent. Un parent manquant laisserait un procede sans groupe, et la
-        // lecture « 135 appartient au sous-groupe 13 » deviendrait fausse.
-        for p in &self.processes {
-            if p.number.len() > 1 {
-                let parent = &p.number[..p.number.len() - 1];
-                if !numbers.contains(parent) {
-                    return Err(bad(format!("{} sans son parent {parent}", p.number)));
+            for us in &p.us_designations {
+                if us.is_empty()
+                    || !us
+                        .chars()
+                        .all(|c| c.is_ascii_uppercase() || c.is_ascii_digit() || c == '-')
+                {
+                    return Err(bad(format!("designation US illisible : {us:?}")));
                 }
+            }
+        }
+        // La hierarchie se lit dans les chiffres : chaque numero releve d'un
+        // groupe principal embarque. La norme ne donne pas toujours le niveau
+        // intermediaire — 185 n'a pas de groupe 18 —, mais jamais un numero
+        // sans groupe principal.
+        for p in &self.processes {
+            let root = &p.number[..1];
+            if !numbers.contains(root) {
+                return Err(bad(format!(
+                    "{} sans son groupe principal {root}",
+                    p.number
+                )));
+            }
+        }
+        // Un numero remplace qui serait aussi dans la liste principale
+        // rendrait la lecture ambigue : la liste principale prevaut, et
+        // l'entree de l'Annexe A ne doit pas etre embarquee.
+        for r in &self.replaced {
+            if numbers.contains(r.number.as_str()) {
+                return Err(bad(format!(
+                    "{} est a la fois en usage et remplace",
+                    r.number
+                )));
+            }
+        }
+        // Une lettre de variante ne designe qu'une chose : `C` ne peut etre a
+        // la fois un mode de transfert et un element additionnel.
+        let mut letters = BTreeSet::new();
+        for v in self.transfer_modes.iter().chain(&self.additional_items) {
+            if v.letter.len() != 1 || !v.letter.chars().all(|c| c.is_ascii_uppercase()) {
+                return Err(bad(format!(
+                    "lettre de variante illisible : {:?}",
+                    v.letter
+                )));
+            }
+            if !letters.insert(v.letter.as_str()) {
+                return Err(bad(format!("lettre de variante en double : {}", v.letter)));
             }
         }
         Ok(())
@@ -123,13 +185,39 @@ impl WeldingProcessTable {
         self.processes.iter().find(|p| p.number == number.trim())
     }
 
-    /// Tous les numeros que designe un alias. Plusieurs, parfois.
+    /// Tous les numeros que designe un alias, un terme de la norme ou une
+    /// designation US. Plusieurs, parfois.
     pub fn by_alias(&self, alias: &str) -> Vec<&WeldingProcess> {
         let lower = alias.trim().to_lowercase();
         self.processes
             .iter()
-            .filter(|p| p.aliases.contains(&lower) || p.name == lower)
+            .filter(|p| {
+                p.aliases.contains(&lower)
+                    || p.name.to_lowercase() == lower
+                    || p.synonyms.iter().any(|s| s.to_lowercase() == lower)
+                    || p.us_designations.iter().any(|u| u.to_lowercase() == lower)
+            })
             .collect()
+    }
+
+    /// Un numero de l'Annexe A : remplace ou depasse, encore lisible dans des
+    /// documents anciens.
+    pub fn replaced(&self, number: &str) -> Option<&ReplacedProcess> {
+        self.replaced.iter().find(|r| r.number == number.trim())
+    }
+
+    pub fn replaced_processes(&self) -> &[ReplacedProcess] {
+        &self.replaced
+    }
+
+    /// Les modes de transfert du Tableau 1.
+    pub fn transfer_modes(&self) -> &[VariantLetter] {
+        &self.transfer_modes
+    }
+
+    /// Les elements additionnels du Tableau 2.
+    pub fn additional_items(&self) -> &[VariantLetter] {
+        &self.additional_items
     }
 
     /// Le groupe, puis le sous-groupe, puis le procede lui-meme.
@@ -188,7 +276,7 @@ pub struct WeldSystem {
     pub note: Option<String>,
 }
 
-/// Un symbole elementaire : le tableau verifie, complete de sa cotation.
+/// Un symbole elementaire : le tableau 1, complete de sa cotation (article 5).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ElementarySymbol {
     /// Identifiant stable, celui de la surcouche : `fillet`.
@@ -202,15 +290,32 @@ pub struct ElementarySymbol {
     /// Vrai quand il peut servir pour plus de deux parties.
     pub multi_part: bool,
     pub note: Option<String>,
-    /// Surcouche non verifiee : le nom de la forme symetrique.
+    /// Cotation : le nom de la forme symetrique, quand le tableau 2 lui en
+    /// donne un (double V, K, double U). `None` ne veut pas dire que la forme
+    /// double n'existe pas : la norme ne la nomme pas.
     pub both_sides_name: Option<String>,
-    /// Surcouche non verifiee : la famille de joint.
+    /// Cotation : la famille de joint.
     pub family: JointFamily,
-    /// Surcouche non verifiee : les lettres de cote admises.
+    /// Cotation : les lettres de cote principale admises (5.2 a 5.12).
     pub sizes: Vec<String>,
+    /// Cotation : vrai quand la norme exige une cote (soudures evasees, 5.4.4).
+    #[serde(default)]
+    pub size_required: bool,
+    /// Cotation : le nom d'une lettre propre a ce symbole, quand il differe du
+    /// nom general (`s` = epaisseur du rechargement sur une soudure de
+    /// rechargement).
+    #[serde(default)]
+    pub size_names: std::collections::BTreeMap<String, String>,
 }
 
-/// Un symbole supplementaire : le tableau verifie, complete de son usage.
+impl ElementarySymbol {
+    /// Le nom de la cote `letter` sur ce symbole, s'il lui est propre.
+    pub fn size_name(&self, letter: &str) -> Option<&str> {
+        self.size_names.get(letter).map(String::as_str)
+    }
+}
+
+/// Un symbole supplementaire : le tableau 3, complete de son emploi.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SupplementarySymbol {
     pub id: String,
@@ -220,8 +325,20 @@ pub struct SupplementarySymbol {
     pub name: String,
     /// La note de la norme, quand elle en porte une.
     pub meaning: Option<String>,
-    /// Surcouche non verifiee : les familles sur lesquelles on le rencontre.
+    /// Cotation : les familles sur lesquelles la norme le montre ou le
+    /// prescrit. Ce n'est pas une interdiction ailleurs.
     pub families: Vec<JointFamily>,
+    /// Cotation : les symboles elementaires, hors de ces familles, avec
+    /// lesquels la norme l'emploie aussi.
+    #[serde(default)]
+    pub symbols: Vec<u32>,
+}
+
+impl SupplementarySymbol {
+    /// Vrai si la norme montre ce symbole supplementaire sur `symbol`.
+    pub fn shown_on(&self, symbol: &ElementarySymbol) -> bool {
+        self.families.contains(&symbol.family) || self.symbols.contains(&symbol.number)
+    }
 }
 
 #[derive(Debug, Deserialize)]
@@ -264,6 +381,10 @@ struct OverlayElementary {
     id: String,
     family: JointFamily,
     sizes: Vec<String>,
+    #[serde(default)]
+    size_required: bool,
+    #[serde(default)]
+    size_names: std::collections::BTreeMap<String, String>,
     both_sides_name: Option<String>,
 }
 
@@ -272,6 +393,8 @@ struct OverlaySupplementary {
     number: u32,
     id: String,
     families: Vec<JointFamily>,
+    #[serde(default)]
+    symbols: Vec<u32>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -285,11 +408,11 @@ struct Overlay {
 
 /// Les symboles embarques.
 ///
-/// Deux jeux de donnees, deux etats : le tableau des symboles vient de
-/// l'ISO 2553:2013 lue dans la norme (`verified`) ; la cotation — famille, cotes
-/// admises, forme double — est une surcouche saisie sans document ouvert
-/// (`unverified`). La surcouche ne remplace aucun mot du tableau verifie : elle
-/// s'y accroche par le numero.
+/// Deux jeux de donnees, tous deux lus dans l'ISO 2553:2013 (`verified`) : le
+/// tableau des symboles (tableaux 1 et 3, 4.2 a 4.4), et sa cotation — famille,
+/// cotes admises, forme double — lue a l'article 5 et aux tableaux 2 et 5. La
+/// cotation est une surcouche : elle ne remplace aucun mot du tableau, elle s'y
+/// accroche par le numero.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct WeldSymbolTable {
     standard: StandardReference,
@@ -365,6 +488,8 @@ impl WeldSymbolTable {
                 both_sides_name: o.both_sides_name,
                 family: o.family,
                 sizes: o.sizes,
+                size_required: o.size_required,
+                size_names: o.size_names,
             })
             .collect();
         let supplementary = verified
@@ -377,6 +502,7 @@ impl WeldSymbolTable {
                 name: v.designation,
                 meaning: v.note,
                 families: o.families,
+                symbols: o.symbols,
             })
             .collect();
 
@@ -410,13 +536,30 @@ impl WeldSymbolTable {
                     return Err(bad(format!("{} : cote inconnue {size}", symbol.id)));
                 }
             }
-            // Le recoupement entre les deux jeux : la norme declare a pleine
-            // penetration par defaut exactement les soudures bout a bout. Une
-            // famille mal rangee dans la surcouche fait tomber le chargement.
-            if (symbol.family == JointFamily::Butt) != symbol.full_penetration {
+            // Le recoupement entre les deux jeux. Ce que la norme declare a
+            // pleine penetration par defaut (note b du tableau 1) est une
+            // soudure bout a bout ; une soudure bout a bout qui ne l'est pas
+            // doit toujours etre cotee (5.4.4). Une famille mal rangee fait
+            // tomber le chargement.
+            if symbol.full_penetration && symbol.family != JointFamily::Butt {
                 return Err(bad(format!(
-                    "{} (n° {}) : la famille de la surcouche contredit la pleine penetration \
-                     declaree par la norme",
+                    "{} (n° {}) : la norme la declare a pleine penetration, la surcouche ne \
+                     la range pas parmi les soudures bout a bout",
+                    symbol.id, symbol.number
+                )));
+            }
+            if symbol.family == JointFamily::Butt && !symbol.full_penetration {
+                if !symbol.size_required {
+                    return Err(bad(format!(
+                        "{} (n° {}) : soudure bout a bout que la norme ne declare pas a pleine \
+                         penetration, elle doit toujours etre cotee (5.4.4)",
+                        symbol.id, symbol.number
+                    )));
+                }
+            } else if symbol.size_required {
+                return Err(bad(format!(
+                    "{} (n° {}) : seules les soudures bout a bout sans pleine penetration par \
+                     defaut doivent toujours etre cotees",
                     symbol.id, symbol.number
                 )));
             }
@@ -433,18 +576,26 @@ impl WeldSymbolTable {
                     symbol.id, symbol.family
                 )));
             }
+            // s se retrouve hors des deux familles (soudure sur chant,
+            // rechargement : 5.10, 5.12) ; a et z, jamais.
             if symbol.family == JointFamily::Other
-                && symbol
-                    .sizes
-                    .iter()
-                    .any(|s| matches!(s.as_str(), "a" | "z" | "s"))
+                && symbol.sizes.iter().any(|s| matches!(s.as_str(), "a" | "z"))
             {
                 return Err(bad(format!(
-                    "{} : a, z et s sont reserves aux soudures bout a bout et d'angle",
+                    "{} : a et z sont reserves aux soudures d'angle",
                     symbol.id
                 )));
             }
+            for letter in symbol.size_names.keys() {
+                if !symbol.sizes.contains(letter) {
+                    return Err(bad(format!(
+                        "{} : nom propre a la cote {letter}, qui n'est pas admise",
+                        symbol.id
+                    )));
+                }
+            }
         }
+        let numbers: BTreeSet<u32> = self.elementary.iter().map(|s| s.number).collect();
         let mut supplementary = BTreeSet::new();
         for symbol in &self.supplementary {
             if !supplementary.insert(symbol.id.as_str()) {
@@ -456,6 +607,12 @@ impl WeldSymbolTable {
             if symbol.families.is_empty() {
                 return Err(bad(format!("{} ne s'applique a aucune famille", symbol.id)));
             }
+            if let Some(unknown) = symbol.symbols.iter().find(|n| !numbers.contains(n)) {
+                return Err(bad(format!(
+                    "{} : symbole elementaire n° {unknown} inconnu",
+                    symbol.id
+                )));
+            }
         }
         Ok(())
     }
@@ -465,7 +622,7 @@ impl WeldSymbolTable {
         &self.standard
     }
 
-    /// La surcouche de cotation, non verifiee.
+    /// La surcouche de cotation, lue a l'article 5 de la norme.
     pub fn cotation_standard(&self) -> &StandardReference {
         &self.cotation
     }
@@ -734,24 +891,40 @@ pub struct ScopeExclusion {
     pub reason: String,
 }
 
-/// Les procedes auxquels MecaTool applique la norme.
+/// Une reserve que la norme attache a un procede vise : `31` pour l'acier
+/// uniquement.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ScopeCondition {
+    pub prefix: String,
+    pub condition: String,
+}
+
+/// Les procedes auxquels la norme s'applique (ISO 5817, article 1 g).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ProcessScope {
     pub note: String,
-    /// Prefixes de numeros ISO 4063 vises : soudage par fusion.
+    /// Prefixes de numeros ISO 4063 que la norme cite : 11, 12, 13, 14, 15
+    /// et 31, avec leurs sous-categories.
     pub fusion: Vec<String>,
+    /// Les reserves attachees a certains procedes cites.
+    #[serde(default)]
+    pub conditions: Vec<ScopeCondition>,
     pub excluded: Vec<ScopeExclusion>,
+    /// Ce que la norme dit d'un procede qu'elle ne cite ni n'exclut.
+    pub not_listed: String,
 }
 
 /// Ce que la norme dit d'un procede.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum ScopeVerdict {
-    /// Procede de soudage par fusion : la norme s'applique.
+    /// Procede cite par l'article 1 g) : la norme s'applique, sous la reserve
+    /// eventuelle que donne [`ProcessScope::condition`].
     InScope,
     /// La norme ne vise pas ce procede.
     Excluded { reason: String },
-    /// MecaTool ne sait pas : ni vise, ni ecarte par les donnees embarquees.
+    /// Ni cite, ni exclu : l'Annexe B admet l'application a d'autres procedes
+    /// de soudage par fusion, le cas echeant. Voir [`ProcessScope::not_listed`].
     Unknown,
 }
 
@@ -771,6 +944,66 @@ impl ProcessScope {
         } else {
             ScopeVerdict::Unknown
         }
+    }
+
+    /// La reserve attachee a un procede vise : « pour l'acier uniquement ».
+    pub fn condition(&self, number: &str) -> Option<&str> {
+        self.conditions
+            .iter()
+            .find(|c| number.starts_with(c.prefix.as_str()))
+            .map(|c| c.condition.as_str())
+    }
+
+    /// Les procedes cites que contient un groupe : `1` contient 11 a 15. Vide
+    /// pour un numero qui n'est pas un groupe englobant un procede cite.
+    pub fn covered_within(&self, number: &str) -> Vec<&str> {
+        self.fusion
+            .iter()
+            .filter(|p| p.len() > number.len() && p.starts_with(number))
+            .map(String::as_str)
+            .collect()
+    }
+
+    fn validate(&self) -> core::result::Result<(), String> {
+        let readable =
+            |p: &str| !p.is_empty() && p.len() <= 3 && p.chars().all(|c| c.is_ascii_digit());
+        let all: Vec<&str> = self
+            .fusion
+            .iter()
+            .map(String::as_str)
+            .chain(self.excluded.iter().map(|e| e.prefix.as_str()))
+            .collect();
+        if self.fusion.is_empty() {
+            return Err("aucun procede vise".into());
+        }
+        if let Some(bad) = all.iter().find(|p| !readable(p)) {
+            return Err(format!("prefixe de procede illisible : {bad:?}"));
+        }
+        // Un procede ne peut etre a la fois vise et exclu : aucun prefixe n'en
+        // englobe un autre.
+        for (i, a) in all.iter().enumerate() {
+            for b in &all[i + 1..] {
+                if a.starts_with(b) || b.starts_with(a) {
+                    return Err(format!("les prefixes {a} et {b} se recouvrent"));
+                }
+            }
+        }
+        for condition in &self.conditions {
+            if !self
+                .fusion
+                .iter()
+                .any(|p| condition.prefix.starts_with(p.as_str()))
+            {
+                return Err(format!(
+                    "reserve sur {}, qui n'est pas un procede vise",
+                    condition.prefix
+                ));
+            }
+        }
+        if self.not_listed.trim().is_empty() {
+            return Err("rien n'est dit des procedes non cites".into());
+        }
+        Ok(())
     }
 }
 
@@ -914,6 +1147,9 @@ impl QualityTable {
         if self.imperfections.is_empty() {
             return Err(bad("aucune imperfection".into()));
         }
+        self.process_scope
+            .validate()
+            .map_err(|detail| bad(format!("domaine des procedes : {detail}")))?;
         let minimum = Length::from_micrometres(MIN_THICKNESS_UM);
 
         for imperfection in &self.imperfections {
@@ -1036,6 +1272,7 @@ fn not_looser(strict: &Limit, loose: &Limit) -> bool {
                 factor_hundredths: f1,
                 of: of1,
                 max: m1,
+                short: s1,
                 ..
             },
             Limit::Bound {
@@ -1043,6 +1280,7 @@ fn not_looser(strict: &Limit, loose: &Limit) -> bool {
                 factor_hundredths: f2,
                 of: of2,
                 max: m2,
+                short: s2,
                 ..
             },
         ) => {
@@ -1052,7 +1290,12 @@ fn not_looser(strict: &Limit, loose: &Limit) -> bool {
                 (None, Some(_)) => false,
                 (Some(a), Some(b)) => a <= b,
             };
-            same_basis && c1 <= c2 && f1 <= f2 && ceiling
+            // Une borne reservee aux defauts courts tolere moins qu'une borne
+            // valable sur toute la longueur : le niveau exigeant ne peut pas
+            // etre le seul a l'admettre sur toute la longueur. (1.17, t ≤ 3 :
+            // D sur toute la longueur, C en defauts courts — et non l'inverse.)
+            let length = *s1 || !*s2;
+            same_basis && c1 <= c2 && f1 <= f2 && ceiling && length
         }
         // Un angle plus grand est plus exigeant : le raccordement est plus doux.
         (Limit::MinAngle { degrees: a }, Limit::MinAngle { degrees: b }) => a >= b,
@@ -1115,19 +1358,73 @@ mod tests {
     }
 
     #[test]
-    fn les_jeux_saisis_ne_se_disent_pas_verifies() {
-        for reference in [
-            processes().standard(),
-            symbols().cotation_standard(),
-            quality().standard(),
-        ] {
-            assert!(!reference.verification.is_verified(), "{}", reference.id);
-            assert!(
-                reference.edition.is_empty(),
-                "millesime invente : {}",
-                reference.id
-            );
-        }
+    fn la_cotation_est_lue_a_larticle_5() {
+        // Les niveaux de qualite (ISO 5817:2014) sont desormais lus dans la
+        // norme : voir `les_niveaux_de_qualite_sont_lus_dans_la_norme`. La
+        // cotation des symboles l'est aussi, a l'article 5 de l'ISO 2553:2013.
+        let reference = symbols().cotation_standard();
+        assert!(reference.verification.is_verified(), "{}", reference.id);
+        assert_eq!(reference.citation(), "ISO 2553:2013");
+        // Meme norme que le tableau des symboles : seul le perimetre les
+        // distingue a l'affichage.
+        assert_ne!(reference.scope, symbols().standard().scope);
+        assert!(reference.source.contains("article 5"));
+    }
+
+    #[test]
+    fn la_nomenclature_est_lue_dans_la_norme() {
+        let reference = processes().standard();
+        assert!(reference.verification.is_verified());
+        assert_eq!(reference.edition, "2009");
+        // Les numeros que la version corrigee a deplaces ou ajoutes.
+        assert!(processes().by_number("977").is_some());
+        assert!(processes().by_number("973").is_some());
+        assert!(processes().by_number("983").is_none());
+        assert!(processes().by_number("987").is_none());
+        assert_eq!(
+            processes().by_number("81").unwrap().name,
+            "coupage à la flamme"
+        );
+    }
+
+    #[test]
+    fn un_numero_remplace_se_lit_a_lannexe_a() {
+        assert!(processes().by_number("181").is_none());
+        assert_eq!(
+            processes().replaced("181").unwrap().name,
+            "soudage à l'arc avec électrode de carbone"
+        );
+        // 43 a change de sens : la liste principale prevaut.
+        assert!(processes().replaced("43").is_none());
+        assert_eq!(
+            processes().by_number("43").unwrap().name,
+            "soudage par friction-malaxage"
+        );
+    }
+
+    #[test]
+    fn les_designations_us_de_lannexe_b_se_lisent() {
+        let numbers = |text: &str| -> Vec<String> {
+            processes()
+                .by_alias(text)
+                .iter()
+                .map(|p| p.number.clone())
+                .collect()
+        };
+        assert_eq!(numbers("SMAW"), ["111"]);
+        assert_eq!(numbers("fcaw"), ["114", "136"]);
+        assert_eq!(numbers("SW"), ["783", "785", "786"]);
+    }
+
+    #[test]
+    fn un_numero_remplace_ne_double_pas_un_numero_en_usage() {
+        let mut broken: serde_json::Value = serde_json::from_str(PROCESSES_EMBEDDED).unwrap();
+        broken["replaced"]
+            .as_array_mut()
+            .unwrap()
+            .push(serde_json::json!({ "number": "43", "name": "soudage par forgeage" }));
+        let err = WeldingProcessTable::parse(&broken.to_string()).unwrap_err();
+        assert!(err.to_string().contains("en usage et remplace"), "{err}");
     }
 
     #[test]
@@ -1150,18 +1447,21 @@ mod tests {
             .map(|p| p.number.as_str())
             .collect();
         assert_eq!(mag, ["135", "136", "138"]);
-        assert_eq!(processes().by_alias("tig").len(), 2);
+        assert_eq!(processes().by_alias("tig").len(), 5);
     }
 
     #[test]
-    fn un_numero_sans_parent_est_refuse() {
+    fn un_numero_sans_groupe_principal_est_refuse() {
         let mut broken: serde_json::Value = serde_json::from_str(PROCESSES_EMBEDDED).unwrap();
         broken["processes"]
             .as_array_mut()
             .unwrap()
             .push(serde_json::json!({ "number": "667", "name": "x", "aliases": [] }));
         let err = WeldingProcessTable::parse(&broken.to_string()).unwrap_err();
-        assert!(err.to_string().contains("sans son parent 66"), "{err}");
+        assert!(
+            err.to_string().contains("sans son groupe principal 6"),
+            "{err}"
+        );
     }
 
     #[test]
@@ -1187,21 +1487,77 @@ mod tests {
     }
 
     #[test]
-    fn deux_jeux_deux_etats() {
+    fn deux_jeux_une_meme_norme() {
         assert!(symbols().standard().verification.is_verified());
         assert_eq!(symbols().standard().citation(), "ISO 2553:2013");
-        assert!(!symbols().cotation_standard().verification.is_verified());
+        assert!(symbols().cotation_standard().verification.is_verified());
     }
 
     #[test]
-    fn la_famille_bout_a_bout_coincide_avec_la_pleine_penetration_de_la_norme() {
-        // On range la soudure d'angle parmi les bout a bout : la norme ne la
-        // declare pas a pleine penetration, le recoupement doit tomber.
+    fn la_pleine_penetration_de_la_norme_reste_bout_a_bout() {
+        // On sort la soudure en V des soudures bout a bout : la norme la
+        // declare a pleine penetration, le recoupement doit tomber.
+        let mut broken: serde_json::Value = serde_json::from_str(COTATION_EMBEDDED).unwrap();
+        broken["elementary"][1]["family"] = serde_json::json!("other");
+        broken["elementary"][1]["sizes"] = serde_json::json!([]);
+        let err = WeldSymbolTable::parse(SYMBOLS_EMBEDDED, &broken.to_string()).unwrap_err();
+        assert!(err.to_string().contains("pleine penetration"), "{err}");
+    }
+
+    #[test]
+    fn une_bout_a_bout_sans_pleine_penetration_doit_etre_cotee() {
+        // Les soudures evasees sont bout a bout (3.20, 3.21) et toujours
+        // cotees (5.4.4).
+        for id in ["flare_v", "flare_bevel"] {
+            let flare = symbols().symbol(id).unwrap();
+            assert_eq!(flare.family, JointFamily::Butt);
+            assert!(!flare.full_penetration);
+            assert!(flare.size_required);
+            assert_eq!(flare.sizes, ["s"]);
+        }
+        // On range la soudure d'angle parmi les bout a bout, sans l'obligation
+        // de cote : le recoupement doit tomber.
         let mut broken: serde_json::Value = serde_json::from_str(COTATION_EMBEDDED).unwrap();
         broken["elementary"][9]["family"] = serde_json::json!("butt");
         broken["elementary"][9]["sizes"] = serde_json::json!(["s"]);
         let err = WeldSymbolTable::parse(SYMBOLS_EMBEDDED, &broken.to_string()).unwrap_err();
-        assert!(err.to_string().contains("pleine penetration"), "{err}");
+        assert!(err.to_string().contains("toujours etre cotee"), "{err}");
+    }
+
+    #[test]
+    fn s_cote_aussi_la_soudure_sur_chant_et_le_rechargement() {
+        let edge = symbols().symbol("edge").unwrap();
+        assert_eq!(edge.sizes, ["s"]);
+        assert_eq!(edge.size_name("s"), Some("épaisseur de métal fondu"));
+        let surfacing = symbols().symbol("surfacing").unwrap();
+        assert_eq!(surfacing.size_name("s"), Some("épaisseur du rechargement"));
+        // Les bords releves n'exigent pas de cotation (5.4.3), la soudure par
+        // transparence n'en recoit pas a l'article 5 de l'edition 2013.
+        assert!(symbols().symbol("flanged").unwrap().sizes.is_empty());
+        assert!(symbols().symbol("transparency").unwrap().sizes.is_empty());
+        // a et z restent reserves aux soudures d'angle.
+        let mut broken: serde_json::Value = serde_json::from_str(COTATION_EMBEDDED).unwrap();
+        broken["elementary"][18]["sizes"] = serde_json::json!(["a"]);
+        broken["elementary"][18]["size_names"] = serde_json::json!({});
+        let err = WeldSymbolTable::parse(SYMBOLS_EMBEDDED, &broken.to_string()).unwrap_err();
+        assert!(
+            err.to_string().contains("reserves aux soudures d'angle"),
+            "{err}"
+        );
+    }
+
+    #[test]
+    fn la_surepaisseur_a_la_racine_se_montre_aussi_sur_chant() {
+        let root = symbols()
+            .supplementary_symbol("root_reinforcement")
+            .unwrap();
+        assert!(root.shown_on(symbols().symbol("single_v").unwrap()));
+        assert!(root.shown_on(symbols().symbol("edge").unwrap()));
+        assert!(!root.shown_on(symbols().symbol("fillet").unwrap()));
+        let mut broken: serde_json::Value = serde_json::from_str(COTATION_EMBEDDED).unwrap();
+        broken["supplementary"][5]["symbols"] = serde_json::json!([99]);
+        let err = WeldSymbolTable::parse(SYMBOLS_EMBEDDED, &broken.to_string()).unwrap_err();
+        assert!(err.to_string().contains("n° 99 inconnu"), "{err}");
     }
 
     #[test]
@@ -1213,14 +1569,27 @@ mod tests {
     }
 
     #[test]
-    fn le_v_des_deux_cotes_est_un_x() {
-        assert!(symbols()
-            .symbol("single_v")
-            .unwrap()
-            .both_sides_name
-            .as_deref()
-            .unwrap()
-            .contains("en X"));
+    fn les_formes_doubles_sont_celles_du_tableau_2() {
+        let double = |id: &str| symbols().symbol(id).unwrap().both_sides_name.clone();
+        assert_eq!(
+            double("single_v").as_deref(),
+            Some("soudure bout à bout en double V")
+        );
+        assert_eq!(
+            double("single_bevel").as_deref(),
+            Some("soudure bout à bout en K")
+        );
+        assert_eq!(
+            double("single_u").as_deref(),
+            Some("soudure bout à bout en double U")
+        );
+        // La norme ne nomme pas les autres : la surcouche n'invente rien.
+        let named = symbols()
+            .elementary()
+            .iter()
+            .filter(|s| s.both_sides_name.is_some())
+            .count();
+        assert_eq!(named, 3);
     }
 
     #[test]
@@ -1282,10 +1651,62 @@ mod tests {
     fn un_niveau_plus_exigeant_ne_tolere_jamais_davantage() {
         // On inverse B et D sur la surepaisseur : B tolererait 10 mm, D 5 mm.
         let mut broken: serde_json::Value = serde_json::from_str(QUALITY_EMBEDDED).unwrap();
-        let row = &mut broken["imperfections"][7]["rows"][0];
+        let row = &mut broken["imperfections"][quality_index("502")]["rows"][0];
         let b = row["B"].clone();
         row["B"] = row["D"].clone();
         row["D"] = b;
+        let err = QualityTable::parse(&broken.to_string()).unwrap_err();
+        assert!(err.to_string().contains("tolere davantage"), "{err}");
+    }
+
+    /// La position d'une imperfection dans le fichier embarque.
+    fn quality_index(iso6520: &str) -> usize {
+        quality()
+            .imperfections()
+            .iter()
+            .position(|i| i.iso6520 == iso6520)
+            .unwrap_or_else(|| panic!("{iso6520} absent"))
+    }
+
+    #[test]
+    fn les_niveaux_de_qualite_sont_lus_dans_la_norme() {
+        let reference = quality().standard();
+        assert!(reference.verification.is_verified());
+        assert_eq!(reference.citation(), "ISO 5817:2014");
+        let line = |iso6520: &str| &quality().imperfections()[quality_index(iso6520)];
+
+        // Fissure de cratere : non autorisee, niveau D compris (Tableau 1, 1.2).
+        assert_eq!(line("104").rows[0].limit("D"), Some(&Limit::NotPermitted));
+        // Le defaut d'alignement se lit en 5071 et 5072, et non 507.
+        assert!(quality().imperfections().iter().all(|i| i.iso6520 != "507"));
+        assert_eq!(line("5072").rows[0].limit("B").unwrap().rank(), 1);
+        // Retassure a la racine, t ≤ 3 : D vaut sur toute la longueur, C
+        // seulement en defauts courts.
+        match (
+            line("515").rows[0].limit("D"),
+            line("515").rows[0].limit("C"),
+        ) {
+            (Some(Limit::Bound { short: d, .. }), Some(Limit::Bound { short: c, .. })) => {
+                assert!(!d && *c);
+            }
+            other => panic!("{other:?}"),
+        }
+        // Les noms des niveaux ne disent que leur rang : la norme ne les nomme
+        // pas.
+        assert!(quality()
+            .level("B")
+            .unwrap()
+            .meaning
+            .contains("plus élevée"));
+    }
+
+    #[test]
+    fn un_niveau_exigeant_nadmet_pas_sur_toute_la_longueur_ce_que_d_reserve_aux_defauts_courts() {
+        // Caniveau, t ≤ 3 : D et C en defauts courts. On retire la reserve a
+        // C, qui tolererait alors sur toute la longueur ce que D limite.
+        let mut broken: serde_json::Value = serde_json::from_str(QUALITY_EMBEDDED).unwrap();
+        broken["imperfections"][quality_index("5011, 5012")]["rows"][0]["C"]["short"] =
+            serde_json::json!(false);
         let err = QualityTable::parse(&broken.to_string()).unwrap_err();
         assert!(err.to_string().contains("tolere davantage"), "{err}");
     }
@@ -1299,17 +1720,57 @@ mod tests {
     }
 
     #[test]
-    fn la_norme_vise_le_soudage_par_fusion() {
+    fn la_norme_vise_les_procedes_de_son_article_1() {
         let scope = quality().process_scope();
         assert_eq!(scope.verdict("135"), ScopeVerdict::InScope);
+        assert_eq!(scope.condition("135"), None);
+        // 31 : pour l'acier uniquement.
         assert_eq!(scope.verdict("311"), ScopeVerdict::InScope);
-        assert!(matches!(scope.verdict("21"), ScopeVerdict::Excluded { .. }));
+        assert!(scope.condition("311").unwrap().contains("acier"));
         match scope.verdict("52") {
             ScopeVerdict::Excluded { reason } => assert!(reason.contains("13919")),
             other => panic!("{other:?}"),
         }
-        // Les goujons : ni vises, ni ecartes. MecaTool dit qu'il ne sait pas.
-        assert_eq!(scope.verdict("783"), ScopeVerdict::Unknown);
+        assert!(matches!(scope.verdict("91"), ScopeVerdict::Excluded { .. }));
+        // Le soudage sous laitier, les goujons, la resistance : ni cites, ni
+        // exclus. L'Annexe B laisse la porte ouverte, MecaTool aussi.
+        for number in ["72", "783", "21"] {
+            assert_eq!(scope.verdict(number), ScopeVerdict::Unknown, "{number}");
+        }
+        assert!(scope.not_listed.contains("Annexe B"));
+        // Le groupe 1 n'est vise que par ses groupes 11 a 15.
+        assert_eq!(scope.verdict("1"), ScopeVerdict::Unknown);
+        assert_eq!(scope.covered_within("1"), ["11", "12", "13", "14", "15"]);
+        assert!(scope.covered_within("135").is_empty());
+    }
+
+    #[test]
+    fn les_procedes_du_domaine_existent_dans_la_nomenclature() {
+        let scope = quality().process_scope();
+        for prefix in scope
+            .fusion
+            .iter()
+            .chain(scope.excluded.iter().map(|e| &e.prefix))
+            .chain(scope.conditions.iter().map(|c| &c.prefix))
+        {
+            assert!(processes().by_number(prefix).is_some(), "{prefix}");
+        }
+    }
+
+    #[test]
+    fn un_procede_ne_peut_etre_a_la_fois_vise_et_exclu() {
+        let mut broken: serde_json::Value = serde_json::from_str(QUALITY_EMBEDDED).unwrap();
+        broken["process_scope"]["excluded"]
+            .as_array_mut()
+            .unwrap()
+            .push(serde_json::json!({ "prefix": "1", "reason": "x" }));
+        let err = QualityTable::parse(&broken.to_string()).unwrap_err();
+        assert!(err.to_string().contains("se recouvrent"), "{err}");
+
+        let mut broken: serde_json::Value = serde_json::from_str(QUALITY_EMBEDDED).unwrap();
+        broken["process_scope"]["conditions"][0]["prefix"] = serde_json::json!("72");
+        let err = QualityTable::parse(&broken.to_string()).unwrap_err();
+        assert!(err.to_string().contains("pas un procede vise"), "{err}");
     }
 
     #[test]

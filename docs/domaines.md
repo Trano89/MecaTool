@@ -125,9 +125,9 @@ recueil, ou recommandation de fabricant.
 | Chaînes de cotes | Que donne cet empilement ? | — (géométrie) | ✅ sans source externe |
 | Tolérancement géométrique | Que dit ce cadre, que lui manque-t-il ? | ISO 1101 | ⚠️ recueil |
 | **Roulements** | **Quel alésage, quelle tolérance de portée ?** | **ISO 15, fabricants** | **✅ construit** |
-| **Soudure** | **Que dit ce symbole, que tolère son niveau de qualité ?** | **ISO 2553:2013, 4063, 5817** | **🟠 construit ; symboles ✅ vérifiés, le reste non** |
+| **Soudure** | **Que dit ce symbole, que tolère son niveau de qualité ?** | **ISO 2553:2013, ISO 4063:2009, ISO 5817:2014** | **✅ construit, données vérifiées** |
 | **Visserie** | **Quel filetage, quel trou de passage ?** | **ISO 261, 68-1, 273, 898-1** | **🟠 construit, données non vérifiées** |
-| **Matières** | **Quelle nuance, quelles propriétés, et que devient l'ajustement à chaud ?** | **EN 10027-1, EN 10025-2** | **🟠 construit, données non vérifiées** |
+| **Matières** | **Quelle nuance, quelles propriétés, et que devient l'ajustement à chaud ?** | **EN 10027-1:2005, EN 10025-2:2019** | **✅ construit, normes vérifiées ; 🟠 propriétés physiques non vérifiées** |
 | **États de surface** | **Que dit cette indication, quel procédé l'obtient ?** | **ISO 21920-1, ISO 1302:1992** | **🟠 construit, données non vérifiées** |
 
 ## Ouvrir un domaine sur des données non vérifiées
@@ -142,9 +142,10 @@ conditions, toutes tenues par le code :
 2. **Chaque fichier dit quoi faire.** Le champ `pending` nomme la source contre
    laquelle confronter le jeu, et le champ `source` dit honnêtement comment il a
    été saisi.
-3. **Le périmètre est une sélection, et le dit.** Un numéro de procédé, un
-   diamètre ou une imperfection absents ne sont pas déclarés inexistants : le
-   moteur dit qu'il ne les connaît pas.
+3. **Le périmètre est une sélection, et le dit.** Un diamètre ou une
+   imperfection absents ne sont pas déclarés inexistants : le moteur dit qu'il
+   ne les connaît pas. Seule une liste embarquée en entier, comme la
+   nomenclature ISO 4063, permet de dire qu'un numéro n'existe pas.
 
 Le jour où une source est confrontée, seul le bloc `verification` change ; le
 domaine passe de « réserve » à « prêt » sans que personne ait à y penser.

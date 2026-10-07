@@ -1,59 +1,65 @@
 {
   "dataset": "iso2553-2013.cotation",
   "standard": {
-    "id": "ISO 2553 — cotation",
-    "edition": "",
-    "title": "Soudage et techniques connexes — Représentations symboliques sur les dessins — cotation des soudures",
-    "scope": "famille de joint, cotes principales admises et forme double de chaque symbole élémentaire",
-    "source": "Surcouche saisie sans document ouvert, indexée sur les numéros du tableau 1 de l'ISO 2553:2013 lu dans la norme. Elle ne reprend ni ne modifie ce tableau : elle lui ajoute ce que sa transcription ne couvre pas.",
+    "id": "ISO 2553",
+    "edition": "2013",
+    "title": "Soudage et techniques connexes — Représentations symboliques sur les dessins — Joints soudés",
+    "scope": "cotation des symboles élémentaires : famille de joint, cotes principales admises, forme double",
+    "source": "Lu dans l'ISO 2553:2013, article 5 (5.1 à 5.12), tableaux 2, 3 et 5, définitions 3.16 à 3.21, 4.4.3 et 4.5.5. Surcouche indexée sur les numéros du tableau 1 : elle ne reprend ni ne modifie ce tableau, elle lui ajoute ce que sa transcription ne couvre pas.",
     "verification": {
-      "state": "unverified",
-      "pending": "À confronter à l'Article 5 de l'ISO 2553:2013 (cotation des soudures), présent dans l'exemplaire fourni mais non transcrit, et au tableau des symboles combinés pour les formes doubles."
+      "state": "verified",
+      "against": "ISO 2553:2013(F) : article 5 et tableau 5 (cotes de chaque type de soudure), tableau 2 (soudures bout à bout symétriques), tableau 3, figure 8, figure A.1 et tableau 4 (emploi des symboles supplémentaires), 3.16 à 3.21 (a, z, s, soudures évasées) — lus sur les pages de la norme",
+      "on": "2026-10-07"
     },
     "notes": [
-      "DEUX JEUX, DEUX ÉTATS. Les numéros, désignations, symboles supplémentaires et systèmes A et B viennent du jeu iso2553-2013.symbols, vérifié sur la norme. Cette surcouche n'ajoute que la cotation : quelle famille, quelles lettres de cote, quel nom pour la forme double. Elle ne remplace aucun mot du jeu vérifié.",
-      "Le chargement vérifie que la surcouche couvre exactement les numéros du tableau vérifié, et que la famille « bout à bout » coïncide avec les symboles que la norme déclare à pleine pénétration par défaut (1 à 7, 17 et 18). Un désaccord ferait tomber le chargement.",
-      "Les noms des formes doubles (« dite en X », « dite en K ») sont des noms d'usage, donnés entre parenthèses après la désignation de la norme.",
-      "Les soudures évasées, par points, à la molette, des goujons, sur chant, à bords relevés, par rechargement et par transparence sont rangées hors des familles bout à bout et d'angle : MecaTool ne leur applique ni les cotes a, z, s ni les limites de l'ISO 5817."
+      "DEUX JEUX, UNE MÊME NORME. Les numéros, désignations, symboles supplémentaires et systèmes A et B viennent du jeu iso2553-2013.symbols. Cette surcouche n'ajoute que la cotation : quelle famille, quelles lettres de cote, quel nom pour la forme double. Elle ne remplace aucun mot de ce jeu.",
+      "Le chargement vérifie que la surcouche couvre exactement les numéros du tableau 1, que tout symbole déclaré à pleine pénétration par défaut (1 à 7, 17 et 18, note b du tableau 1) est de la famille bout à bout, et qu'une soudure bout à bout qui ne l'est pas doit toujours être cotée (8 et 9, 5.4.4). Un désaccord fait tomber le chargement.",
+      "FAMILLES. Les soudures évasées 8 et 9 sont des soudures bout à bout (3.20, 3.21 ; tableau 5, n° 1.6 et 1.7) : elles se cotent en s et « doivent toujours être cotées » (5.4.4). Le n° 20 reste hors des familles : la norme le désigne à la fois comme soudure bout à bout à bords relevés et comme soudure en angle extérieure ; toujours à pleine pénétration, il « n'exige pas de cotation » (5.4.3). L'article 5 de l'édition 2013 ne donne aucune cote au n° 22.",
+      "UNE LETTRE, PLUSIEURS GRANDEURS. La norme emploie s pour la profondeur de pénétration d'une soudure bout à bout (5.4.1, tableau 5 n° 1), l'épaisseur de métal fondu d'une soudure sur chant (5.10, n° 7), l'épaisseur du rechargement (5.12, n° 9), la profondeur de remplissage d'un bouchon (5.6, 5.7) et l'épaisseur de gorge à pénétration profonde d'une soudure d'angle (5.5.2, n° 2.2). size_names donne le nom propre à un symbole quand il diffère de celui de la lettre.",
+      "COTES PRINCIPALES SEULEMENT : celles qui se placent à gauche du symbole (5.2). Ne sont pas embarquées la profondeur de remplissage d'un bouchon, inscrite dans le symbole (5.6, 5.7), la forme « s a » de la soudure d'angle à pénétration profonde (5.5.2), les côtés inégaux « z1 z2 » (5.5.1, n° 2.3), ni les cotes de préparation de l'article 6.",
+      "FORMES DOUBLES. Seuls les noms du tableau 2 sont repris : double V, K, double U. Les autres soudures bout à bout et la soudure d'angle peuvent être réalisées des deux côtés (4.4.3, 5.4.2, 5.5.1) sans que la norme leur donne de nom : la surcouche n'en invente pas.",
+      "SYMBOLES SUPPLÉMENTAIRES. families dit sur quelles familles la norme montre le symbole (tableau 3, figure 8, figure A.1) ou le prescrit (4.5.5) ; ce n'est pas une interdiction ailleurs. symbols ajoute des numéros hors de ces familles : en système B, la surépaisseur à la racine, associée au symbole de soudure sur chant (19), désigne la soudure bout à bout à bords relevés et la soudure en angle extérieure (tableau 3, note e ; tableau 4, n° 2 et 4).",
+      "INCOHÉRENCE DE LA NORME, signalée sans être tranchée : 5.4.1 place la profondeur de pénétration « à droite » du symbole élémentaire, alors que 5.2 et le tableau 5 (n° 1.1 et 1.2) placent les cotes de section à gauche. MecaTool ne restitue pas l'emplacement des cotes.",
+      "CHOIX DE MECATOOL, pas de la norme : les limites de l'ISO 5817 ne sont appliquées qu'aux soudures bout à bout à pleine pénétration par défaut et aux soudures d'angle — pas aux soudures évasées, ni aux soudures rangées hors des familles."
     ]
   },
   "sizes": [
-    { "letter": "a", "name": "épaisseur de gorge", "meaning": "Hauteur du plus grand triangle isocèle inscrit dans la section du cordon d'angle." },
-    { "letter": "z", "name": "longueur du côté", "meaning": "Longueur du côté du plus grand triangle isocèle inscrit dans la section du cordon d'angle." },
-    { "letter": "s", "name": "épaisseur nominale de la soudure", "meaning": "Profondeur de pénétration d'une soudure bout à bout, quand elle n'est pas complète." },
-    { "letter": "d", "name": "diamètre", "meaning": "Diamètre du point, du bouchon, du goujon ou du trou." },
-    { "letter": "c", "name": "largeur", "meaning": "Largeur de la soudure à la molette ou de l'entaille." }
+    { "letter": "a", "name": "épaisseur de gorge nominale", "meaning": "Valeur de conception de la hauteur du plus large triangle isocèle qui peut être inscrit dans la section de la soudure d'angle (3.16)." },
+    { "letter": "z", "name": "côté", "meaning": "Distance entre l'intersection réelle ou projetée des faces à souder et le raccordement d'une soudure d'angle, mesurée à travers la surface de la soudure (3.17)." },
+    { "letter": "s", "name": "profondeur de pénétration", "meaning": "Pour une soudure bout à bout, épaisseur du métal déposé à l'exclusion de toute surépaisseur (3.18). Sans cote, une soudure bout à bout est à pleine pénétration (5.4.1). Sur une soudure sur chant ou un rechargement, la même lettre désigne une épaisseur (tableau 5, n° 7 et 9)." },
+    { "letter": "d", "name": "diamètre", "meaning": "Diamètre requis au niveau de la face à souder : du bouchon (5.6) ou du point (5.8) ; diamètre du goujon (5.11)." },
+    { "letter": "c", "name": "largeur", "meaning": "Largeur requise au niveau de la face à souder : de l'entaille (5.7) ou de la soudure à la molette (5.9)." }
   ],
   "elementary": [
-    { "number": 1, "id": "square_butt", "family": "butt", "sizes": ["s"], "both_sides_name": "soudure bout à bout à bords droits des deux côtés" },
-    { "number": 2, "id": "single_v", "family": "butt", "sizes": ["s"], "both_sides_name": "soudure bout à bout en V des deux côtés (dite en X)" },
-    { "number": 3, "id": "single_y", "family": "butt", "sizes": ["s"], "both_sides_name": "soudure bout à bout en Y des deux côtés" },
-    { "number": 4, "id": "single_bevel", "family": "butt", "sizes": ["s"], "both_sides_name": "soudure bout à bout en demi V des deux côtés (dite en K)" },
-    { "number": 5, "id": "single_bevel_y", "family": "butt", "sizes": ["s"], "both_sides_name": "soudure bout à bout en demi Y des deux côtés" },
-    { "number": 6, "id": "single_u", "family": "butt", "sizes": ["s"], "both_sides_name": "soudure bout à bout en U des deux côtés" },
-    { "number": 7, "id": "single_j", "family": "butt", "sizes": ["s"], "both_sides_name": "soudure bout à bout en J des deux côtés" },
-    { "number": 8, "id": "flare_v", "family": "other", "sizes": [], "both_sides_name": null },
-    { "number": 9, "id": "flare_bevel", "family": "other", "sizes": [], "both_sides_name": null },
-    { "number": 10, "id": "fillet", "family": "fillet", "sizes": ["a", "z"], "both_sides_name": "soudure d'angle des deux côtés" },
+    { "number": 1, "id": "square_butt", "family": "butt", "sizes": ["s"], "both_sides_name": null },
+    { "number": 2, "id": "single_v", "family": "butt", "sizes": ["s"], "both_sides_name": "soudure bout à bout en double V" },
+    { "number": 3, "id": "single_y", "family": "butt", "sizes": ["s"], "both_sides_name": null },
+    { "number": 4, "id": "single_bevel", "family": "butt", "sizes": ["s"], "both_sides_name": "soudure bout à bout en K" },
+    { "number": 5, "id": "single_bevel_y", "family": "butt", "sizes": ["s"], "both_sides_name": null },
+    { "number": 6, "id": "single_u", "family": "butt", "sizes": ["s"], "both_sides_name": "soudure bout à bout en double U" },
+    { "number": 7, "id": "single_j", "family": "butt", "sizes": ["s"], "both_sides_name": null },
+    { "number": 8, "id": "flare_v", "family": "butt", "sizes": ["s"], "size_required": true, "both_sides_name": null },
+    { "number": 9, "id": "flare_bevel", "family": "butt", "sizes": ["s"], "size_required": true, "both_sides_name": null },
+    { "number": 10, "id": "fillet", "family": "fillet", "sizes": ["a", "z"], "both_sides_name": null },
     { "number": 11, "id": "plug", "family": "other", "sizes": ["d", "c"], "both_sides_name": null },
     { "number": 12, "id": "resistance_spot", "family": "other", "sizes": ["d"], "both_sides_name": null },
     { "number": 13, "id": "fusion_spot", "family": "other", "sizes": ["d"], "both_sides_name": null },
     { "number": 14, "id": "resistance_seam", "family": "other", "sizes": ["c"], "both_sides_name": null },
     { "number": 15, "id": "fusion_seam", "family": "other", "sizes": ["c"], "both_sides_name": null },
     { "number": 16, "id": "stud", "family": "other", "sizes": ["d"], "both_sides_name": null },
-    { "number": 17, "id": "steep_v", "family": "butt", "sizes": ["s"], "both_sides_name": "soudure bout à bout en V à flancs droits des deux côtés" },
-    { "number": 18, "id": "steep_bevel", "family": "butt", "sizes": ["s"], "both_sides_name": "soudure bout à bout en demi V à flancs droits des deux côtés" },
-    { "number": 19, "id": "edge", "family": "other", "sizes": [], "both_sides_name": null },
+    { "number": 17, "id": "steep_v", "family": "butt", "sizes": ["s"], "both_sides_name": null },
+    { "number": 18, "id": "steep_bevel", "family": "butt", "sizes": ["s"], "both_sides_name": null },
+    { "number": 19, "id": "edge", "family": "other", "sizes": ["s"], "size_names": { "s": "épaisseur de métal fondu" }, "both_sides_name": null },
     { "number": 20, "id": "flanged", "family": "other", "sizes": [], "both_sides_name": null },
-    { "number": 21, "id": "surfacing", "family": "other", "sizes": [], "both_sides_name": null },
+    { "number": 21, "id": "surfacing", "family": "other", "sizes": ["s"], "size_names": { "s": "épaisseur du rechargement" }, "both_sides_name": null },
     { "number": 22, "id": "transparency", "family": "other", "sizes": [], "both_sides_name": null }
   ],
   "supplementary": [
-    { "number": 1, "id": "flush", "families": ["butt", "fillet"] },
-    { "number": 2, "id": "convex", "families": ["butt", "fillet"] },
+    { "number": 1, "id": "flush", "families": ["butt"] },
+    { "number": 2, "id": "convex", "families": ["butt"] },
     { "number": 3, "id": "concave", "families": ["fillet"] },
-    { "number": 4, "id": "toes_blended", "families": ["butt", "fillet"] },
+    { "number": 4, "id": "toes_blended", "families": ["fillet"] },
     { "number": 5, "id": "root_run", "families": ["butt"] },
-    { "number": 6, "id": "root_reinforcement", "families": ["butt"] }
+    { "number": 6, "id": "root_reinforcement", "families": ["butt"], "symbols": [19] }
   ]
 }

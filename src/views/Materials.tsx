@@ -182,8 +182,18 @@ function Reading({
                   <span className="faint"> (à partir de 3 mm)</span>
                 ) : null}
               </dd>
-              <dt>Qualités embarquées</dt>
-              <dd>{structural.qualities.join(", ")}</dd>
+              <dt>Qualités</dt>
+              <dd>
+                {structural.qualities.length > 0
+                  ? structural.qualities.join(", ")
+                  : "aucune : la norme n'en donne pas pour cette nuance"}
+              </dd>
+              {structural.restriction ? (
+                <>
+                  <dt>Emploi</dt>
+                  <dd>{structural.restriction}</dd>
+                </>
+              ) : null}
             </dl>
           ) : null}
         </section>
@@ -347,7 +357,8 @@ export function Materials() {
   const grades = useMemo<Choice[]>(
     () =>
       (catalogue?.structural_grades ?? []).flatMap((grade) =>
-        grade.qualities.map((quality) => ({
+        // Une nuance sans qualité (S185) se désigne par son seul nom.
+        (grade.qualities.length > 0 ? grade.qualities : [""]).map((quality) => ({
           value: `${grade.grade}${quality}`,
           label: `${grade.grade}${quality}`,
         })),

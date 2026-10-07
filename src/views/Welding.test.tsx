@@ -48,11 +48,11 @@ describe("écran de la soudure", () => {
     vi.clearAllMocks();
   });
 
-  it("montre l'origine des données avant toute saisie", async () => {
+  it("n'affiche aucune réserve : toutes ses sources sont lues dans les normes", async () => {
     await show();
-    const notes = await screen.findAllByRole("note");
-    expect(notes).toHaveLength(catalogue.warnings.length);
-    expect(notes.map((n) => n.textContent ?? "").join(" ")).toMatch(/non vérifiée/);
+    await screen.findByLabelText("Symbole élémentaire");
+    expect(catalogue.warnings).toHaveLength(0);
+    expect(screen.queryAllByRole("note")).toHaveLength(0);
   });
 
   it("propose les symboles du catalogue, et eux seuls", async () => {

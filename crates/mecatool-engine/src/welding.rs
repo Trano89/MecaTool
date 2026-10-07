@@ -30,7 +30,7 @@
 use mecatool_core::{Conclusion, Length, Provenance, ReasoningStep, Unit, Verdict};
 use mecatool_standards::soudure::{
     ElementarySymbol, Imperfection, JointFamily, Limit, QualityLevel, QualityTable, ScopeVerdict,
-    SupplementarySymbol, WeldSymbolTable, WeldingProcess, WeldingProcessTable,
+    SupplementarySymbol, VariantLetter, WeldSymbolTable, WeldingProcess, WeldingProcessTable,
 };
 use mecatool_standards::Basis;
 use serde::{Deserialize, Serialize};
@@ -124,10 +124,48 @@ pub struct IntermittentReading {
     pub notation: String,
 }
 
+/// Une variante de procede (ISO 4063, 2.2) : mode de transfert, nombre
+/// d'electrodes, element additionnel.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ProcessVariant {
+    pub transfer: Option<VariantLetter>,
+    /// Le nombre d'electrodes, quand il y en a plus d'une.
+    pub electrodes: Option<u32>,
+    pub additional: Option<VariantLetter>,
+}
+
+impl ProcessVariant {
+    fn is_empty(&self) -> bool {
+        self.transfer.is_none() && self.electrodes.is_none() && self.additional.is_none()
+    }
+
+    /// Les suffixes, dans l'ordre ou ils ont ete lus : `-D-2`.
+    fn suffix(&self, order: &[char]) -> String {
+        order
+            .iter()
+            .filter_map(|kind| match kind {
+                'T' => self.transfer.as_ref().map(|v| v.letter.clone()),
+                'E' => self.electrodes.map(|n| n.to_string()),
+                'A' => self.additional.as_ref().map(|v| v.letter.clone()),
+                _ => None,
+            })
+            .map(|part| format!("-{part}"))
+            .collect()
+    }
+}
+
 /// Un procede, et sa place dans la nomenclature.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ProcessReading {
     pub process: WeldingProcess,
+    /// Le numero avec ses variantes : `131-D`.
+    pub code: String,
+    /// La designation complete selon 2.1 : `ISO 4063 - 131-D`.
+    pub designation: String,
+    pub variant: ProcessVariant,
+    /// Pour un procede hybride (2.3), la designation entiere : `522+15`.
+    /// Chaque procede du melange a alors sa propre lecture.
+    pub hybrid: Option<String>,
     /// Du groupe au procede lui-meme.
     pub lineage: Vec<WeldingProcess>,
     /// Vrai quand le numero designe un groupe dont MecaTool connait des
@@ -265,42 +303,167 @@ impl WeldingEngine {
             ));
         }
 
-        if cleaned.chars().all(|c| c.is_ascii_digit()) {
-            if let Some(process) = self.processes.by_number(cleaned) {
-                return Ok(vec![self.process_reading(process)]);
+        // Un procede hybride s'ecrit numero + numero (2.3) : chaque procede du
+        // melange se lit pour lui-meme.
+        if cleaned.contains('+') {
+            let parts: Vec<&str> = cleaned.split('+').map(str::trim).collect();
+            if parts.len() < 2 || parts.iter().any(|p| p.is_empty()) {
+                return Err(unparsable(
+                    "Un procédé hybride s'écrit avec deux numéros séparés par « + », par \
+                     exemple « 522+15 »."
+                        .into(),
+                ));
             }
-            // Le numero n'est pas embarque. On dit ce qu'on sait de son
-            // ascendance, sans affirmer qu'il n'existe pas.
-            let known = (1..cleaned.len())
-                .rev()
-                .find_map(|end| self.processes.by_number(&cleaned[..end]));
-            let hint = match known {
-                Some(parent) => format!(
-                    "MecaTool ne connaît pas le numéro {cleaned}. Il relèverait de {} — {}. \
-                     La sélection embarquée n'est pas la nomenclature complète : ce numéro \
-                     peut exister.",
-                    parent.number, parent.name
-                ),
-                None => format!(
-                    "MecaTool ne connaît pas le numéro {cleaned}, ni aucun groupe dont il \
-                     relèverait."
-                ),
-            };
-            return Err(unparsable(hint));
+            let mut readings = Vec::new();
+            for part in &parts {
+                if !part.starts_with(|c: char| c.is_ascii_digit()) {
+                    return Err(unparsable(format!(
+                        "« {part} » : un procédé hybride se désigne par les numéros de ses \
+                         procédés, pas par un nom d'atelier."
+                    )));
+                }
+                readings.push(self.read_number(input, part)?);
+            }
+            let whole = readings
+                .iter()
+                .map(|r| r.code.as_str())
+                .collect::<Vec<_>>()
+                .join("+");
+            for reading in &mut readings {
+                reading.hybrid = Some(whole.clone());
+                reading.designation = format!("ISO 4063 - {whole}");
+                reading.explanation = format!(
+                    "Procédé hybride {whole} (ISO 4063, 2.3) : {}",
+                    reading.explanation
+                );
+            }
+            return Ok(readings);
+        }
+
+        if cleaned.starts_with(|c: char| c.is_ascii_digit()) {
+            return Ok(vec![self.read_number(input, cleaned)?]);
         }
 
         let found = self.processes.by_alias(cleaned);
         if found.is_empty() {
             return Err(unparsable(
                 "Ni un numéro de procédé, ni un nom d'atelier connu. Essayez « 135 », « MAG », \
-                 « TIG » ou « électrode enrobée »."
+                 « TIG », « SMAW » ou « électrode enrobée »."
                     .into(),
             ));
         }
-        Ok(found.into_iter().map(|p| self.process_reading(p)).collect())
+        Ok(found
+            .into_iter()
+            .map(|p| self.process_reading(p, ProcessVariant::default(), &[]))
+            .collect())
     }
 
-    fn process_reading(&self, process: &WeldingProcess) -> ProcessReading {
+    /// Un numero, suivi ou non de ses variantes : `131`, `131-D`, `131-2`,
+    /// `121-C`.
+    fn read_number(&self, input: &str, text: &str) -> Result<ProcessReading> {
+        let unparsable = |hint: String| EngineError::Unparsable {
+            input: input.to_string(),
+            hint,
+        };
+        let mut pieces = text.split('-').map(str::trim);
+        let number = pieces.next().unwrap_or_default();
+        if number.is_empty() || !number.chars().all(|c| c.is_ascii_digit()) {
+            return Err(unparsable(format!(
+                "« {text} » ne commence pas par un numéro de procédé."
+            )));
+        }
+        let Some(process) = self.processes.by_number(number) else {
+            return Err(unparsable(self.unknown_number(number)));
+        };
+
+        let mut variant = ProcessVariant::default();
+        let mut order = Vec::new();
+        for piece in pieces {
+            let upper = piece.to_uppercase();
+            if !upper.is_empty() && upper.chars().all(|c| c.is_ascii_digit()) {
+                let count: u32 = upper.parse().unwrap_or(0);
+                if count < 2 || variant.electrodes.is_some() {
+                    return Err(unparsable(format!(
+                        "« {piece} » : le nombre d'électrodes ne s'indique que s'il y en a \
+                         plus d'une, et une seule fois (2.2.3)."
+                    )));
+                }
+                variant.electrodes = Some(count);
+                order.push('E');
+            } else if let Some(mode) = self
+                .processes
+                .transfer_modes()
+                .iter()
+                .find(|m| m.letter == upper)
+            {
+                if variant.transfer.is_some() {
+                    return Err(unparsable(
+                        "Un seul mode de transfert par désignation (2.2.2).".into(),
+                    ));
+                }
+                variant.transfer = Some(mode.clone());
+                order.push('T');
+            } else if let Some(item) = self
+                .processes
+                .additional_items()
+                .iter()
+                .find(|m| m.letter == upper)
+            {
+                if variant.additional.is_some() {
+                    return Err(unparsable(
+                        "Un seul élément additionnel par désignation (2.2.4).".into(),
+                    ));
+                }
+                variant.additional = Some(item.clone());
+                order.push('A');
+            } else {
+                let letters = |list: &[VariantLetter]| {
+                    list.iter()
+                        .map(|v| format!("{} ({})", v.letter, v.name))
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                };
+                return Err(unparsable(format!(
+                    "« {piece} » n'est pas une variante de l'ISO 4063. Modes de transfert : \
+                     {}. Éléments additionnels : {}. Nombre d'électrodes : un nombre, à partir \
+                     de 2.",
+                    letters(self.processes.transfer_modes()),
+                    letters(self.processes.additional_items())
+                )));
+            }
+        }
+        Ok(self.process_reading(process, variant, &order))
+    }
+
+    /// Ce qu'on dit d'un numero que la liste principale ne porte pas.
+    fn unknown_number(&self, number: &str) -> String {
+        if let Some(replaced) = self.processes.replaced(number) {
+            return format!(
+                "{number} — {} n'est plus en usage : l'ISO 4063:2009 le range parmi les \
+                 procédés remplacés ou dépassés (Annexe A). Il peut encore se lire dans des \
+                 documents anciens.",
+                replaced.name
+            );
+        }
+        let known = (1..number.len())
+            .rev()
+            .find_map(|end| self.processes.by_number(&number[..end]));
+        match known {
+            Some(parent) => format!(
+                "Le numéro {number} n'existe pas dans l'ISO 4063:2009. Le groupe le plus proche \
+                 est {} — {}.",
+                parent.number, parent.name
+            ),
+            None => format!("Le numéro {number} n'existe pas dans l'ISO 4063:2009."),
+        }
+    }
+
+    fn process_reading(
+        &self,
+        process: &WeldingProcess,
+        variant: ProcessVariant,
+        order: &[char],
+    ) -> ProcessReading {
         let lineage: Vec<WeldingProcess> = self
             .processes
             .lineage(&process.number)
@@ -320,9 +483,9 @@ impl WeldingEngine {
             .skip(1)
             .map(|p| format!("{} ({})", p.number, p.name))
             .collect::<Vec<_>>();
-        let explanation = if ancestry.is_empty() {
+        let mut explanation = if ancestry.is_empty() {
             format!(
-                "{} — {} : un groupe de la nomenclature.",
+                "{} — {} : un groupe principal de la nomenclature.",
                 process.number, process.name
             )
         } else {
@@ -333,8 +496,33 @@ impl WeldingEngine {
                 ancestry.join(", puis de ")
             )
         };
+        let mut details = Vec::new();
+        if let Some(mode) = &variant.transfer {
+            details.push(format!("mode de transfert {} : {}", mode.letter, mode.name));
+        }
+        if let Some(count) = variant.electrodes {
+            details.push(format!("{count} électrodes"));
+        }
+        if let Some(item) = &variant.additional {
+            details.push(format!(
+                "élément additionnel {} : {}",
+                item.letter, item.name
+            ));
+        }
+        if !details.is_empty() {
+            explanation.push_str(&format!(" Variante : {}.", details.join(", ")));
+        }
+        let code = format!("{}{}", process.number, variant.suffix(order));
         ProcessReading {
             process: process.clone(),
+            designation: format!("ISO 4063 - {code}"),
+            code,
+            variant: if variant.is_empty() {
+                ProcessVariant::default()
+            } else {
+                variant
+            },
+            hybrid: None,
             lineage,
             is_group,
             children,
@@ -376,13 +564,19 @@ impl WeldingEngine {
             capitalise(&shape),
             request.side.label_fr()
         ));
-        if request.side == Side::Both && symbol.both_sides_name.is_none() {
+        // Les soudures bout a bout et d'angle se font des deux cotes (4.4.3,
+        // 5.4.2, 5.5.1), meme quand la norme ne nomme pas la forme double. Pour
+        // les autres, elle ne decrit rien de tel.
+        if request.side == Side::Both
+            && symbol.both_sides_name.is_none()
+            && symbol.family == JointFamily::Other
+        {
             findings.push(Finding::new(
                 "no_double_form",
                 Severity::Caution,
                 format!(
-                    "La source embarquée ne décrit pas de forme double pour la {}. Vérifiez \
-                     que le symbole doit bien figurer des deux côtés.",
+                    "L'ISO 2553 ne décrit pas de forme double pour la {}. Vérifiez que le \
+                     symbole doit bien figurer des deux côtés.",
                     symbol.name
                 ),
             ));
@@ -393,7 +587,13 @@ impl WeldingEngine {
         let equivalent = size
             .as_ref()
             .and_then(fillet_equivalent)
-            .filter(|_| symbol.family == JointFamily::Fillet);
+            .filter(|_| symbol.family == JointFamily::Fillet)
+            .map(|mut equivalent| {
+                if let Some(definition) = self.symbols.size(&equivalent.letter) {
+                    equivalent.name = definition.name.clone();
+                }
+                equivalent
+            });
         match (&size, symbol.family) {
             (Some(size), _) => {
                 let mut sentence = format!("{} {}.", capitalise(&size.name), size.label);
@@ -407,6 +607,26 @@ impl WeldingEngine {
                     );
                 }
                 sentences.push(sentence);
+                // Des deux cotes, chaque cote porte sa cote (5.4.2), meme
+                // identique pour une soudure d'angle (5.5.1).
+                if request.side == Side::Both && symbol.family != JointFamily::Other {
+                    findings.push(Finding::new(
+                        "both_sides_sizes",
+                        Severity::Note,
+                        match symbol.family {
+                            JointFamily::Fillet => {
+                                "Des deux côtés, la cote de chaque soudure d'angle doit être \
+                                 inscrite, même identique (ISO 2553:2013, 5.5.1). MecaTool lit \
+                                 la même cote pour les deux."
+                            }
+                            _ => {
+                                "Des deux côtés, les cotes de chaque côté s'indiquent \
+                                 séparément (ISO 2553:2013, 5.4.2). MecaTool lit la même cote \
+                                 pour les deux."
+                            }
+                        },
+                    ));
+                }
             }
             (None, _) if symbol.full_penetration => {
                 sentences.push("Sans cote : pénétration complète.".into());
@@ -416,6 +636,21 @@ impl WeldingEngine {
                     format!("Aucune cote s. {}", self.symbols.full_penetration_rule()),
                 ));
             }
+            (None, _) if symbol.size_required => findings.push(Finding::new(
+                "size_required",
+                Severity::Error,
+                format!(
+                    "La {} doit toujours être cotée (ISO 2553:2013, 5.4.4) : sans {}, rien ne \
+                     dit la pénétration voulue.",
+                    symbol.name,
+                    symbol
+                        .sizes
+                        .iter()
+                        .map(|letter| format!("cote {letter}"))
+                        .collect::<Vec<_>>()
+                        .join(" ni ")
+                ),
+            )),
             (None, JointFamily::Fillet) => findings.push(Finding::new(
                 "fillet_without_size",
                 Severity::Caution,
@@ -474,10 +709,25 @@ impl WeldingEngine {
         }
 
         // Le procede.
+        let mut hybrid_parts: Vec<ProcessReading> = Vec::new();
         let process = match present(&request.process) {
             Some(text) => {
                 let mut readings = self.read_process(text)?;
-                if readings.len() > 1 {
+                let hybrid = readings[0].hybrid.clone();
+                if let Some(whole) = &hybrid {
+                    // Chaque procede du melange doit etre vise par le niveau de
+                    // qualite : les suivants sont gardes pour le controle du
+                    // domaine, plus bas.
+                    sentences.push(format!(
+                        "Procédé hybride {whole} : {}.",
+                        readings
+                            .iter()
+                            .map(|r| format!("{} ({})", r.process.number, r.process.name))
+                            .collect::<Vec<_>>()
+                            .join(" + ")
+                    ));
+                    hybrid_parts = readings[1..].to_vec();
+                } else if readings.len() > 1 {
                     findings.push(Finding::new(
                         "ambiguous_process",
                         Severity::Caution,
@@ -511,10 +761,12 @@ impl WeldingEngine {
                         ),
                     ));
                 }
-                sentences.push(format!(
-                    "Procédé {} : {}.",
-                    reading.process.number, reading.process.name
-                ));
+                if hybrid.is_none() {
+                    sentences.push(format!(
+                        "Procédé {} : {}.",
+                        reading.code, reading.process.name
+                    ));
+                }
                 Some(reading)
             }
             None => None,
@@ -525,7 +777,8 @@ impl WeldingEngine {
             Some(level) => {
                 let thickness = parse_mm(&request.thickness_mm, "Épaisseur t")?;
                 let width = parse_mm(&request.width_mm, "Largeur b")?;
-                if let Some(process) = &process {
+                // Un procede hybride : chaque procede du melange doit etre vise.
+                for process in process.iter().chain(&hybrid_parts) {
                     match &process.quality_scope {
                         ScopeVerdict::Excluded { reason } => findings.push(Finding::new(
                             "quality_scope_excluded",
@@ -536,25 +789,60 @@ impl WeldingEngine {
                                 process.process.number
                             ),
                         )),
-                        ScopeVerdict::Unknown => findings.push(Finding::new(
-                            "quality_scope_unknown",
-                            Severity::Caution,
-                            format!(
-                                "MecaTool ne sait pas si l'ISO 5817 vise le procédé {} : ni \
-                                 soudage par fusion reconnu, ni procédé écarté dans ses données.",
-                                process.process.number
-                            ),
-                        )),
-                        ScopeVerdict::InScope => {}
+                        ScopeVerdict::Unknown => {
+                            let scope = self.quality.process_scope();
+                            let covered = scope.covered_within(&process.process.number);
+                            let message = if covered.is_empty() {
+                                format!(
+                                    "Niveau de qualité ISO 5817 et procédé {} : {}.",
+                                    process.process.number, scope.not_listed
+                                )
+                            } else {
+                                format!(
+                                    "Le groupe {} n'est visé par l'ISO 5817 que par ses \
+                                     procédés {} (article 1 g). Précisez le procédé.",
+                                    process.process.number,
+                                    covered.join(", ")
+                                )
+                            };
+                            findings.push(Finding::new(
+                                "quality_scope_unknown",
+                                Severity::Caution,
+                                message,
+                            ))
+                        }
+                        ScopeVerdict::InScope => {
+                            if let Some(condition) = self
+                                .quality
+                                .process_scope()
+                                .condition(&process.process.number)
+                            {
+                                findings.push(Finding::new(
+                                    "quality_scope_condition",
+                                    Severity::Caution,
+                                    format!(
+                                        "Niveau de qualité ISO 5817 et procédé {} : {condition}.",
+                                        process.process.number
+                                    ),
+                                ));
+                            }
+                        }
                     }
                 }
-                if symbol.family == JointFamily::Other {
+                // Choix de MecaTool, pas de l'ISO 2553 : les soudures evasees,
+                // bout a bout mais jamais a pleine penetration par defaut,
+                // restent hors des limites embarquees, comme les soudures
+                // rangees hors des deux familles.
+                if symbol.family == JointFamily::Other
+                    || (symbol.family == JointFamily::Butt && !symbol.full_penetration)
+                {
                     findings.push(Finding::new(
                         "quality_not_applicable",
                         Severity::Error,
                         format!(
-                            "Les limites embarquées portent sur les soudures bout à bout et \
-                             d'angle. MecaTool ne les applique pas à une {}.",
+                            "MecaTool n'applique les limites embarquées qu'aux soudures bout à \
+                             bout à pleine pénétration par défaut et aux soudures d'angle, pas \
+                             à une {}.",
                             symbol.name
                         ),
                     ));
@@ -689,8 +977,9 @@ impl WeldingEngine {
             width,
             limits,
             notes: vec![format!(
-                "Sélection de {} lignes du tableau des limites : défauts de surface et de \
-                 géométrie du joint. Les défauts internes ne sont pas embarqués — une \
+                "Sélection de {} lignes du Tableau 1 de l'ISO 5817:2014 : défauts superficiels \
+                 et défauts géométriques. Les défauts internes, les défauts multiples, les \
+                 projections et la coloration du revenu ne sont pas embarqués — une \
                  imperfection absente n'est pas une imperfection admise.",
                 self.quality.imperfections().len()
             )],
@@ -797,9 +1086,14 @@ impl WeldingEngine {
                 ),
             ));
         }
+        // Une meme lettre peut nommer une autre grandeur selon le symbole : s
+        // est l'epaisseur du rechargement sur une soudure de rechargement.
+        let name = symbol
+            .size_name(&letter)
+            .map_or_else(|| definition.name.clone(), str::to_string);
         Ok(Some(SizeReading {
             letter: letter.clone(),
-            name: definition.name.clone(),
+            name,
             value,
             label: format!("{letter} = {} mm", format::mm_trimmed(value)),
             rounded: false,
@@ -893,13 +1187,13 @@ impl WeldingEngine {
                             .join(", ")
                     ),
                 })?;
-            if !extra.families.contains(&symbol.family) {
+            if !extra.shown_on(symbol) {
                 findings.push(Finding::new(
                     "supplementary_unusual",
                     Severity::Caution,
                     format!(
-                        "Le symbole « {} » ne se rencontre pas, dans la source embarquée, sur une \
-                         {}.",
+                        "L'ISO 2553 ne montre le symbole « {} » sur aucune {}. Ce n'est pas une \
+                         interdiction : vérifiez qu'il s'applique.",
                         extra.name, symbol.name
                     ),
                 ));
@@ -950,7 +1244,9 @@ impl WeldingEngine {
             )),
             None => parts.push(shape),
         }
-        if side != Side::Both {
+        // Le nom de la forme double dit deja les deux cotes ; sans nom, on le
+        // precise.
+        if side != Side::Both || symbol.both_sides_name.is_none() {
             parts.push(side.label_fr().to_string());
         }
         if let Some(intermittent) = intermittent {
@@ -958,7 +1254,12 @@ impl WeldingEngine {
         }
         let mut tail = Vec::new();
         if let Some(process) = process {
-            tail.push(process.process.number.clone());
+            tail.push(
+                process
+                    .hybrid
+                    .clone()
+                    .unwrap_or_else(|| process.code.clone()),
+            );
         }
         if let Some(quality) = quality {
             tail.push(format!("ISO 5817-{}", quality.level.id));
@@ -979,10 +1280,13 @@ impl WeldingEngine {
         let mut steps = vec![
             ReasoningStep::new("Symbole élémentaire")
                 .with_expression(format!("n° {} — {}", symbol.number, symbol.name))
-                .with_value(match symbol.family {
-                    JointFamily::Butt => "soudure bout à bout : se cote en s",
-                    JointFamily::Fillet => "soudure d'angle : se cote en a ou en z",
-                    JointFamily::Other => "ni bout à bout, ni d'angle",
+                .with_value(match (symbol.family, symbol.size_required) {
+                    (JointFamily::Butt, true) => {
+                        "soudure bout à bout : se cote en s, et doit toujours l'être (5.4.4)"
+                    }
+                    (JointFamily::Butt, false) => "soudure bout à bout : se cote en s",
+                    (JointFamily::Fillet, _) => "soudure d'angle : se cote en a ou en z",
+                    (JointFamily::Other, _) => "ni bout à bout, ni d'angle",
                 }),
             ReasoningStep::new("Côté")
                 .with_expression(side.label_fr())
@@ -1362,11 +1666,45 @@ mod tests {
     }
 
     #[test]
+    fn chaque_procede_dun_hybride_passe_le_domaine_de_liso_5817() {
+        // 135 est vise, 72 ne l'est pas : le second ne doit pas passer
+        // inapercu derriere le premier.
+        let request = WeldRequest {
+            process: Some("135+72".into()),
+            level: Some("C".into()),
+            thickness_mm: Some("10".into()),
+            ..fillet_a5()
+        };
+        let reading = engine().read_weld(&request).unwrap();
+        assert!(
+            reading
+                .findings
+                .iter()
+                .any(|f| f.code == "quality_scope_unknown" && f.message.contains("72")),
+            "{:?}",
+            reading.findings
+        );
+        assert!(
+            reading.designation.contains("135+72"),
+            "{}",
+            reading.designation
+        );
+    }
+
+    #[test]
     fn lit_un_numero_et_sa_hierarchie() {
         let readings = engine().read_process("135").unwrap();
         assert_eq!(readings.len(), 1);
         let reading = &readings[0];
-        assert_eq!(reading.process.name, "soudage MAG avec fil-électrode plein");
+        assert!(
+            reading
+                .process
+                .name
+                .starts_with("soudage MAG avec fil-électrode fusible"),
+            "{}",
+            reading.process.name
+        );
+        assert_eq!(reading.designation, "ISO 4063 - 135");
         assert_eq!(reading.lineage.len(), 3);
         assert!(!reading.is_group);
         assert!(reading.explanation.contains("13 ("));
@@ -1389,11 +1727,65 @@ mod tests {
     }
 
     #[test]
-    fn un_numero_absent_nest_pas_dit_inexistant() {
+    fn un_numero_remplace_renvoie_a_lannexe_a() {
+        // 137 etait le MIG avec fil fourre : l'edition 2009 l'a remplace.
         let err = engine().read_process("137").unwrap_err().to_string();
-        assert!(err.contains("ne connaît pas le numéro 137"), "{err}");
-        assert!(err.contains("peut exister"), "{err}");
+        assert!(err.contains("Annexe A"), "{err}");
+        assert!(err.contains("documents anciens"), "{err}");
+    }
+
+    #[test]
+    fn un_numero_hors_norme_est_dit_inexistant() {
+        // La nomenclature est complete : l'absence vaut inexistence.
+        let err = engine().read_process("139").unwrap_err().to_string();
+        assert!(err.contains("n'existe pas dans l'ISO 4063:2009"), "{err}");
         assert!(err.contains("13 —"), "{err}");
+    }
+
+    #[test]
+    fn lit_les_variantes_de_procede() {
+        // Les trois exemples de l'article 2.2.
+        let short = &engine().read_process("ISO 4063 - 131-D").unwrap()[0];
+        assert_eq!(short.code, "131-D");
+        assert_eq!(short.designation, "ISO 4063 - 131-D");
+        assert_eq!(
+            short.variant.transfer.as_ref().unwrap().name,
+            "transfert par court-circuit"
+        );
+        let two = &engine().read_process("131-2").unwrap()[0];
+        assert_eq!(two.variant.electrodes, Some(2));
+        let cold = &engine().read_process("121-c").unwrap()[0];
+        assert_eq!(cold.code, "121-C");
+        assert_eq!(cold.variant.additional.as_ref().unwrap().name, "fil froid");
+        assert!(cold.explanation.contains("fil froid"));
+    }
+
+    #[test]
+    fn une_variante_inconnue_dit_lesquelles_existent() {
+        let err = engine().read_process("131-X").unwrap_err().to_string();
+        assert!(err.contains("D (transfert par court-circuit)"), "{err}");
+        let err = engine().read_process("131-D-S").unwrap_err().to_string();
+        assert!(err.contains("Un seul mode de transfert"), "{err}");
+        let err = engine().read_process("131-1").unwrap_err().to_string();
+        assert!(err.contains("plus d'une"), "{err}");
+    }
+
+    #[test]
+    fn lit_un_procede_hybride() {
+        // L'exemple de l'article 2.3 : laser et plasma ensemble.
+        let readings = engine().read_process("522+15").unwrap();
+        let numbers: Vec<&str> = readings.iter().map(|r| r.process.number.as_str()).collect();
+        assert_eq!(numbers, ["522", "15"]);
+        assert!(readings
+            .iter()
+            .all(|r| r.hybrid.as_deref() == Some("522+15")));
+        assert_eq!(readings[0].designation, "ISO 4063 - 522+15");
+    }
+
+    #[test]
+    fn une_designation_us_se_lit() {
+        let readings = engine().read_process("GTAW").unwrap();
+        assert_eq!(readings[0].process.number, "14");
     }
 
     #[test]
@@ -1451,8 +1843,10 @@ mod tests {
             .findings
             .iter()
             .any(|f| f.code == "full_penetration"));
-        // Et un V des deux cotes se nomme X.
-        assert!(reading.designation.contains("dite en X"));
+        // Et un V des deux cotes se nomme double V (tableau 2).
+        assert!(reading
+            .designation
+            .contains("soudure bout à bout en double V"));
         // La regle vient de la norme, mot pour mot.
         let finding = reading
             .findings
@@ -1670,6 +2064,54 @@ mod tests {
     }
 
     #[test]
+    fn le_soudage_oxygaz_nest_vise_que_pour_lacier() {
+        let request = WeldRequest {
+            process: Some("311".into()),
+            level: Some("C".into()),
+            ..fillet_a5()
+        };
+        let reading = engine().read_weld(&request).unwrap();
+        assert_eq!(reading.conclusion.verdict, Verdict::Caution);
+        let finding = reading
+            .findings
+            .iter()
+            .find(|f| f.code == "quality_scope_condition")
+            .expect("la reserve de l'article 1 g) doit etre dite");
+        assert!(finding.message.contains("acier"), "{}", finding.message);
+        assert!(reading.quality.is_some());
+    }
+
+    #[test]
+    fn un_procede_non_cite_nest_ni_vise_ni_exclu() {
+        // Le soudage sous laitier n'est pas dans l'article 1 g) ; l'Annexe B
+        // admet d'autres procedes de soudage par fusion, le cas echeant.
+        let request = WeldRequest {
+            process: Some("72".into()),
+            level: Some("C".into()),
+            ..fillet_a5()
+        };
+        let reading = engine().read_weld(&request).unwrap();
+        assert_eq!(reading.conclusion.verdict, Verdict::Caution);
+        let finding = reading
+            .findings
+            .iter()
+            .find(|f| f.code == "quality_scope_unknown")
+            .unwrap();
+        assert!(finding.message.contains("Annexe B"), "{}", finding.message);
+    }
+
+    #[test]
+    fn la_fissure_de_cratere_nest_admise_a_aucun_niveau() {
+        // Tableau 1, 1.2 : non autorisee en D comme en C et B.
+        for level in ["B", "C", "D"] {
+            let quality = engine()
+                .assess_quality(level, JointFamily::Butt, Some(mm("10")), None, None)
+                .unwrap();
+            assert_eq!(limit(&quality, "104").status, LimitStatus::NotPermitted);
+        }
+    }
+
+    #[test]
     fn la_penetration_ne_depasse_pas_la_piece() {
         let request = WeldRequest {
             symbol: "single_v".into(),
@@ -1730,12 +2172,17 @@ mod tests {
 
     #[test]
     fn la_reserve_suit_chaque_lecture() {
-        // Quatre sources, dont une verifiee : le tableau des symboles. Les trois
-        // autres portent leur reserve.
+        // Quatre sources : chacune qui n'est pas verifiee porte sa reserve,
+        // et seulement celles-la.
         let reading = engine().read_weld(&fillet_a5()).unwrap();
         assert_eq!(reading.provenance.references.len(), 4);
-        assert_eq!(reading.conclusion.warnings.len(), 3);
-        assert!(!reading.provenance.is_fully_verified());
+        let unverified = reading
+            .provenance
+            .references
+            .iter()
+            .filter(|r| !r.verification.is_verified())
+            .count();
+        assert_eq!(reading.conclusion.warnings.len(), unverified);
     }
 
     #[test]
@@ -1748,6 +2195,124 @@ mod tests {
             .unwrap();
         assert_eq!(reading.symbol.name, "soudure bout à bout en V");
         assert_eq!(reading.symbol.number, 2);
+    }
+
+    #[test]
+    fn une_soudure_evasee_sans_cote_est_une_faute() {
+        // ISO 2553:2013, 5.4.4 : toujours cotee, jamais a pleine penetration
+        // par defaut.
+        let reading = engine()
+            .read_weld(&WeldRequest {
+                symbol: "flare_v".into(),
+                ..WeldRequest::default()
+            })
+            .unwrap();
+        assert_eq!(reading.conclusion.verdict, Verdict::Incompatible);
+        assert!(reading.findings.iter().any(|f| f.code == "size_required"));
+        assert!(!reading
+            .findings
+            .iter()
+            .any(|f| f.code == "full_penetration"));
+        // Cotee en s, elle se lit ; les limites embarquees ne s'y appliquent
+        // pas.
+        let reading = engine()
+            .read_weld(&WeldRequest {
+                symbol: "flare_bevel".into(),
+                size_letter: Some("s".into()),
+                size_mm: Some("3".into()),
+                level: Some("C".into()),
+                ..WeldRequest::default()
+            })
+            .unwrap();
+        assert!(!reading.findings.iter().any(|f| f.code == "size_required"));
+        assert!(reading.quality.is_none());
+        assert!(reading
+            .findings
+            .iter()
+            .any(|f| f.code == "quality_not_applicable"));
+    }
+
+    #[test]
+    fn la_cote_s_prend_le_nom_que_lui_donne_le_symbole() {
+        let reading = engine()
+            .read_weld(&WeldRequest {
+                symbol: "surfacing".into(),
+                size_letter: Some("s".into()),
+                size_mm: Some("2".into()),
+                ..WeldRequest::default()
+            })
+            .unwrap();
+        assert!(!reading
+            .findings
+            .iter()
+            .any(|f| f.code == "size_not_for_symbol"));
+        assert_eq!(reading.size.unwrap().name, "épaisseur du rechargement");
+        // Les bords releves n'exigent pas de cotation (5.4.3) : une cote y est
+        // etrangere.
+        let reading = engine()
+            .read_weld(&WeldRequest {
+                symbol: "flanged".into(),
+                size_letter: Some("s".into()),
+                size_mm: Some("2".into()),
+                ..WeldRequest::default()
+            })
+            .unwrap();
+        assert!(reading
+            .findings
+            .iter()
+            .any(|f| f.code == "size_not_for_symbol"));
+    }
+
+    #[test]
+    fn un_cordon_dangle_des_deux_cotes_se_lit_sans_nom_invente() {
+        let reading = engine()
+            .read_weld(&WeldRequest {
+                side: Side::Both,
+                ..fillet_a5()
+            })
+            .unwrap();
+        // La norme admet la soudure d'angle des deux cotes (5.5.1) sans la
+        // nommer : pas de reserve, et la designation dit les deux cotes.
+        assert!(!reading.findings.iter().any(|f| f.code == "no_double_form"));
+        assert!(reading
+            .designation
+            .contains("a5 soudure d'angle · des deux côtés"));
+        // Chaque cote porte sa cote, meme identique.
+        assert!(reading
+            .findings
+            .iter()
+            .any(|f| f.code == "both_sides_sizes" && f.message.contains("5.5.1")));
+        // L'equivalent porte le nom de la norme.
+        assert_eq!(reading.equivalent.unwrap().name, "côté");
+    }
+
+    #[test]
+    fn un_symbole_supplementaire_hors_des_exemples_est_signale_sans_etre_refuse() {
+        let reading = engine()
+            .read_weld(&WeldRequest {
+                supplementary: vec!["flush".into()],
+                ..fillet_a5()
+            })
+            .unwrap();
+        let finding = reading
+            .findings
+            .iter()
+            .find(|f| f.code == "supplementary_unusual")
+            .unwrap();
+        assert_eq!(finding.severity, Severity::Caution);
+        // En systeme B, la surepaisseur a la racine accompagne la soudure sur
+        // chant (tableau 4) : pas de reserve.
+        let reading = engine()
+            .read_weld(&WeldRequest {
+                symbol: "edge".into(),
+                supplementary: vec!["root_reinforcement".into()],
+                ..WeldRequest::default()
+            })
+            .unwrap();
+        assert!(!reading
+            .findings
+            .iter()
+            .any(|f| f.code == "supplementary_unusual"));
     }
 
     #[test]

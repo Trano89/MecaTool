@@ -60,7 +60,10 @@ describe("écran des matières", () => {
   it("propose les nuances embarquées en boutons, et les lit d'un clic", async () => {
     await show();
     const grades = await screen.findByRole("group", { name: "Aciers de construction embarqués" });
-    const expected = catalogue.structural_grades.flatMap((grade) => grade.qualities).length;
+    // Une nuance sans qualité (S185) a son propre bouton.
+    const expected = catalogue.structural_grades
+      .map((grade) => Math.max(grade.qualities.length, 1))
+      .reduce((a, b) => a + b, 0);
     expect(within(grades).getAllByRole("button")).toHaveLength(expected);
 
     await userEvent.click(within(grades).getByRole("button", { name: /S355J2$/ }));

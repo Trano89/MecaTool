@@ -2,19 +2,26 @@
   "dataset": "en10025-2.aciers-construction",
   "standard": {
     "id": "EN 10025-2",
-    "edition": "",
-    "title": "Produits laminés à chaud en aciers de construction — Partie 2 : aciers de construction non alliés",
-    "scope": "limite d'élasticité minimale et résistance à la traction selon l'épaisseur nominale, nuances S235, S275 et S355",
-    "source": "Saisi sans document normatif ouvert lors de la saisie.",
+    "edition": "2019",
+    "title": "Produits laminés à chaud en aciers de construction — Partie 2 : Conditions techniques de livraison pour les aciers de construction non alliés",
+    "scope": "limite d'élasticité minimale ReH et résistance à la traction Rm selon l'épaisseur nominale, nuances S185, S235, S275, S355, S460 et S500",
+    "source": "Lu dans la norme EN 10025-2:2019, version française (reproduite à l'identique par SN EN 10025-2:2020), Tableaux 6 et 7, et Article 1 pour les domaines d'épaisseur. Exemplaire sous licence fourni par l'utilisateur.",
     "verification": {
-      "state": "unverified",
-      "pending": "À confronter aux tableaux des caractéristiques mécaniques de l'EN 10025-2 (limite d'élasticité ReH et résistance Rm selon l'épaisseur), ou à leur relevé dans le VSM « Extrait de normes » (chapitre matériaux)."
+      "state": "verified",
+      "against": "EN 10025-2:2019 (F), Tableau 6 page 29 (S235 à S500 : ReH sur 9 échelons, Rm sur 5 échelons, qualités) et Tableau 7 page 31 (S185) — chaque case relue sur la page de la norme ; Article 1 page 5 (domaines d'épaisseur) ; Tableau 8 page 33 (qualités et résilience, transcrites en notes seulement)",
+      "on": "2026-10-07"
     },
     "notes": [
       "La limite d'élasticité DÉCROÎT quand l'épaisseur croît : S355 ne garantit 355 MPa que jusqu'à 16 mm. Le nombre de la désignation est la valeur de la plus petite épaisseur, d'où l'importance de choisir l'épaisseur réelle.",
       "Le chargement vérifie cette décroissance, et que la première valeur de chaque nuance coïncide avec le nombre de sa désignation.",
-      "Seules trois nuances sont embarquées, au-delà de 3 mm pour la résistance. Une nuance absente n'est pas une nuance invalide.",
-      "Les qualités JR, J0, J2 et K2 ne changent pas ces valeurs : elles portent la résilience."
+      "La norme donne Rm sur des échelons plus larges que ReH (< 3, 3 à 100, 100 à 150, 150 à 250, 250 à 400 mm). Chaque valeur de Rm est reportée sur les échelons de ReH qu'elle couvre ; aucune n'est interpolée.",
+      "Rm n'est embarquée qu'à partir de 3 mm. La norme donne aussi une plage de Rm sous 3 mm, différente pour S185, S275 et S355 : elle n'est pas embarquée, et la valeur tabulée de 3 à 16 mm ne vaut pas en dessous de 3 mm.",
+      "Domaines d'épaisseur (Article 1) : jusqu'à 400 mm pour les produits plats des qualités JR, J0, J2 et K2 ; jusqu'à 250 mm pour les produits plats et longs des autres nuances et qualités, donc pour les produits longs de S235 à S355 et pour S185. L'échelon 250 à 400 mm ne vaut que pour les produits plats.",
+      "S460 (JR, J0, J2, K2) et S500 (J0) ne s'appliquent qu'aux produits longs, de 3 à 150 mm : la norme ne donne rien au-delà de 150 mm, et la table s'arrête là pour ces nuances. S185 s'arrête à 250 mm.",
+      "Pour les tôles, bandes et larges plats de largeur supérieure ou égale à 600 mm, les valeurs s'entendent en sens travers ; pour les autres produits, en sens long.",
+      "Les qualités JR, J0, J2 et K2 ne changent ni ReH ni Rm : elles portent la résilience (Tableau 8, éprouvettes longitudinales). JR à 20 °C, J0 à 0 °C, J2 et K2 à -20 °C ; 27 J, sauf K2 : 40 J jusqu'à 150 mm, puis 33 J au-delà. S185 n'a pas de qualité.",
+      "Les nuances E295, E335 et E360 du Tableau 7 sont des aciers de construction mécanique (groupe E) : elles ne sont pas embarquées dans cette table, qui ne porte que les nuances S.",
+      "Une nuance absente n'est pas une nuance invalide."
     ]
   },
   "tensile_from_mm": 3,
@@ -24,26 +31,49 @@
     { "above": 40, "to": 63 },
     { "above": 63, "to": 80 },
     { "above": 80, "to": 100 },
-    { "above": 100, "to": 150 }
+    { "above": 100, "to": 150 },
+    { "above": 150, "to": 200 },
+    { "above": 200, "to": 250 },
+    { "above": 250, "to": 400 }
   ],
   "grades": [
     {
+      "grade": "S185",
+      "qualities": [],
+      "yield_mpa": [185, 175, 175, 175, 175, 165, 155, 145],
+      "tensile_mpa": [[290, 510], [290, 510], [290, 510], [290, 510], [290, 510], [280, 500], [270, 490], [270, 490]]
+    },
+    {
       "grade": "S235",
       "qualities": ["JR", "J0", "J2"],
-      "yield_mpa": [235, 225, 215, 215, 215, 195],
-      "tensile_mpa": [[360, 510], [360, 510], [360, 510], [360, 510], [360, 510], [350, 500]]
+      "yield_mpa": [235, 225, 215, 215, 215, 195, 185, 175, 165],
+      "tensile_mpa": [[360, 510], [360, 510], [360, 510], [360, 510], [360, 510], [350, 500], [340, 490], [340, 490], [330, 480]]
     },
     {
       "grade": "S275",
       "qualities": ["JR", "J0", "J2"],
-      "yield_mpa": [275, 265, 255, 245, 235, 225],
-      "tensile_mpa": [[410, 560], [410, 560], [410, 560], [410, 560], [410, 560], [400, 540]]
+      "yield_mpa": [275, 265, 255, 245, 235, 225, 215, 205, 195],
+      "tensile_mpa": [[410, 560], [410, 560], [410, 560], [410, 560], [410, 560], [400, 540], [380, 540], [380, 540], [380, 540]]
     },
     {
       "grade": "S355",
       "qualities": ["JR", "J0", "J2", "K2"],
-      "yield_mpa": [355, 345, 335, 325, 315, 295],
-      "tensile_mpa": [[470, 630], [470, 630], [470, 630], [470, 630], [470, 630], [450, 600]]
+      "yield_mpa": [355, 345, 335, 325, 315, 295, 285, 275, 265],
+      "tensile_mpa": [[470, 630], [470, 630], [470, 630], [470, 630], [470, 630], [450, 600], [450, 600], [450, 600], [450, 600]]
+    },
+    {
+      "grade": "S460",
+      "qualities": ["JR", "J0", "J2", "K2"],
+      "restriction": "Produits longs seulement, de 3 à 150 mm d'épaisseur (EN 10025-2:2019, Article 1 et Tableau 6, note b).",
+      "yield_mpa": [460, 440, 420, 400, 390, 390],
+      "tensile_mpa": [[550, 720], [550, 720], [550, 720], [550, 720], [550, 720], [530, 700]]
+    },
+    {
+      "grade": "S500",
+      "qualities": ["J0"],
+      "restriction": "Produits longs seulement, de 3 à 150 mm d'épaisseur (EN 10025-2:2019, Article 1 et Tableau 6, note b).",
+      "yield_mpa": [500, 480, 460, 450, 450, 450],
+      "tensile_mpa": [[580, 760], [580, 760], [580, 760], [580, 760], [580, 760], [560, 750]]
     }
   ]
 }

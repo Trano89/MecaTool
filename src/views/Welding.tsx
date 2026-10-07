@@ -48,7 +48,7 @@ const SIDES: readonly { id: Side; label: string }[] = [
   { id: "both", label: "Des deux côtés" },
 ];
 
-const PROCESS_EXAMPLES = ["135", "MAG", "141", "111", "21"];
+const PROCESS_EXAMPLES = ["135", "MAG", "131-D", "522+15", "SMAW", "137"];
 
 /** Le texte saisi, ou `null` : le moteur distingue « vide » de « absent ». */
 function orNull(text: string): string | null {
@@ -64,10 +64,15 @@ function ProcessReadings({ readings }: { readings: ProcessReading[] }) {
           {readings.length} lecture{readings.length > 1 ? "s" : ""}
         </span>
       </header>
-      {readings.length > 1 ? (
+      {readings[0]?.hybrid ? (
         <p className="hint">
-          Ce nom d'atelier désigne plusieurs numéros. Un symbole porte un numéro : à vous de
-          reconnaître le vôtre.
+          Procédé hybride <span className="mono">{readings[0].designation}</span> : plusieurs
+          procédés employés ensemble dans la même zone (ISO 4063, 2.3).
+        </p>
+      ) : readings.length > 1 ? (
+        <p className="hint">
+          Ce nom désigne plusieurs numéros. Un symbole porte un numéro : à vous de reconnaître le
+          vôtre.
         </p>
       ) : null}
       <div className="table-scroll">
@@ -85,10 +90,31 @@ function ProcessReadings({ readings }: { readings: ProcessReading[] }) {
             {readings.map((reading) => (
               <tr key={reading.process.number}>
                 <th scope="row" className="mono">
-                  {reading.process.number}
+                  {reading.code}
                 </th>
                 <td>
                   {reading.process.name}
+                  {reading.process.us_designations.length > 0 ? (
+                    <span className="faint">
+                      {" "}
+                      — US : {reading.process.us_designations.join(", ")}
+                    </span>
+                  ) : null}
+                  {reading.variant.transfer ? (
+                    <div className="muted">
+                      Mode de transfert {reading.variant.transfer.letter} :{" "}
+                      {reading.variant.transfer.name}
+                    </div>
+                  ) : null}
+                  {reading.variant.electrodes !== null ? (
+                    <div className="muted">{reading.variant.electrodes} électrodes</div>
+                  ) : null}
+                  {reading.variant.additional ? (
+                    <div className="muted">
+                      Élément additionnel {reading.variant.additional.letter} :{" "}
+                      {reading.variant.additional.name}
+                    </div>
+                  ) : null}
                   {reading.is_group ? (
                     <span className="faint">
                       {" "}
@@ -328,7 +354,9 @@ export function Welding() {
         </header>
         <div className="row">
           <div className="grow">
-            <label htmlFor="weld-process-lookup">Numéro ISO 4063 ou nom d'atelier</label>
+            <label htmlFor="weld-process-lookup">
+              Désignation ISO 4063 (numéro et variantes), nom d'atelier ou désignation US
+            </label>
             <input
               id="weld-process-lookup"
               type="text"

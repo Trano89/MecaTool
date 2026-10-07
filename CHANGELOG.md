@@ -3,6 +3,89 @@
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), et le
 projet adopte le [versionnage sémantique](https://semver.org/lang/fr/).
 
+## [0.3.0] — 2026-10-07
+
+### Vérifié — données confrontées aux normes elles-mêmes
+
+L'utilisateur a fourni plusieurs normes. Chaque jeu concerné a été relu sur
+la norme, valeur par valeur, et porte désormais l'état « vérifié » quand tout
+ce qu'il contient y a été lu.
+
+- **ISO 4063:2009** (version corrigée 2010, NF EN ISO 4063:2011) : la
+  sélection de 46 numéros devient la **nomenclature complète**, 157 numéros.
+  Un numéro absent n'appartient donc plus à la norme, et MecaTool le dit.
+  - Intitulés corrigés : 81 est le « coupage à la flamme » et non
+    l'oxycoupage ; 91 et 94 sont le brasage fort et le brasage tendre **avec
+    chauffage local**, non le brasage en général ; 135 et 131 sont « avec
+    fil-électrode fusible », non « plein » ; 786 est à amorçage « par
+    contact ».
+  - Variantes de l'article 2.2 lues : mode de transfert (`131-D`), nombre
+    d'électrodes (`131-2`), fil froid ou chaud (`121-C`). Procédés hybrides
+    de l'article 2.3 (`522+15`).
+  - Numéros remplacés ou dépassés de l'Annexe A (`137`, `181`…) : signalés
+    comme tels, non comme inconnus.
+  - Désignations US de l'Annexe B (`SMAW`, `GTAW`, `FCAW`…), seulement
+    celles que la norme donne pour exactement équivalentes.
+  - La hiérarchie admet un procédé sans groupe intermédiaire : la norme range
+    185 directement sous 1.
+- **EN 10025-2:2019** : les valeurs embarquées étaient justes. La table est
+  complétée jusqu'à 400 mm (trois échelons de plus). Elle gagne S185
+  (Tableau 7, sans qualité), S460 et S500 (produits longs seulement,
+  rappelé à la lecture).
+
+- **ISO 5817:2014** : toutes les lignes embarquées relues sur le Tableau 1.
+  - Une limite était fausse : la fissure de cratère (1.2) n'est admise à
+    **aucun** niveau, D compris.
+  - Le défaut d'alignement (3.1) se lit 5071 (tôles) et 5072 (profils creux),
+    non 507.
+  - **Procédés visés** : la norme vise les procédés 11 à 15, et 31 pour
+    l'acier seulement (article 1). Le soudage sous laitier (72) n'est pas
+    visé ; le soudage par résistance n'est pas « exclu » mais non cité.
+    Chaque procédé d'un procédé hybride passe ce contrôle.
+  - Le « défaut court » se compte sur les 100 mm de soudure qui en
+    contiennent le plus, non sur toute longueur de 100 mm.
+  - Les niveaux B, C et D ne portent plus de noms inventés : la norme ne dit
+    que leur rang.
+  - Six lignes ajoutées (1.5 micromanque de fusion, 1.8, 1.14, 1.17, 1.18,
+    1.19). Les défauts internes et les défauts multiples ne sont pas encore
+    embarqués, et l'écran le dit.
+
+- **EN 10027-1:2005** (édition remplacée par celle de 2016, qui n'a pas été
+  confrontée : chaque lecture le rappelle).
+  - Erreur de fond corrigée : une seule liste de symboles additionnels
+    servait à tous les groupes, alors que la norme en donne une par tableau.
+    `P265GH` lisait H « profil creux » au lieu de « température élevée » ;
+    `Y1770C` lisait C « formage à froid » au lieu de « fil tréfilé ».
+  - Groupes ajoutés : D, H (six formes), T, M (Tableaux 8 à 11). Les groupes
+    L, B, R, Y retrouvent leurs propres symboles : `L360NB`, `B500A`,
+    `R320Cr`, `Y1770S7` se lisent.
+  - Non alliés : `C20D2` et `C2D1` se lisent ; E ou R suivi d'un chiffre donne
+    la teneur en soufre. Fortement alliés : `-N5`. Aciers rapides : symbole
+    final (`HS6-5-2C`). Préfixe PM (métallurgie des poudres).
+  - Les symboles après « + » ne sont plus « lus sans être interprétés » :
+    les Tableaux 16 à 18 les définissent (`C45+A` recuit, `DX51D+Z`
+    galvanisé, `+AR` brut de laminage).
+  - Les 88 exemples des Tableaux 1 à 15 sont testés.
+- **ISO 2553:2013, cotation (article 5)** : la surcouche devient vérifiée.
+  - Les soudures évasées (8, 9) sont des soudures bout à bout, cotées en `s`,
+    et leur cote est **obligatoire** (§ 5.4.4) : MecaTool la réclame.
+  - La soudure sur chant (19) et le rechargement (21) se cotent en `s`,
+    épaisseur de métal fondu ou du rechargement.
+  - Définition de `z` corrigée (§ 3.17) ; `s` est la profondeur de
+    pénétration.
+  - Formes doubles : seuls le double V, le K et le double U ont un nom dans
+    la norme ; les six autres noms, inventés, sont retirés.
+  - Symboles supplémentaires rattachés aux familles où la norme les montre.
+- **ISO 2553:2019** : comparée à l'édition 2013 sans changer la référence.
+  Ses différences (renommage de 8, 9, 11, 21 ; 12 et 20 scindés ; cote `d`
+  de la soudure par transparence) sont relevées dans
+  [docs/standards.md](docs/standards.md).
+
+### Corrigé
+
+- Toutes les sources de la soudure étant lues dans les normes, l'écran de la
+  soudure n'affiche plus de réserve et le domaine passe à « prêt ».
+
 ## [0.2.0] — 2026-10-07
 
 ### Ajouté — matières

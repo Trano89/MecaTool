@@ -383,12 +383,19 @@ describe("échantillons des domaines états de surface, soudure et visserie", ()
         expect(["unverified", "verified"]).toContain(reference.verification.state);
       }
     }
-    const verified = weldingCatalogue.provenance.references.filter(
-      (reference) => reference.verification.state === "verified",
-    );
-    expect(verified.map((reference) => `${reference.id}:${reference.edition}`)).toEqual([
-      "ISO 2553:2013",
+    // Toutes les sources de la soudure ont été lues dans les normes : ISO 2553
+    // (symboles et cotation), ISO 4063 et ISO 5817.
+    expect(
+      weldingCatalogue.provenance.references.map(
+        (reference) => `${reference.id}:${reference.edition}:${reference.verification.state}`,
+      ),
+    ).toEqual([
+      "ISO 2553:2013:verified",
+      "ISO 2553:2013:verified",
+      "ISO 4063:2009:verified",
+      "ISO 5817:2014:verified",
     ]);
+    expect(weldingCatalogue.warnings).toHaveLength(0);
     expect(weldingCatalogue.elementary).toHaveLength(22);
     expect(weldingCatalogue.systems.map((system) => system.id)).toEqual(["A", "B"]);
   });
@@ -463,8 +470,15 @@ describe("échantillons du domaine matières", () => {
     expect(states).toContain("unverified");
   });
 
-  it("ne présente aucune de ses sources comme vérifiée", () => {
-    expect(materialsCatalogue.warnings).toHaveLength(materialsCatalogue.provenance.references.length);
+  it("porte une réserve par source non vérifiée, et l'EN 10025-2 lue dans la norme", () => {
+    const unverified = materialsCatalogue.provenance.references.filter(
+      (reference) => reference.verification.state !== "verified",
+    );
+    expect(materialsCatalogue.warnings).toHaveLength(unverified.length);
+    expect(
+      materialsCatalogue.provenance.references.find((reference) => reference.id === "EN 10025-2")
+        ?.verification.state,
+    ).toBe("verified");
     expect(materialsCatalogue.families.length).toBeGreaterThan(5);
   });
 

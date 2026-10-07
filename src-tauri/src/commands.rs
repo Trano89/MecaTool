@@ -1291,7 +1291,15 @@ mod tests {
         )
         .unwrap();
         assert_eq!(thermal.clearance_shift_label, "+44 µm");
-        assert_eq!(materials_catalogue().unwrap().warnings.len(), 3);
+        // Une reserve par source qui n'est pas verifiee, et seulement elles.
+        let catalogue = materials_catalogue().unwrap();
+        let unverified = catalogue
+            .provenance
+            .references
+            .iter()
+            .filter(|r| !r.verification.is_verified())
+            .count();
+        assert_eq!(catalogue.warnings.len(), unverified);
     }
 
     #[test]

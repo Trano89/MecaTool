@@ -2,33 +2,52 @@
   {
     "process": {
       "number": "135",
-      "name": "soudage MAG avec fil-électrode plein",
+      "name": "soudage MAG avec fil-électrode fusible (soudage à l'arc sous protection de gaz actif avec fil-électrode fusible)",
+      "synonyms": [],
       "aliases": [
         "mag"
-      ]
+      ],
+      "us_designations": []
     },
+    "code": "135",
+    "designation": "ISO 4063 - 135",
+    "variant": {
+      "transfer": null,
+      "electrodes": null,
+      "additional": null
+    },
+    "hybrid": null,
     "lineage": [
       {
         "number": "1",
         "name": "soudage à l'arc",
+        "synonyms": [],
         "aliases": [
           "arc"
+        ],
+        "us_designations": [
+          "AW"
         ]
       },
       {
         "number": "13",
-        "name": "soudage à l'arc sous protection gazeuse avec fil-électrode fusible",
+        "name": "soudage à l'arc avec électrode fusible sous protection gazeuse",
+        "synonyms": [],
         "aliases": [
-          "mig/mag",
-          "gmaw"
+          "mig/mag"
+        ],
+        "us_designations": [
+          "GMAW"
         ]
       },
       {
         "number": "135",
-        "name": "soudage MAG avec fil-électrode plein",
+        "name": "soudage MAG avec fil-électrode fusible (soudage à l'arc sous protection de gaz actif avec fil-électrode fusible)",
+        "synonyms": [],
         "aliases": [
           "mag"
-        ]
+        ],
+        "us_designations": []
       }
     ],
     "is_group": false,
@@ -36,37 +55,62 @@
     "quality_scope": {
       "kind": "in_scope"
     },
-    "explanation": "135 — soudage MAG avec fil-électrode plein, qui relève de 13 (soudage à l'arc sous protection gazeuse avec fil-électrode fusible), puis de 1 (soudage à l'arc)."
+    "explanation": "135 — soudage MAG avec fil-électrode fusible (soudage à l'arc sous protection de gaz actif avec fil-électrode fusible), qui relève de 13 (soudage à l'arc avec électrode fusible sous protection gazeuse), puis de 1 (soudage à l'arc)."
   },
   {
     "process": {
       "number": "136",
-      "name": "soudage MAG avec fil fourré de flux",
+      "name": "soudage MAG avec fil fourré de flux (soudage à l'arc sous protection de gaz actif avec fil fourré de flux)",
+      "synonyms": [],
       "aliases": [
         "mag"
+      ],
+      "us_designations": [
+        "FCAW",
+        "FCAW-G"
       ]
     },
+    "code": "136",
+    "designation": "ISO 4063 - 136",
+    "variant": {
+      "transfer": null,
+      "electrodes": null,
+      "additional": null
+    },
+    "hybrid": null,
     "lineage": [
       {
         "number": "1",
         "name": "soudage à l'arc",
+        "synonyms": [],
         "aliases": [
           "arc"
+        ],
+        "us_designations": [
+          "AW"
         ]
       },
       {
         "number": "13",
-        "name": "soudage à l'arc sous protection gazeuse avec fil-électrode fusible",
+        "name": "soudage à l'arc avec électrode fusible sous protection gazeuse",
+        "synonyms": [],
         "aliases": [
-          "mig/mag",
-          "gmaw"
+          "mig/mag"
+        ],
+        "us_designations": [
+          "GMAW"
         ]
       },
       {
         "number": "136",
-        "name": "soudage MAG avec fil fourré de flux",
+        "name": "soudage MAG avec fil fourré de flux (soudage à l'arc sous protection de gaz actif avec fil fourré de flux)",
+        "synonyms": [],
         "aliases": [
           "mag"
+        ],
+        "us_designations": [
+          "FCAW",
+          "FCAW-G"
         ]
       }
     ],
@@ -75,38 +119,57 @@
     "quality_scope": {
       "kind": "in_scope"
     },
-    "explanation": "136 — soudage MAG avec fil fourré de flux, qui relève de 13 (soudage à l'arc sous protection gazeuse avec fil-électrode fusible), puis de 1 (soudage à l'arc)."
+    "explanation": "136 — soudage MAG avec fil fourré de flux (soudage à l'arc sous protection de gaz actif avec fil fourré de flux), qui relève de 13 (soudage à l'arc avec électrode fusible sous protection gazeuse), puis de 1 (soudage à l'arc)."
   },
   {
     "process": {
       "number": "138",
-      "name": "soudage MAG avec fil fourré de poudre métallique",
+      "name": "soudage MAG avec fil fourré de poudre métallique (soudage à l'arc sous protection de gaz actif avec fil-électrode fourré de poudre métallique)",
+      "synonyms": [],
       "aliases": [
         "mag"
-      ]
+      ],
+      "us_designations": []
     },
+    "code": "138",
+    "designation": "ISO 4063 - 138",
+    "variant": {
+      "transfer": null,
+      "electrodes": null,
+      "additional": null
+    },
+    "hybrid": null,
     "lineage": [
       {
         "number": "1",
         "name": "soudage à l'arc",
+        "synonyms": [],
         "aliases": [
           "arc"
+        ],
+        "us_designations": [
+          "AW"
         ]
       },
       {
         "number": "13",
-        "name": "soudage à l'arc sous protection gazeuse avec fil-électrode fusible",
+        "name": "soudage à l'arc avec électrode fusible sous protection gazeuse",
+        "synonyms": [],
         "aliases": [
-          "mig/mag",
-          "gmaw"
+          "mig/mag"
+        ],
+        "us_designations": [
+          "GMAW"
         ]
       },
       {
         "number": "138",
-        "name": "soudage MAG avec fil fourré de poudre métallique",
+        "name": "soudage MAG avec fil fourré de poudre métallique (soudage à l'arc sous protection de gaz actif avec fil-électrode fourré de poudre métallique)",
+        "synonyms": [],
         "aliases": [
           "mag"
-        ]
+        ],
+        "us_designations": []
       }
     ],
     "is_group": false,
@@ -114,6 +177,6 @@
     "quality_scope": {
       "kind": "in_scope"
     },
-    "explanation": "138 — soudage MAG avec fil fourré de poudre métallique, qui relève de 13 (soudage à l'arc sous protection gazeuse avec fil-électrode fusible), puis de 1 (soudage à l'arc)."
+    "explanation": "138 — soudage MAG avec fil fourré de poudre métallique (soudage à l'arc sous protection de gaz actif avec fil-électrode fourré de poudre métallique), qui relève de 13 (soudage à l'arc avec électrode fusible sous protection gazeuse), puis de 1 (soudage à l'arc)."
   }
 ]

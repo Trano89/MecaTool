@@ -4,8 +4,11 @@
 //! # Ce que ce module fait
 //!
 //! * Il **decompose** une designation symbolique EN 10027-1 — `S355J2`, `C45E`,
-//!   `42CrMo4`, `X5CrNi18-10`, `HS6-5-2` — morceau par morceau, en appliquant
-//!   les regles de la norme plutot qu'en cherchant dans une liste.
+//!   `42CrMo4`, `X5CrNi18-10`, `HS6-5-2`, `DX51D+Z`, `M400-50A` — morceau par
+//!   morceau, en appliquant les regles de la norme plutot qu'en cherchant dans
+//!   une liste. Les symboles additionnels se lisent avec les listes du groupe
+//!   d'emploi (tableaux 1 a 15), les symboles apres `+` avec les tableaux 16 a
+//!   18.
 //! * Pour un acier de construction embarque, il rend la **limite d'elasticite
 //!   par epaisseur** : S355 ne vaut 355 MPa que jusqu'a 16 mm.
 //! * Il rattache la nuance a une **famille**, et donne les proprietes physiques
@@ -22,13 +25,17 @@
 //!   arrondies.
 //! * Lire la designation numerique (`1.4301`) au-dela de sa structure : la
 //!   table des groupes d'aciers n'est pas embarquee.
+//! * Taire l'edition : les regles ont ete lues dans l'EN 10027-1:2005, que
+//!   l'edition 2016 remplace sans avoir ete confrontee. Chaque lecture le
+//!   rappelle.
 
 use mecatool_core::{
     Conclusion, FitKind, Length, Provenance, ReasoningStep, ToleranceClass, Unit, Verdict,
 };
 use mecatool_standards::matieres::{
-    DesignationRules, GroupNumber, MaterialFamily, MaterialFamilyTable, StructuralGrade,
-    StructuralSteelTable, Suffix, UseGroup,
+    CompositionRules, DesignationRules, GroupForm, GroupNumber, MaterialFamily,
+    MaterialFamilyTable, ProductSymbol, StructuralGrade, StructuralSteelTable, Suffix,
+    SuffixDigits, SymbolSet, UseGroup,
 };
 use serde::{Deserialize, Serialize};
 
@@ -41,15 +48,15 @@ use crate::iso286::Iso286Engine;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum SteelKind {
-    /// Designee par son emploi : `S355J2`.
+    /// Designee par son emploi : `S355J2`, `DC04`, `M400-50A` (tableaux 1 a 11).
     UseGroup,
-    /// Non alliee : `C45`.
+    /// Non alliee, manganese moyen < 1 % : `C45` (tableau 12).
     NonAlloy,
-    /// Faiblement alliee : `42CrMo4`.
+    /// Chaque element d'alliage sous 5 % : `42CrMo4`, `28Mn6` (tableau 13).
     LowAlloy,
-    /// Fortement alliee : `X5CrNi18-10`.
+    /// Un element au moins a 5 % : `X5CrNi18-10` (tableau 14).
     HighAlloy,
-    /// Acier rapide : `HS6-5-2`.
+    /// Acier rapide : `HS6-5-2` (tableau 15).
     HighSpeed,
     /// Designation numerique : `1.4301`.
     Numeric,
@@ -59,9 +66,16 @@ impl SteelKind {
     pub const fn label_fr(self) -> &'static str {
         match self {
             SteelKind::UseGroup => "désignée par son emploi et ses caractéristiques",
-            SteelKind::NonAlloy => "acier non allié, désigné par sa teneur en carbone",
-            SteelKind::LowAlloy => "acier faiblement allié, désigné par sa composition",
-            SteelKind::HighAlloy => "acier fortement allié, désigné par sa composition",
+            SteelKind::NonAlloy => {
+                "acier non allié (manganèse moyen < 1 %), désigné par sa teneur en carbone"
+            }
+            SteelKind::LowAlloy => {
+                "acier désigné par sa composition, chaque élément d'alliage sous 5 % \
+                 (allié, non allié à manganèse ≥ 1 % ou de décolletage)"
+            }
+            SteelKind::HighAlloy => {
+                "acier allié dont un élément au moins atteint 5 %, désigné par sa composition"
+            }
             SteelKind::HighSpeed => "acier rapide",
             SteelKind::Numeric => "désignation numérique",
         }
@@ -94,6 +108,26 @@ pub struct ImpactReading {
     pub label: String,
 }
 
+/// Un symbole additionnel pour l'acier, lu avec les listes de son tableau.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct AdditionalSymbol {
+    /// Tel qu'ecrit, chiffres compris : `L1`, `Cu3`, `-N5`.
+    pub code: String,
+    /// Groupe 1 ou groupe 2 (EN 10027-1, 7.2).
+    pub group: u8,
+    pub meaning: String,
+}
+
+/// Un symbole pour les produits en acier, apres `+` (tableaux 16 a 18).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ProductSymbolReading {
+    /// Tel qu'ecrit, avec son `+`.
+    pub code: String,
+    /// Le ou les tableaux qui le definissent ; vide pour un symbole inconnu.
+    pub tables: Vec<u8>,
+    pub meaning: String,
+}
+
 /// Une designation decomposee.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SteelReading {
@@ -102,13 +136,18 @@ pub struct SteelReading {
     pub kind_label: String,
     /// Vrai pour un acier moule (prefixe `G`).
     pub cast: bool,
+    /// Vrai pour un acier elabore par metallurgie des poudres (prefixe `PM`).
+    pub powder_metallurgy: bool,
     pub parts: Vec<DesignationPart>,
     pub group: Option<UseGroup>,
     /// Le nombre du groupe d'emploi, et ce qu'il porte.
     pub group_value: Option<u32>,
     pub group_value_label: Option<String>,
     pub impact: Option<ImpactReading>,
-    pub suffixes: Vec<Suffix>,
+    /// Les symboles additionnels pour l'acier.
+    pub suffixes: Vec<AdditionalSymbol>,
+    /// Les symboles pour les produits en acier.
+    pub product_symbols: Vec<ProductSymbolReading>,
     pub carbon: Option<ElementContent>,
     pub elements: Vec<ElementContent>,
     /// La nuance de l'EN 10025-2, quand elle est embarquee.
@@ -152,6 +191,23 @@ pub struct ThermalFitLimits {
     pub hot_min: Length,
     pub hot_max: Length,
     pub hot_kind: FitKind,
+}
+
+/// Ce qu'un symbole additionnel a reconnu a une position.
+enum SymbolMatch<'a> {
+    Named(&'a Suffix),
+    Chemical(&'a str),
+    AnyLetter(&'a str, char),
+}
+
+impl SymbolMatch<'_> {
+    fn len(&self) -> usize {
+        match self {
+            SymbolMatch::Named(s) => s.code.len(),
+            SymbolMatch::Chemical(e) => e.len(),
+            SymbolMatch::AnyLetter(..) => 1,
+        }
+    }
 }
 
 /// Le moteur du domaine matieres.
@@ -207,27 +263,46 @@ impl MaterialsEngine {
             ));
         }
 
-        // L'etat de livraison suit un « + » : il ne change pas la nuance.
-        let (body, delivery) = match trimmed.split_once('+') {
-            Some((body, delivery)) => (body.trim(), Some(delivery.trim().to_string())),
-            None => (trimmed, None),
-        };
+        // Les symboles pour les produits suivent chacun un « + » (7.2).
+        let mut pieces = trimmed.split('+');
+        let body = pieces.next().unwrap_or_default().trim();
+        let products: Vec<&str> = pieces.map(str::trim).collect();
+        if body.is_empty() {
+            return Err(unparsable(
+                "La désignation de l'acier précède les symboles « + » : « S235JR+AR ».".into(),
+            ));
+        }
+        if products.iter().any(|p| p.is_empty()) {
+            return Err(unparsable(
+                "Chaque « + » est suivi d'un symbole des tableaux 16 à 18 : « DX51D+Z ».".into(),
+            ));
+        }
 
         let mut reading = if is_numeric(body) {
             self.numeric(body)
         } else {
-            let (cast, core) = match body.strip_prefix('G') {
-                Some(rest) if rest.starts_with(|c: char| c.is_ascii_alphanumeric()) => (true, rest),
-                _ => (false, body),
+            // 7.1 : G pour une piece moulee (tableaux 1 a 15), PM pour la
+            // metallurgie des poudres (tableaux 14 et 15).
+            let powder = body
+                .strip_prefix("PM")
+                .filter(|rest| rest.starts_with('X') || rest.starts_with("HS"));
+            let cast = body
+                .strip_prefix('G')
+                .filter(|rest| rest.starts_with(|c: char| c.is_ascii_alphanumeric()));
+            let (prefix, core) = match (powder, cast) {
+                (Some(rest), _) => (Some(("PM", "métallurgie des poudres")), rest),
+                (None, Some(rest)) => (Some(("G", "acier moulé")), rest),
+                (None, None) => (None, body),
             };
             let mut reading = self.symbolic(core, &unparsable)?;
-            if cast {
-                reading.cast = true;
+            if let Some((text, meaning)) = prefix {
+                reading.cast = text == "G";
+                reading.powder_metallurgy = text == "PM";
                 reading.parts.insert(
                     0,
                     DesignationPart {
-                        text: "G".into(),
-                        meaning: "acier moulé".into(),
+                        text: text.into(),
+                        meaning: meaning.into(),
                     },
                 );
             }
@@ -235,22 +310,135 @@ impl MaterialsEngine {
         };
         reading.input = trimmed.to_string();
 
-        if let Some(delivery) = delivery {
-            reading.parts.push(DesignationPart {
-                text: format!("+{delivery}"),
-                meaning: "état de livraison, lu sans être interprété".into(),
-            });
-            reading.findings.push(Finding::new(
-                "delivery_condition",
-                Severity::Note,
-                format!(
-                    "« +{delivery} » désigne un état de livraison. Il ne change pas la nuance ; \
-                     sa signification est dans la norme de produit."
-                ),
-            ));
+        let (tables, origin) = self.product_tables(&reading);
+        for product in products {
+            self.product_symbol(&mut reading, product, &tables, &origin);
         }
 
         self.finish(reading)
+    }
+
+    /// Les tableaux de symboles pour les produits que la categorie admet, et
+    /// d'ou vient cette liste.
+    fn product_tables(&self, reading: &SteelReading) -> (Vec<u8>, String) {
+        let composition = |rules: &CompositionRules| {
+            (
+                rules.product_tables.clone(),
+                format!("le tableau {}", rules.table),
+            )
+        };
+        match reading.kind {
+            SteelKind::UseGroup => reading
+                .group
+                .as_ref()
+                .map(|g| (g.product_tables.clone(), format!("le tableau {}", g.table)))
+                .unwrap_or_default(),
+            SteelKind::NonAlloy => composition(self.rules.non_alloy()),
+            SteelKind::LowAlloy => composition(self.rules.low_alloy()),
+            SteelKind::HighAlloy => composition(self.rules.high_alloy()),
+            SteelKind::HighSpeed => composition(self.rules.high_speed()),
+            SteelKind::Numeric => (
+                self.rules.numeric_product_tables().to_vec(),
+                "la note de 7.2".into(),
+            ),
+        }
+    }
+
+    /// Lit un symbole pour les produits : `Z`, `QT`, `C700`, `Z25`.
+    fn product_symbol(&self, reading: &mut SteelReading, text: &str, tables: &[u8], origin: &str) {
+        let symbols = self.rules.product_symbols();
+        let exact: Vec<&ProductSymbol> = symbols
+            .iter()
+            .filter(|s| !s.value && s.code == text)
+            .collect();
+        let (matches, value) = if exact.is_empty() {
+            let letters: String = text.chars().take_while(char::is_ascii_alphabetic).collect();
+            let digits = &text[letters.len()..];
+            if !digits.is_empty() && digits.chars().all(|c| c.is_ascii_digit()) {
+                let found: Vec<&ProductSymbol> = symbols
+                    .iter()
+                    .filter(|s| s.value && s.code == letters)
+                    .collect();
+                (found, Some(digits))
+            } else {
+                (Vec::new(), None)
+            }
+        } else {
+            (exact, None)
+        };
+
+        if matches.is_empty() {
+            reading.findings.push(Finding::new(
+                "product_symbol_unknown",
+                Severity::Caution,
+                format!(
+                    "« +{text} » ne figure pas aux tableaux 16 à 18 de l'EN 10027-1 : sa \
+                     signification, s'il en a une, est dans la norme de produit."
+                ),
+            ));
+            let meaning = "symbole absent des tableaux 16 à 18".to_string();
+            reading.parts.push(DesignationPart {
+                text: format!("+{text}"),
+                meaning: meaning.clone(),
+            });
+            reading.product_symbols.push(ProductSymbolReading {
+                code: format!("+{text}"),
+                tables: Vec::new(),
+                meaning,
+            });
+            return;
+        }
+
+        let applicable: Vec<&ProductSymbol> = matches
+            .iter()
+            .copied()
+            .filter(|s| tables.contains(&s.table))
+            .collect();
+        let chosen = if applicable.is_empty() {
+            let listed = if tables.is_empty() {
+                "aucun".to_string()
+            } else {
+                join_tables(tables)
+            };
+            reading.findings.push(Finding::new(
+                "product_symbol_table",
+                Severity::Caution,
+                format!(
+                    "« +{text} » vient du tableau {}, auquel {origin} ne renvoie pas \
+                     (tableaux prévus : {listed}).",
+                    join_tables(&matches.iter().map(|s| s.table).collect::<Vec<_>>()),
+                ),
+            ));
+            matches
+        } else {
+            applicable
+        };
+        let meaning = chosen
+            .iter()
+            .map(|s| match value {
+                Some(n) => s.meaning.replace("{n}", n),
+                None => s.meaning.clone(),
+            })
+            .collect::<Vec<_>>()
+            .join(" ou ");
+        let found_in: Vec<u8> = chosen.iter().map(|s| s.table).collect();
+        reading.parts.push(DesignationPart {
+            text: format!("+{text}"),
+            meaning: format!(
+                "{meaning} ({} {})",
+                if found_in.len() > 1 {
+                    "tableaux"
+                } else {
+                    "tableau"
+                },
+                join_tables(&found_in)
+            ),
+        });
+        reading.product_symbols.push(ProductSymbolReading {
+            code: format!("+{text}"),
+            tables: found_in,
+            meaning,
+        });
     }
 
     fn numeric(&self, body: &str) -> SteelReading {
@@ -324,87 +512,102 @@ impl MaterialsEngine {
         rest: &str,
         unparsable: &dyn Fn(String) -> EngineError,
     ) -> Result<SteelReading> {
-        let digits: String = rest.chars().take_while(char::is_ascii_digit).collect();
+        // La forme au plus long prefixe : `HXT` avant `HX`.
+        let form = group
+            .forms
+            .iter()
+            .filter(|f| rest.starts_with(f.prefix.as_str()))
+            .max_by_key(|f| f.prefix.len())
+            .ok_or_else(|| {
+                unparsable(format!(
+                    "« {} » ({}) se poursuit par {} : {}",
+                    group.letter,
+                    group.name,
+                    group
+                        .forms
+                        .iter()
+                        .map(|f| format!("{}{}", group.letter, f.prefix))
+                        .collect::<Vec<_>>()
+                        .join(", "),
+                    lowercase_first(&group.forms[0].note)
+                ))
+            })?;
+        let after = &rest[form.prefix.len()..];
+        let digits: String = after.chars().take_while(char::is_ascii_digit).collect();
         if digits.is_empty() {
             return Err(unparsable(format!(
-                "« {} » attend un nombre : {}",
+                "« {}{} » attend un nombre : {}",
                 group.letter,
-                lowercase_first(&group.note)
+                form.prefix,
+                lowercase_first(&form.note)
             )));
         }
         let value: u32 = digits
             .parse()
             .map_err(|_| unparsable("Nombre illisible.".into()))?;
-        let mut tail = &rest[digits.len()..];
+        let tail = &after[digits.len()..];
 
         let mut reading = blank(SteelKind::UseGroup);
-        let (unit, label) = match group.number {
-            GroupNumber::Yield => ("MPa", "limite d'élasticité minimale"),
-            GroupNumber::Tensile => ("MPa", "résistance à la traction nominale"),
-            GroupNumber::Hardness => ("HBW", "dureté Brinell minimale"),
-        };
         reading.parts.push(DesignationPart {
             text: group.letter.clone(),
-            meaning: group.name.clone(),
+            meaning: format!("{} (tableau {})", group.name, group.table),
         });
-        reading.parts.push(DesignationPart {
-            text: digits.clone(),
-            meaning: format!("{label} : {value} {unit}"),
-        });
-        reading.group_value = Some(value);
-        reading.group_value_label = Some(format!("{value} {unit} — {label}"));
-
-        // La resilience : une lettre d'energie puis un code de temperature.
-        let mut chars = tail.chars();
-        if let (Some(energy), Some(code)) = (chars.next(), chars.next()) {
-            let energy_def = self
-                .rules
-                .impact()
-                .energies
-                .iter()
-                .find(|e| e.letter.starts_with(energy));
-            let temperature = self
-                .rules
-                .impact()
-                .temperatures
-                .iter()
-                .find(|t| t.code.starts_with(code));
-            if let (Some(e), Some(t)) = (energy_def, temperature) {
-                let text = format!("{energy}{code}");
-                let label = format!("{} J à {} °C", e.joules, t.celsius);
-                reading.parts.push(DesignationPart {
-                    text: text.clone(),
-                    meaning: format!("résilience : {label}"),
-                });
-                reading.impact = Some(ImpactReading {
-                    code: text,
-                    joules: e.joules,
-                    celsius: t.celsius,
-                    label,
-                });
-                tail = &tail[2..];
+        if !form.prefix.is_empty() {
+            reading.parts.push(DesignationPart {
+                text: form.prefix.clone(),
+                meaning: form.meaning.clone(),
+            });
+        }
+        if let Some(expected) = form.digits {
+            if digits.len() != usize::from(expected) {
+                reading.findings.push(Finding::new(
+                    "digit_count",
+                    Severity::Caution,
+                    format!(
+                        "« {digits} » : le tableau {} prévoit {expected} chiffres. {}",
+                        group.table, form.note
+                    ),
+                ));
             }
         }
 
-        for symbol in split_suffixes(tail) {
-            let code = &symbol[..1];
-            let suffix = self.rules.suffix(code).ok_or_else(|| {
-                unparsable(format!(
-                    "« {symbol} » n'est ni un code de résilience (J2, K2…) ni un symbole \
-                     additionnel connu ({}).",
-                    self.rules
-                        .suffixes()
-                        .iter()
-                        .map(|s| s.code.as_str())
-                        .collect::<Vec<_>>()
-                        .join(", ")
-                ))
-            })?;
-            reading.parts.push(DesignationPart {
-                text: symbol.clone(),
-                meaning: suffix.meaning.clone(),
-            });
-            reading.suffixes.push(suffix.clone());
+        match form.number {
+            GroupNumber::Losses => {
+                self.electrical(&mut reading, group, form, value, &digits, tail, unparsable)?;
+            }
+            GroupNumber::Code => {
+                reading.parts.push(DesignationPart {
+                    text: digits.clone(),
+                    meaning: format!(
+                        "{} : {digits}, attribués par l'organisme responsable",
+                        form.label
+                    ),
+                });
+                reading.group_value_label = Some(format!("{digits} — {}", form.label));
+            }
+            GroupNumber::Yield | GroupNumber::Tensile | GroupNumber::Hardness => {
+                let unit = if form.number == GroupNumber::Hardness {
+                    "HBW"
+                } else {
+                    "MPa"
+                };
+                reading.parts.push(DesignationPart {
+                    text: digits.clone(),
+                    meaning: format!("{} : {value} {unit}", form.label),
+                });
+                reading.group_value = Some(value);
+                reading.group_value_label = Some(format!("{value} {unit} — {}", form.label));
+            }
+        }
+        if form.number != GroupNumber::Losses {
+            self.additional(
+                &mut reading,
+                tail,
+                &group.group1,
+                &group.group2,
+                group.table,
+                unparsable,
+            )?;
         }
 
         reading.group = Some(group.clone());
@@ -413,24 +616,321 @@ impl MaterialsEngine {
             if let Some(structural) = self.structural.grade(&grade) {
                 if let Some(impact) = &reading.impact {
                     if !structural.qualities.contains(&impact.code) {
+                        let listed = if structural.qualities.is_empty() {
+                            "aucune qualité".to_string()
+                        } else {
+                            structural.qualities.join(", ")
+                        };
                         reading.findings.push(Finding::new(
                             "quality_not_listed",
                             Severity::Caution,
                             format!(
                                 "La qualité {} n'est pas listée pour {grade} dans la table \
-                                 embarquée ({}). La désignation reste bien formée.",
+                                 embarquée ({listed}). La désignation reste bien formée.",
                                 impact.code,
-                                structural.qualities.join(", ")
                             ),
                         ));
                     }
+                }
+                if let Some(restriction) = &structural.restriction {
+                    reading.findings.push(Finding::new(
+                        "grade_restricted",
+                        Severity::Caution,
+                        format!("{grade} : {restriction}"),
+                    ));
                 }
                 reading.structural = Some(structural.clone());
             }
         }
         reading.family = self.families.family("steel").cloned();
-        reading.family_reason = format!("Un {} est un acier non inoxydable.", group.name);
+        reading.family_reason = format!(
+            "Rattachement indicatif : un {} est un acier non inoxydable.",
+            group.name
+        );
         Ok(reading)
+    }
+
+    /// Tableau 11 : `M400-50A`, pertes, epaisseur, type de produit.
+    #[allow(clippy::too_many_arguments)]
+    fn electrical(
+        &self,
+        reading: &mut SteelReading,
+        group: &UseGroup,
+        form: &GroupForm,
+        value: u32,
+        digits: &str,
+        tail: &str,
+        unparsable: &dyn Fn(String) -> EngineError,
+    ) -> Result<()> {
+        let hint = || {
+            unparsable(format!(
+                "Un acier électrique s'écrit « M400-50A » : {}",
+                lowercase_first(&form.note)
+            ))
+        };
+        let rest = tail.strip_prefix('-').ok_or_else(hint)?;
+        let thickness: String = rest.chars().take_while(char::is_ascii_digit).collect();
+        let kind = &rest[thickness.len()..];
+        let product = group
+            .types
+            .iter()
+            .find(|t| t.code == kind)
+            .ok_or_else(hint)?;
+        if thickness.is_empty() {
+            return Err(hint());
+        }
+        let thickness_value: i64 = thickness.parse().map_err(|_| hint())?;
+        let losses = format!("{} W/kg", percent(i64::from(value) * 10));
+        reading.parts.push(DesignationPart {
+            text: digits.to_string(),
+            meaning: format!("{} : {losses} ({value} / 100)", form.label),
+        });
+        reading.parts.push(DesignationPart {
+            text: format!("-{thickness}"),
+            meaning: format!(
+                "épaisseur nominale : {} mm ({thickness} / 100)",
+                percent(thickness_value * 10)
+            ),
+        });
+        reading.parts.push(DesignationPart {
+            text: product.code.clone(),
+            meaning: product.meaning.clone(),
+        });
+        reading.group_value = Some(value);
+        reading.group_value_label = Some(format!("{losses} — {}", form.label));
+        Ok(())
+    }
+
+    /// Lit les symboles additionnels pour l'acier : groupe 1, puis groupe 2,
+    /// qui ne s'emploie qu'apres lui (7.2).
+    fn additional(
+        &self,
+        reading: &mut SteelReading,
+        text: &str,
+        group1: &SymbolSet,
+        group2: &SymbolSet,
+        table: u8,
+        unparsable: &dyn Fn(String) -> EngineError,
+    ) -> Result<()> {
+        let mut rest = text;
+        // Tableaux 1 et 4 : la resilience ouvre le groupe 1.
+        if group1.impact {
+            if let Some(impact) = self.impact_at(rest) {
+                reading.parts.push(DesignationPart {
+                    text: impact.code.clone(),
+                    meaning: format!("résilience : {}", impact.label),
+                });
+                reading.impact = Some(impact);
+                rest = &rest[2..];
+            }
+        }
+        let mut phase = 1;
+        while !rest.is_empty() {
+            let first = if phase == 1 {
+                self.symbol_at(rest, group1).map(|m| (1, m))
+            } else {
+                None
+            };
+            let found = first.or_else(|| self.symbol_at(rest, group2).map(|m| (2, m)));
+            let Some((group, found)) = found else {
+                let listed = |set: &SymbolSet| {
+                    let mut codes: Vec<String> = Vec::new();
+                    if set.impact {
+                        codes.push("un code de résilience en tête (J2, K2…)".into());
+                    }
+                    codes.extend(set.symbols.iter().map(|s| s.code.clone()));
+                    if let Some(any) = &set.any_letter {
+                        codes.push(format!("une lettre de {any}"));
+                    }
+                    if set.chemical.is_some() {
+                        codes.push("un symbole chimique".into());
+                    }
+                    if codes.is_empty() {
+                        "aucun".into()
+                    } else {
+                        codes.join(", ")
+                    }
+                };
+                return Err(unparsable(format!(
+                    "« {rest} » n'est pas un symbole additionnel du tableau {table} \
+                     (groupe 1 : {} ; groupe 2 : {}).",
+                    listed(group1),
+                    listed(group2)
+                )));
+            };
+            phase = group;
+            let symbol_text = &rest[..found.len()];
+            rest = &rest[found.len()..];
+            let digits: String = rest.chars().take_while(char::is_ascii_digit).collect();
+            rest = &rest[digits.len()..];
+            let set = if group == 1 { group1 } else { group2 };
+            let code = format!("{symbol_text}{digits}");
+            let meaning = match found {
+                SymbolMatch::Named(suffix) => {
+                    let rule = suffix
+                        .digits
+                        .or(set.digits.then_some(SuffixDigits::Quality));
+                    self.digits_meaning(reading, &suffix.meaning, &digits, rule, &code, table)
+                }
+                SymbolMatch::AnyLetter(meaning, letter) => {
+                    let rule = set.digits.then_some(SuffixDigits::Quality);
+                    let meaning = format!("{meaning} {letter}");
+                    self.digits_meaning(reading, &meaning, &digits, rule, &code, table)
+                }
+                SymbolMatch::Chemical(element) => {
+                    let what = set.chemical.as_deref().unwrap_or("élément");
+                    self.chemical_symbol(reading, element, &digits, what, &code, table)
+                }
+            };
+            reading.parts.push(DesignationPart {
+                text: code.clone(),
+                meaning: format!("groupe {group} : {meaning}"),
+            });
+            reading.suffixes.push(AdditionalSymbol {
+                code,
+                group,
+                meaning,
+            });
+        }
+        Ok(())
+    }
+
+    /// Un code de resilience au debut du texte : `J2`, `KR`.
+    fn impact_at(&self, text: &str) -> Option<ImpactReading> {
+        let mut chars = text.chars();
+        let (energy, code) = (chars.next()?, chars.next()?);
+        let impact = self.rules.impact();
+        let e = impact
+            .energies
+            .iter()
+            .find(|e| e.letter.chars().eq([energy]))?;
+        let t = impact
+            .temperatures
+            .iter()
+            .find(|t| t.code.chars().eq([code]))?;
+        let label = format!("{} J à {} °C", e.joules, t.celsius);
+        Some(ImpactReading {
+            code: format!("{energy}{code}"),
+            joules: e.joules,
+            celsius: t.celsius,
+            label,
+        })
+    }
+
+    /// Le symbole le plus long qu'un groupe reconnait au debut du texte. A
+    /// longueur egale, le symbole nomme passe avant le symbole chimique : `S`
+    /// d'un acier de construction est « construction navale », pas le soufre.
+    fn symbol_at<'a>(&self, text: &str, set: &'a SymbolSet) -> Option<SymbolMatch<'a>> {
+        let named = set
+            .symbols
+            .iter()
+            .filter(|s| text.starts_with(s.code.as_str()))
+            .max_by_key(|s| s.code.len())
+            .map(SymbolMatch::Named);
+        let chemical = set.chemical.as_ref().and_then(|_| {
+            self.rules
+                .elements()
+                .into_iter()
+                .find(|e| text.starts_with(e))
+                .map(SymbolMatch::Chemical)
+        });
+        let best = match (named, chemical) {
+            (Some(n), Some(c)) if c.len() > n.len() => Some(c),
+            (Some(n), _) => Some(n),
+            (None, c) => c,
+        };
+        best.or_else(|| {
+            let any = set.any_letter.as_deref()?;
+            let letter = text.chars().next().filter(char::is_ascii_uppercase)?;
+            Some(SymbolMatch::AnyLetter(any, letter))
+        })
+    }
+
+    /// Le sens d'un symbole, avec les chiffres qui le suivent.
+    fn digits_meaning(
+        &self,
+        reading: &mut SteelReading,
+        meaning: &str,
+        digits: &str,
+        rule: Option<SuffixDigits>,
+        code: &str,
+        table: u8,
+    ) -> String {
+        if digits.is_empty() {
+            return meaning.to_string();
+        }
+        match rule {
+            Some(SuffixDigits::SulphurHundredths) => {
+                let hundredths: i64 = digits.parse().unwrap_or(0);
+                format!(
+                    "{meaning} ; {digits} : soufre {} %",
+                    percent(hundredths * 10)
+                )
+            }
+            Some(SuffixDigits::Quality) => {
+                if digits.len() > 2 {
+                    reading.findings.push(Finding::new(
+                        "unexpected_digits",
+                        Severity::Caution,
+                        format!(
+                            "« {code} » : le tableau {table} prévoit un ou deux chiffres de \
+                             qualité, pas {}.",
+                            digits.len()
+                        ),
+                    ));
+                }
+                format!("{meaning} ; {digits} : qualité, selon la norme de produit")
+            }
+            None => {
+                reading.findings.push(Finding::new(
+                    "unexpected_digits",
+                    Severity::Caution,
+                    format!("« {code} » : le tableau {table} ne prévoit pas de chiffre ici."),
+                ));
+                format!("{meaning} ; {digits} : chiffres non prévus par le tableau {table}")
+            }
+        }
+    }
+
+    /// Un symbole chimique additionnel, suivi au plus d'un chiffre valant 10 ×
+    /// sa teneur moyenne (tableaux 1, 7, 8 et 12).
+    fn chemical_symbol(
+        &self,
+        reading: &mut SteelReading,
+        element: &str,
+        digits: &str,
+        what: &str,
+        code: &str,
+        table: u8,
+    ) -> String {
+        let content = if digits.is_empty() {
+            None
+        } else {
+            if digits.len() > 1 {
+                reading.findings.push(Finding::new(
+                    "unexpected_digits",
+                    Severity::Caution,
+                    format!(
+                        "« {code} » : le tableau {table} prévoit un seul chiffre après un \
+                         symbole chimique, 10 × sa teneur moyenne."
+                    ),
+                ));
+            }
+            digits.parse::<i64>().ok().map(|n| n * 100)
+        };
+        let label = match content {
+            Some(t) => format!("{} %", percent(t)),
+            None => "présent, teneur non indiquée".into(),
+        };
+        reading.elements.push(ElementContent {
+            element: element.to_string(),
+            thousandths_percent: content,
+            label: label.clone(),
+        });
+        match content {
+            Some(_) => format!("{what} : {element}, {label} ({digits} / 10)"),
+            None => format!("{what} : {element}"),
+        }
     }
 
     fn non_alloy(
@@ -446,26 +946,22 @@ impl MaterialsEngine {
         let carbon = carbon_content(carbon);
         reading.parts.push(DesignationPart {
             text: "C".into(),
-            meaning: "acier non allié".into(),
+            meaning: "carbone : acier non allié (tableau 12)".into(),
         });
         reading.parts.push(DesignationPart {
             text: digits.clone(),
             meaning: format!("carbone : {}", carbon.label),
         });
         reading.carbon = Some(carbon);
-        for symbol in rest[digits.len()..].chars() {
-            let code = symbol.to_string();
-            let suffix = self.rules.non_alloy_suffix(&code).ok_or_else(|| {
-                unparsable(format!(
-                    "« {code} » n'est pas un symbole additionnel connu d'un acier non allié."
-                ))
-            })?;
-            reading.parts.push(DesignationPart {
-                text: code,
-                meaning: suffix.meaning.clone(),
-            });
-            reading.suffixes.push(suffix.clone());
-        }
+        let rules = self.rules.non_alloy();
+        self.additional(
+            &mut reading,
+            &rest[digits.len()..],
+            &rules.group1,
+            &rules.group2,
+            rules.table,
+            unparsable,
+        )?;
         reading.family = self.families.family("steel").cloned();
         reading.family_reason = "Un acier non allié.".into();
         Ok(reading)
@@ -498,20 +994,34 @@ impl MaterialsEngine {
                 "Aucun symbole chimique connu après la teneur en carbone dans « {rest} »."
             )));
         }
-        let numbers: Vec<i64> = if tail.is_empty() {
-            Vec::new()
-        } else {
-            tail.split('-')
-                .map(|n| n.trim().parse::<i64>())
-                .collect::<core::result::Result<_, _>>()
-                .map_err(|_| unparsable(format!("Teneurs illisibles : « {tail} ».")))?
-        };
+        // Les nombres, puis (tableau 14) les symboles additionnels « -N5 ».
+        let mut numbers: Vec<i64> = Vec::new();
+        let mut extras: Vec<&str> = Vec::new();
+        if !tail.trim().is_empty() {
+            for segment in tail.split('-').map(str::trim) {
+                if !extras.is_empty() || segment.starts_with(|c: char| c.is_ascii_alphabetic()) {
+                    extras.push(segment);
+                } else {
+                    numbers.push(
+                        segment
+                            .parse::<i64>()
+                            .map_err(|_| unparsable(format!("Teneurs illisibles : « {tail} ».")))?,
+                    );
+                }
+            }
+        }
         if numbers.len() > symbols.len() {
             return Err(unparsable(format!(
                 "{} teneurs pour {} éléments : chaque nombre se rapporte à un élément, dans \
                  l'ordre.",
                 numbers.len(),
                 symbols.len()
+            )));
+        }
+        if !high && !extras.is_empty() {
+            return Err(unparsable(format!(
+                "Teneurs illisibles : « {tail} ». Le tableau 13 ne prévoit pas de symbole \
+                 additionnel pour l'acier."
             )));
         }
 
@@ -523,7 +1033,8 @@ impl MaterialsEngine {
         if high {
             reading.parts.push(DesignationPart {
                 text: "X".into(),
-                meaning: "acier fortement allié : un élément au moins atteint 5 %".into(),
+                meaning: "un élément d'alliage au moins a une teneur moyenne ≥ 5 % (tableau 14)"
+                    .into(),
             });
         }
         reading.parts.push(DesignationPart {
@@ -559,9 +1070,14 @@ impl MaterialsEngine {
                 label,
             });
         }
+        let main_known = numbers.len() == symbols.len();
 
-        // Un faiblement allie dont un element atteint 5 % aurait du s'ecrire en
-        // X : la designation se contredit.
+        for extra in extras {
+            self.high_alloy_extra(&mut reading, extra, unparsable)?;
+        }
+
+        // Un acier du tableau 13 dont un element atteint 5 % aurait du s'ecrire
+        // en X : la designation se contredit.
         if !high {
             if let Some(over) = reading
                 .elements
@@ -578,6 +1094,19 @@ impl MaterialsEngine {
                     ),
                 ));
             }
+        } else if main_known
+            && reading
+                .elements
+                .iter()
+                .all(|e| e.thousandths_percent.is_some_and(|t| t < 5000))
+        {
+            reading.findings.push(Finding::new(
+                "high_alloy_under_five",
+                Severity::Caution,
+                "Toutes les teneurs sont données et aucune n'atteint 5 % : le préfixe X est \
+                 réservé aux aciers dont un élément d'alliage atteint 5 % (tableau 14). \
+                 Vérifiez la saisie.",
+            ));
         }
 
         let content = |element: &str| {
@@ -615,28 +1144,103 @@ impl MaterialsEngine {
         Ok(reading)
     }
 
+    /// Tableau 14, groupe 1 : `-N5`, un element entre 0,20 et 1,0 %, suivi de
+    /// 10 × sa teneur moyenne.
+    fn high_alloy_extra(
+        &self,
+        reading: &mut SteelReading,
+        extra: &str,
+        unparsable: &dyn Fn(String) -> EngineError,
+    ) -> Result<()> {
+        let element = self
+            .rules
+            .elements()
+            .into_iter()
+            .find(|e| extra.starts_with(e))
+            .ok_or_else(|| {
+                unparsable(format!(
+                    "« -{extra} » : le tableau 14 attend un symbole chimique suivi de 10 × sa \
+                     teneur moyenne, par exemple « -N5 »."
+                ))
+            })?;
+        let digits = &extra[element.len()..];
+        if !digits.chars().all(|c| c.is_ascii_digit()) {
+            return Err(unparsable(format!(
+                "« -{extra} » : seul un nombre suit le symbole chimique."
+            )));
+        }
+        let content = digits.parse::<i64>().ok().map(|n| n * 100);
+        if content.is_some_and(|t| !(200..=1000).contains(&t)) {
+            reading.findings.push(Finding::new(
+                "additional_out_of_range",
+                Severity::Caution,
+                format!(
+                    "« -{extra} » : le tableau 14 réserve ce symbole à un élément dont la teneur \
+                     est comprise entre 0,20 % et 1,0 %."
+                ),
+            ));
+        }
+        let label = match content {
+            Some(t) => format!("{} %", percent(t)),
+            None => "présent, teneur non indiquée".into(),
+        };
+        match reading.elements.iter_mut().find(|e| e.element == element) {
+            Some(existing) if existing.thousandths_percent.is_none() => {
+                existing.thousandths_percent = content;
+                existing.label = label.clone();
+            }
+            Some(_) => {}
+            None => reading.elements.push(ElementContent {
+                element: element.to_string(),
+                thousandths_percent: content,
+                label: label.clone(),
+            }),
+        }
+        let meaning = format!(
+            "{element} : {label}, élément entre 0,20 et 1,0 % (nombre = 10 × teneur moyenne)"
+        );
+        reading.parts.push(DesignationPart {
+            text: format!("-{extra}"),
+            meaning: format!("groupe 1 : {meaning}"),
+        });
+        reading.suffixes.push(AdditionalSymbol {
+            code: format!("-{extra}"),
+            group: 1,
+            meaning,
+        });
+        Ok(())
+    }
+
     fn high_speed(
         &self,
         rest: &str,
         unparsable: &dyn Fn(String) -> EngineError,
     ) -> Result<SteelReading> {
-        let numbers: Vec<i64> = rest
+        let order = self.rules.high_speed_order();
+        let hint = || {
+            unparsable(format!(
+                "MecaTool lit de 3 à {} teneurs, dans l'ordre {} (tableau 15) : « HS6-5-2 ».",
+                order.len(),
+                order.join(", ")
+            ))
+        };
+        // Le dernier nombre peut porter les symboles du groupe 1 : `HS6-5-2C`.
+        let numbers_end = rest
+            .rfind(|c: char| c.is_ascii_digit())
+            .map_or(0, |i| i + 1);
+        let (numbers_text, mut symbols_text) = rest.split_at(numbers_end);
+        let numbers: Vec<i64> = numbers_text
             .split('-')
             .map(|n| n.trim().parse::<i64>())
             .collect::<core::result::Result<_, _>>()
-            .map_err(|_| unparsable("Un acier rapide s'écrit « HS6-5-2 ».".into()))?;
-        let order = self.rules.high_speed_order();
+            .map_err(|_| hint())?;
         if numbers.len() < 3 || numbers.len() > order.len() {
-            return Err(unparsable(format!(
-                "Un acier rapide porte de 3 à {} teneurs, dans l'ordre {}.",
-                order.len(),
-                order.join(", ")
-            )));
+            return Err(hint());
         }
         let mut reading = blank(SteelKind::HighSpeed);
         reading.parts.push(DesignationPart {
             text: "HS".into(),
-            meaning: "acier rapide".into(),
+            meaning: "acier rapide (tableau 15)".into(),
         });
         for (symbol, n) in order.iter().zip(&numbers) {
             let label = format!("{} %", percent(n * 1000));
@@ -650,6 +1254,32 @@ impl MaterialsEngine {
                 label,
             });
         }
+        // Groupe 1 : l'element, ou les elements, a teneur plus elevee.
+        let known = self.rules.elements();
+        while !symbols_text.is_empty() {
+            let element = known
+                .iter()
+                .copied()
+                .chain(["C"])
+                .find(|e| symbols_text.starts_with(e))
+                .ok_or_else(|| {
+                    unparsable(format!(
+                        "« {symbols_text} » : après les teneurs, le tableau 15 n'attend que des \
+                         symboles chimiques (« HS6-5-2C »)."
+                    ))
+                })?;
+            symbols_text = &symbols_text[element.len()..];
+            let meaning = format!("{element} : teneur plus élevée, pour une même nuance");
+            reading.parts.push(DesignationPart {
+                text: element.to_string(),
+                meaning: format!("groupe 1 : {meaning}"),
+            });
+            reading.suffixes.push(AdditionalSymbol {
+                code: element.to_string(),
+                group: 1,
+                meaning,
+            });
+        }
         reading.family = self.families.family("steel").cloned();
         reading.family_reason = "Un acier à outils.".into();
         Ok(reading)
@@ -657,6 +1287,17 @@ impl MaterialsEngine {
 
     fn finish(&self, mut reading: SteelReading) -> Result<SteelReading> {
         let provenance = self.provenance();
+        if let Some(by) = self.rules.superseded_by() {
+            reading.findings.push(Finding::new(
+                "edition_superseded",
+                Severity::Note,
+                format!(
+                    "Règles lues dans l'{}, remplacée par l'{by}, qui n'a pas été confrontée : \
+                     une règle ou un symbole a pu y changer.",
+                    self.rules.standard().citation()
+                ),
+            ));
+        }
         reading.findings.push(Finding::new(
             "existence_not_claimed",
             Severity::Note,
@@ -892,12 +1533,14 @@ fn blank(kind: SteelKind) -> SteelReading {
         kind,
         kind_label: String::new(),
         cast: false,
+        powder_metallurgy: false,
         parts: Vec::new(),
         group: None,
         group_value: None,
         group_value_label: None,
         impact: None,
         suffixes: Vec::new(),
+        product_symbols: Vec::new(),
         carbon: None,
         elements: Vec::new(),
         structural: None,
@@ -917,16 +1560,14 @@ fn is_numeric(text: &str) -> bool {
     (rest.len() == 4 || rest.len() == 6) && rest.chars().all(|c| c.is_ascii_digit())
 }
 
-/// Les symboles additionnels : une lettre, suivie le cas echeant de chiffres.
-fn split_suffixes(text: &str) -> Vec<String> {
-    let mut symbols: Vec<String> = Vec::new();
-    for c in text.chars() {
-        match symbols.last_mut() {
-            Some(last) if c.is_ascii_digit() => last.push(c),
-            _ => symbols.push(c.to_string()),
-        }
+/// `17`, `17 et 18`, `16, 17 et 18`.
+fn join_tables(tables: &[u8]) -> String {
+    let text: Vec<String> = tables.iter().map(u8::to_string).collect();
+    match text.split_last() {
+        Some((last, rest)) if !rest.is_empty() => format!("{} et {last}", rest.join(", ")),
+        Some((last, _)) => last.clone(),
+        None => String::new(),
     }
-    symbols
 }
 
 /// La teneur en carbone : le nombre vaut cent fois le pourcentage.
@@ -1069,6 +1710,44 @@ mod tests {
             .findings
             .iter()
             .any(|f| f.code == "quality_not_listed"));
+        // S185 n'a aucune qualite : le message le dit sans liste vide.
+        let reading = engine().read("S185JR").unwrap();
+        let finding = reading
+            .findings
+            .iter()
+            .find(|f| f.code == "quality_not_listed")
+            .unwrap();
+        assert!(
+            finding.message.contains("aucune qualité"),
+            "{}",
+            finding.message
+        );
+        // Sans qualite, la nuance se lit et retrouve sa table, sans constat.
+        let reading = engine().read("S185").unwrap();
+        assert_eq!(reading.structural.as_ref().unwrap().grade, "S185");
+        assert!(!reading
+            .findings
+            .iter()
+            .any(|f| f.code == "quality_not_listed"));
+    }
+
+    #[test]
+    fn s460_rappelle_quil_ne_vaut_que_pour_les_produits_longs() {
+        // EN 10025-2:2019, article 1 et tableau 6, note b.
+        let reading = engine().read("S460J2").unwrap();
+        let structural = reading.structural.as_ref().unwrap();
+        assert_eq!(structural.rows.len(), 6);
+        assert!(reading
+            .findings
+            .iter()
+            .any(|f| f.code == "grade_restricted" && f.message.contains("longs")));
+        // Une nuance sans restriction ne la signale pas.
+        let reading = engine().read("S355J2").unwrap();
+        assert!(!reading
+            .findings
+            .iter()
+            .any(|f| f.code == "grade_restricted"));
+        assert_eq!(reading.structural.unwrap().rows.len(), 9);
     }
 
     #[test]
@@ -1130,14 +1809,275 @@ mod tests {
     }
 
     #[test]
-    fn lit_un_acier_moule_et_un_etat_de_livraison() {
+    fn lit_un_acier_moule_et_un_symbole_de_produit() {
         let reading = engine().read("GX5CrNi19-10").unwrap();
         assert!(reading.cast);
+        assert!(!reading.powder_metallurgy);
+        // EN 10027-1:2005, tableau 18 : +AR est defini par la norme, il ne
+        // renvoie pas a la norme de produit.
         let reading = engine().read("S235JR+AR").unwrap();
+        let product = &reading.product_symbols[0];
+        assert_eq!(product.code, "+AR");
+        assert_eq!(product.tables, [18]);
+        assert!(
+            product.meaning.starts_with("brut de laminage"),
+            "{}",
+            product.meaning
+        );
+        assert!(!reading
+            .findings
+            .iter()
+            .any(|f| f.code.starts_with("product_symbol")));
+    }
+
+    #[test]
+    fn le_groupe_dit_quels_tableaux_de_produit_sappliquent() {
+        // Tableau 8 -> tableaux 17 et 18 : +Z est la galvanisation.
+        let reading = engine().read("DX51D+Z").unwrap();
+        assert_eq!(reading.product_symbols[0].tables, [17]);
+        assert!(reading.product_symbols[0].meaning.contains("galvanisation"));
+        // Tableau 12 -> tableau 18 seul : +A est un recuit, pas un revetement.
+        let reading = engine().read("C45+A").unwrap();
+        assert_eq!(reading.product_symbols[0].tables, [18]);
+        assert_eq!(reading.product_symbols[0].meaning, "recuit d'adoucissement");
+        // Tableau 1 -> 16, 17 et 18 : +A a deux sens, les deux sont donnes.
+        let reading = engine().read("S235JR+A").unwrap();
+        assert_eq!(reading.product_symbols[0].tables, [17, 18]);
+        assert!(reading.product_symbols[0].meaning.contains(" ou "));
+        // Une valeur : +C700.
+        let reading = engine().read("S355J2+C700").unwrap();
+        assert!(reading.product_symbols[0].meaning.contains("700 MPa"));
+        // Plusieurs symboles, chacun apres son « + ».
+        let reading = engine().read("S355J2+Z25+N").unwrap();
+        let codes: Vec<&str> = reading
+            .product_symbols
+            .iter()
+            .map(|p| p.code.as_str())
+            .collect();
+        assert_eq!(codes, ["+Z25", "+N"]);
+        assert_eq!(reading.product_symbols[0].tables, [16]);
+        // Tableau 4 -> tableau 18 seul : un revetement est signale.
+        let reading = engine().read("E295+Z").unwrap();
         assert!(reading
             .findings
             .iter()
-            .any(|f| f.code == "delivery_condition"));
+            .any(|f| f.code == "product_symbol_table"));
+        // Un symbole absent des tableaux 16 a 18 est signale, pas refuse.
+        let reading = engine().read("S235JR+XYZ").unwrap();
+        assert!(reading.product_symbols[0].tables.is_empty());
+        assert!(reading
+            .findings
+            .iter()
+            .any(|f| f.code == "product_symbol_unknown"));
+        assert!(engine().read("S235JR+").is_err());
+    }
+
+    #[test]
+    fn les_exemples_de_la_norme_se_lisent_sans_reserve() {
+        // EN 10027-1:2005, exemples des tableaux 1 a 15.
+        for input in [
+            "S235JR",
+            "S355JR",
+            "S355J0",
+            "S355J2",
+            "S355K2",
+            "S450J0",
+            "S355N",
+            "S355NL",
+            "S355M",
+            "S355ML",
+            "S235J0W",
+            "S235J2W",
+            "S355J0WP",
+            "S355J2WP",
+            "S355J0W",
+            "S355J2W",
+            "S355K2W",
+            "S460Q",
+            "S460QL",
+            "S460QL1",
+            "S355MC",
+            "S355NC",
+            "S355J2H",
+            "S355GP",
+            "S350GD",
+            "S350GD+Z",
+            "P265GH",
+            "P355NH",
+            "P355M",
+            "P355ML1",
+            "P355Q",
+            "P355QH",
+            "P355QL1",
+            "P265NB",
+            "P265S",
+            "GP240GR",
+            "GP240GH",
+            "L360GA",
+            "L360NB",
+            "L360QB",
+            "L360MB",
+            "E295",
+            "E295GC",
+            "E335",
+            "E360",
+            "GE240",
+            "E355K2",
+            "B500A",
+            "Y1770C",
+            "Y1770S7",
+            "Y1230H",
+            "R320Cr",
+            "DD14",
+            "DC04",
+            "DC03+ZE",
+            "DC04EK",
+            "DX51D+Z",
+            "HC400LA",
+            "HXT450X",
+            "TH550",
+            "TS550",
+            "M400-50A",
+            "M140-30S",
+            "M660-50D",
+            "M390-50E",
+            "C20D",
+            "C2D1",
+            "C20D2",
+            "C35E",
+            "C35R",
+            "C35",
+            "C85S",
+            "C8C",
+            "13CrMo4-5",
+            "13MnNi6-3",
+            "28Mn6",
+            "27MnCrB5-2",
+            "11SMnPb30",
+            "X100CrMoV 5",
+            "X38CrMoNb16",
+            "X10CrNi18-8",
+            "X6CrMoNb17-1",
+            "X5CrNiCuNb16-4",
+            "X30NiCrN15-1-N5",
+            "HS2-9-1-8",
+            "HS6-5-2",
+            "HS6-5-2C",
+        ] {
+            let reading = engine()
+                .read(input)
+                .unwrap_or_else(|e| panic!("{input} : {e}"));
+            let reserved: Vec<&str> = reading
+                .findings
+                .iter()
+                .filter(|f| f.severity == Severity::Error || f.code.contains("digit"))
+                .chain(
+                    reading
+                        .findings
+                        .iter()
+                        .filter(|f| f.code.starts_with("product_symbol")),
+                )
+                .map(|f| f.code.as_str())
+                .collect();
+            assert!(reserved.is_empty(), "{input} : {reserved:?}");
+        }
+    }
+
+    #[test]
+    fn les_symboles_additionnels_dependent_du_groupe() {
+        // Tableau 2 : H est la temperature elevee, pas le profil creux du
+        // tableau 1.
+        let reading = engine().read("P265GH").unwrap();
+        let groups: Vec<(&str, u8)> = reading
+            .suffixes
+            .iter()
+            .map(|s| (s.code.as_str(), s.group))
+            .collect();
+        assert_eq!(groups, [("G", 1), ("H", 2)]);
+        assert_eq!(reading.suffixes[1].meaning, "température élevée");
+        let reading = engine().read("S355J2H").unwrap();
+        assert_eq!(reading.suffixes[0].meaning, "profil creux");
+        // Tableau 3 : toute lettre du groupe 2 est une classe d'exigence.
+        let reading = engine().read("L360NB").unwrap();
+        assert_eq!(reading.suffixes[1].meaning, "classe d'exigence B");
+        // Tableau 1, groupe 2 : un symbole chimique et 10 × sa teneur.
+        let reading = engine().read("S355J2WCu3").unwrap();
+        assert_eq!(content(&reading, "Cu"), Some(300));
+        // Tableau 12, note d : E2 vaut 0,02 % de soufre au plus.
+        let reading = engine().read("C35E2").unwrap();
+        assert!(reading.suffixes[0].meaning.contains("soufre 0.02 %"));
+        // Tableau 7 : Cr est « allie au chrome », groupe 1 ; HT, groupe 2.
+        let reading = engine().read("R350HT").unwrap();
+        assert_eq!(
+            (reading.suffixes[0].code.as_str(), reading.suffixes[0].group),
+            ("HT", 2)
+        );
+        assert_eq!(engine().read("R320Cr").unwrap().group_value, Some(320));
+    }
+
+    #[test]
+    fn les_groupes_des_tableaux_8_a_11() {
+        // Tableau 8 : le nombre n'est pas une caracteristique.
+        let reading = engine().read("DC04").unwrap();
+        assert_eq!(reading.group_value, None);
+        assert_eq!(reading.group.as_ref().unwrap().table, 8);
+        // Tableau 9 : HXT + resistance a la traction.
+        let reading = engine().read("HXT450X").unwrap();
+        assert_eq!(reading.group_value, Some(450));
+        assert!(reading
+            .group_value_label
+            .as_deref()
+            .unwrap()
+            .contains("résistance à la traction"));
+        assert_eq!(reading.suffixes[0].meaning, "biphasé");
+        // Tableau 10 : valeur nominale.
+        let reading = engine().read("TS550").unwrap();
+        assert!(reading.group_value_label.unwrap().contains("nominale"));
+        // Tableau 11 : pertes, epaisseur, type.
+        let reading = engine().read("M400-50A").unwrap();
+        assert_eq!(reading.group_value, Some(400));
+        assert!(reading.group_value_label.unwrap().starts_with("4 W/kg"));
+        assert!(reading.parts.iter().any(|p| p.meaning.contains("0.5 mm")));
+        assert!(reading
+            .parts
+            .iter()
+            .any(|p| p.meaning.starts_with("grains non orientés")));
+        assert!(engine().read("M400-50Z").is_err());
+        assert!(engine().read("M400").is_err());
+        // Tableau 6 : quatre chiffres, le premier nul sous 1000 MPa.
+        let reading = engine().read("Y960C").unwrap();
+        assert!(reading.findings.iter().any(|f| f.code == "digit_count"));
+        assert!(!engine()
+            .read("Y0960C")
+            .unwrap()
+            .findings
+            .iter()
+            .any(|f| f.code == "digit_count"));
+    }
+
+    #[test]
+    fn les_symboles_additionnels_des_tableaux_14_et_15() {
+        // Tableau 14 : -N5 = azote entre 0,20 et 1,0 %, 10 × la teneur.
+        let reading = engine().read("X30NiCrN15-1-N5").unwrap();
+        assert_eq!(content(&reading, "Ni"), Some(15_000));
+        assert_eq!(content(&reading, "N"), Some(500));
+        assert_eq!(reading.suffixes[0].code, "-N5");
+        // Tableau 15 : HS6-5-2C, variante a carbone plus eleve.
+        let reading = engine().read("HS6-5-2C").unwrap();
+        assert_eq!(content(&reading, "V"), Some(2000));
+        assert_eq!(reading.suffixes[0].code, "C");
+        // 7.1 : PM, metallurgie des poudres, devant X ou HS.
+        let reading = engine().read("PMHS6-5-3-8").unwrap();
+        assert!(reading.powder_metallurgy);
+        assert_eq!(content(&reading, "Co"), Some(8000));
+        // Le tableau 13 n'a pas de symbole additionnel.
+        assert!(engine().read("42CrMo4-N5").is_err());
+        // X sans element a 5 %, toutes teneurs donnees : signale.
+        let reading = engine().read("X5Cr4").unwrap();
+        assert!(reading
+            .findings
+            .iter()
+            .any(|f| f.code == "high_alloy_under_five"));
     }
 
     #[test]
@@ -1179,7 +2119,17 @@ mod tests {
             .iter()
             .any(|f| f.code == "existence_not_claimed"));
         assert_eq!(reading.conclusion.verdict, Verdict::Caution);
-        assert_eq!(reading.conclusion.warnings.len(), 3);
+        // EN 10025-2 et EN 10027-1 sont verifiees : seules les familles
+        // portent encore une reserve.
+        assert_eq!(reading.conclusion.warnings.len(), 1);
+        // L'edition lue (2005) est remplacee, et chaque lecture le dit.
+        let superseded = reading
+            .findings
+            .iter()
+            .find(|f| f.code == "edition_superseded")
+            .unwrap();
+        assert!(superseded.message.contains("EN 10027-1:2005"));
+        assert!(superseded.message.contains("EN 10027-1:2016"));
     }
 
     #[test]

@@ -969,8 +969,28 @@ export interface SurfaceCatalogue {
 
 export interface WeldingProcess {
   number: string;
+  /** Le terme préféré de l'ISO 4063. */
   name: string;
+  /** Les synonymes que la norme donne à la suite. */
+  synonyms: string[];
+  /** Noms d'atelier : des clés de recherche, pas des termes de la norme. */
   aliases: string[];
+  /** Désignations américaines exactement équivalentes (Annexe B). */
+  us_designations: string[];
+}
+
+/** Une lettre de variante : mode de transfert ou élément additionnel. */
+export interface VariantLetter {
+  letter: string;
+  name: string;
+}
+
+/** Une variante de procédé (ISO 4063, 2.2). */
+export interface ProcessVariant {
+  transfer: VariantLetter | null;
+  /** Le nombre d'électrodes, quand il y en a plus d'une. */
+  electrodes: number | null;
+  additional: VariantLetter | null;
 }
 
 export type JointFamily = "butt" | "fillet" | "other";
@@ -984,10 +1004,10 @@ export interface SizeLetter {
 /**
  * Un symbole élémentaire.
  *
- * Deux natures de source dans un même objet : `number`, `name`,
- * `full_penetration` et `multi_part` viennent de l'ISO 2553:2013 lue dans la
- * norme ; `family`, `sizes` et `both_sides_name` d'une surcouche de cotation
- * non vérifiée.
+ * Deux jeux, une même norme : `number`, `name`, `full_penetration` et
+ * `multi_part` viennent du tableau 1 de l'ISO 2553:2013 ; `family`, `sizes` et
+ * `both_sides_name` d'une surcouche de cotation lue à l'article 5 de la même
+ * norme. `both_sides_name` n'est renseigné que pour les noms du tableau 2.
  */
 export interface ElementarySymbol {
   id: string;
@@ -999,6 +1019,10 @@ export interface ElementarySymbol {
   both_sides_name: string | null;
   family: JointFamily;
   sizes: string[];
+  /** Vrai si la norme exige la cote (soudures évasées, § 5.4.4). */
+  size_required: boolean;
+  /** Le nom d'une lettre propre à ce symbole : `s` = épaisseur du rechargement. */
+  size_names: Record<string, string>;
 }
 
 export interface SupplementarySymbol {
@@ -1007,6 +1031,8 @@ export interface SupplementarySymbol {
   name: string;
   meaning: string | null;
   families: JointFamily[];
+  /** Les numéros de symboles élémentaires sur lesquels la norme le montre aussi. */
+  symbols: number[];
 }
 
 /** Système A (double trait de référence) ou B (trait unique). */
@@ -1068,7 +1094,11 @@ export interface Imperfection {
 export interface ProcessScope {
   note: string;
   fusion: string[];
+  /** Une réserve sur un procédé visé : « 31 : acier uniquement ». */
+  conditions: { prefix: string; condition: string }[];
   excluded: { prefix: string; reason: string }[];
+  /** Ce que la norme dit d'un procédé qu'elle ne cite pas. */
+  not_listed: string;
 }
 
 export type ScopeVerdict =
@@ -1094,6 +1124,13 @@ export interface WeldingCatalogue {
 
 export interface ProcessReading {
   process: WeldingProcess;
+  /** Le numéro avec ses variantes : `131-D`. */
+  code: string;
+  /** La désignation complète : `ISO 4063 - 131-D`. */
+  designation: string;
+  variant: ProcessVariant;
+  /** Pour un procédé hybride, la désignation entière : `522+15`. */
+  hybrid: string | null;
   /** Du groupe au procédé lui-même. */
   lineage: WeldingProcess[];
   is_group: boolean;
@@ -1291,13 +1328,47 @@ export interface ThreadReport {
 
 /* ---------- Matières ---------- */
 
-export type GroupNumber = "yield" | "tensile" | "hardness";
+/** Ce que porte le nombre d'un groupe d'emploi (EN 10027-1). */
+export type GroupNumber = "yield" | "tensile" | "hardness" | "losses" | "code";
+
+/** Une forme d'écriture du groupe : `H` en a six (C, D, X, CT, DT, XT). */
+export interface GroupForm {
+  prefix: string;
+  meaning?: string;
+  number: GroupNumber;
+  label: string;
+  digits?: number;
+  note: string;
+}
+
+/** Un symbole additionnel ; ses chiffres éventuels se lisent selon `digits`. */
+export interface Suffix {
+  code: string;
+  meaning: string;
+  digits?: "quality" | "sulphur_hundredths";
+}
+
+/** Les symboles additionnels d'un groupe (groupe 1 ou groupe 2 de la norme). */
+export interface SymbolSet {
+  impact: boolean;
+  symbols: Suffix[];
+  any_letter?: string;
+  chemical?: string;
+  digits: boolean;
+}
 
 export interface UseGroup {
   letter: string;
+  /** Le tableau de l'EN 10027-1 qui le décrit. */
+  table: number;
   name: string;
-  number: GroupNumber;
-  note: string;
+  forms: GroupForm[];
+  group1: SymbolSet;
+  group2: SymbolSet;
+  /** Les types d'un acier magnétique (groupe M). */
+  types?: Suffix[];
+  /** Les tableaux des symboles qui suivent un « + ». */
+  product_tables: number[];
 }
 
 export interface ThicknessBand {
@@ -1314,7 +1385,11 @@ export interface GradeRow {
 
 export interface StructuralGrade {
   grade: string;
+  /** Vide pour une nuance sans qualité (`S185`). */
   qualities: string[];
+  /** Une restriction d'emploi que la norme attache à la nuance. */
+  restriction?: string;
+  /** Une nuance peut s'arrêter avant le dernier échelon de la table. */
   rows: GradeRow[];
 }
 
@@ -1366,8 +1441,17 @@ export interface ImpactReading {
   label: string;
 }
 
-export interface Suffix {
+/** Un symbole additionnel lu, avec le groupe de la norme qui le porte. */
+export interface AdditionalSymbol {
   code: string;
+  group: 1 | 2;
+  meaning: string;
+}
+
+/** Un symbole qui suit un « + » : exigence, revêtement ou traitement. */
+export interface ProductSymbolReading {
+  code: string;
+  tables: number[];
   meaning: string;
 }
 
@@ -1376,12 +1460,15 @@ export interface SteelReading {
   kind: SteelKind;
   kind_label: string;
   cast: boolean;
+  /** Préfixe PM : métallurgie des poudres. */
+  powder_metallurgy: boolean;
   parts: DesignationPart[];
   group: UseGroup | null;
   group_value: number | null;
   group_value_label: string | null;
   impact: ImpactReading | null;
-  suffixes: Suffix[];
+  suffixes: AdditionalSymbol[];
+  product_symbols: ProductSymbolReading[];
   carbon: ElementContent | null;
   elements: ElementContent[];
   structural: StructuralGrade | null;

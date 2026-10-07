@@ -334,12 +334,17 @@ mod tests {
     fn les_nouveaux_domaines_disent_que_leur_source_nest_pas_verifiee() {
         // Saisies sans document ouvert : utilisables, mais jamais presentees
         // comme etablies. La reserve doit le dire en toutes lettres.
-        for id in ["surface", "welding", "fasteners", "materials"] {
+        for id in ["surface", "fasteners", "materials"] {
             let domain = by_id(id);
             assert_eq!(domain.status, DomainStatus::Reserved, "{id}");
             let reserve = domain.reserve.as_deref().unwrap();
             assert!(reserve.contains("non vérifiée"), "{id} : {reserve}");
         }
+        // La soudure n'en fait plus partie : ses quatre sources (ISO 2553:2013,
+        // symboles et cotation, ISO 4063, ISO 5817) sont lues dans la norme.
+        let welding = by_id("welding");
+        assert_eq!(welding.status, DomainStatus::Ready);
+        assert!(welding.reserve.is_none());
     }
 
     #[test]

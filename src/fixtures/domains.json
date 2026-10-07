@@ -131,14 +131,14 @@
     "question": "Que dit ce symbole de soudure, et que tolère son niveau de qualité ?",
     "group": "components",
     "group_label": "Composants",
-    "status": "reserved",
+    "status": "ready",
     "sources": [
       "ISO 2553:2013",
-      "ISO 2553 — cotation",
-      "ISO 4063",
-      "ISO 5817"
+      "ISO 2553:2013",
+      "ISO 4063:2009",
+      "ISO 5817:2014"
     ],
-    "reserve": "ISO 2553 — cotation (famille de joint, cotes principales admises et forme double de chaque symbole élémentaire) : Donnée normative non vérifiée. À confronter à l'Article 5 de l'ISO 2553:2013 (cotation des soudures), présent dans l'exemplaire fourni mais non transcrit, et au tableau des symboles combinés pour les formes doubles.",
+    "reserve": null,
     "unavailable": null,
     "examples": [
       "135",
@@ -175,11 +175,11 @@
     "group_label": "Matières",
     "status": "reserved",
     "sources": [
-      "EN 10027-1",
-      "EN 10025-2",
+      "EN 10027-1:2005",
+      "EN 10025-2:2019",
       "Propriétés physiques par famille"
     ],
-    "reserve": "EN 10027-1 (règles de lecture des désignations symboliques : groupes d'emploi, résilience, teneurs des aciers non alliés, faiblement et fortement alliés, aciers rapides) : Donnée normative non vérifiée. À confronter à l'EN 10027-1 (désignation symbolique) : lettres de groupe, codes de résilience, facteurs de teneur des éléments d'alliage, ou à leur relevé dans le VSM « Extrait de normes » (chapitre matériaux).",
+    "reserve": "Propriétés physiques par famille (module d'élasticité, coefficient de Poisson, masse volumique et coefficient de dilatation linéique, à température ambiante) : Donnée normative non vérifiée. À confronter à un recueil de propriétés des matériaux (VSM « Extrait de normes », chapitre matériaux, ou fiches de nuances), puis à requalifier en « recommended » avec sa source.",
     "unavailable": null,
     "examples": [
       "S355J2",
