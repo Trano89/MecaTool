@@ -120,7 +120,10 @@ seul l'état « réserve » des trois domaines.
   installeurs se téléchargent dans les artefacts du run.
 - L'application macOS reçoit une signature ad hoc, faute de certificat Apple :
   elle s'ouvre par clic droit → Ouvrir au premier lancement.
-- La release ne construit plus que ces deux cibles.
+- Releases GitHub publiques, téléchargeables par tous : dès qu'un commit poussé
+  porte une version qui n'a pas encore de release, le workflow « Release » crée
+  le tag, construit les deux installeurs, les joint et publie. Un commit sans
+  changement de version ne republie rien.
 
 ## [0.1.1] — 2026-09-11
 
