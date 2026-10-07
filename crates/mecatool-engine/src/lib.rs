@@ -28,6 +28,7 @@ pub mod compare;
 pub mod diagram;
 pub mod domain;
 pub mod error;
+pub mod fasteners;
 pub mod format;
 pub mod geometric;
 pub mod iso2768;
@@ -35,6 +36,8 @@ pub mod iso286;
 pub mod parser;
 pub mod requirement;
 pub mod search;
+pub mod surface;
+pub mod welding;
 
 pub use bearing::{BearingEngine, DesignationReading, MountingAdvice, MountingOption};
 pub use chain::{analyse_chain, verify_chain, ChainAnalysis, Link, LinkDirection};
@@ -42,6 +45,7 @@ pub use compare::{compare_fits, ComparedFit, FitComparison};
 pub use diagram::{comparison_diagram, fit_diagram, to_svg, Diagram, DiagramMode, DiagramOptions};
 pub use domain::{registry, Domain, DomainGroup, DomainStatus};
 pub use error::{EngineError, Result};
+pub use fasteners::{FastenerEngine, ThreadReport};
 pub use geometric::{
     Finding, GeometricEngine, GeometricSpec, GroupAnalysis, Overlap, Severity, SpecAnalysis,
 };
@@ -50,3 +54,5 @@ pub use iso286::{FeatureAnalysis, FitAnalysis, Iso286Engine};
 pub use parser::{parse, ParsedInput};
 pub use requirement::{verify_clearance, ClearanceRequirement, Margins, Verification};
 pub use search::{find_fits, Basis, SearchOptions, SearchResult, Solution};
+pub use surface::{ProcessFit, Reach, RoughnessChart, SurfaceAnalysis, SurfaceEngine};
+pub use welding::{QualityAssessment, WeldReading, WeldRequest, WeldingEngine};

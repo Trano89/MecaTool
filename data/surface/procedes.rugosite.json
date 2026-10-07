@@ -1,0 +1,199 @@
+{
+  "dataset": "procedes.rugosite",
+  "standard": {
+    "id": "Rugosité par procédé",
+    "edition": "",
+    "title": "Rugosité Ra usuellement obtenue selon le procédé de fabrication",
+    "scope": "plages de Ra courantes et plages atteignables avec des soins particuliers",
+    "source": "Ordres de grandeur d'atelier, saisis sans document ouvert lors de la saisie. Les plages varient d'un manuel à l'autre ; aucune norme ne les fixe.",
+    "verification": {
+      "state": "unverified",
+      "pending": "À confronter au tableau « Procédés d'usinage et rugosité » du VSM « Extrait de normes » 2022, § 2.9, page 211, puis à requalifier en « recommended » avec sa source."
+    },
+    "notes": [
+      "CE N'EST PAS UNE NORME. Ces plages sont des ordres de grandeur : elles disent ce qu'un procédé donne d'ordinaire, pas ce qu'il garantit. La machine, l'outil, la matière et les conditions de coupe déplacent les valeurs dans les deux sens.",
+      "Deux plages par procédé. La plage usuelle est celle d'une fabrication courante ; la plage atteignable demande des conditions particulières — outil affûté, passes de finition, machine rigide — et se paie en temps.",
+      "Toutes les bornes tombent sur les valeurs des classes N1 à N12, ce que le chargement vérifie : une borne hors de cette série serait une faute de saisie, ou une précision que la donnée n'a pas.",
+      "Le tableau est exprimé en Ra seulement. MecaTool ne le convertit pas en Rz : aucune relation fixe ne lie les deux paramètres.",
+      "Le classement « avec ou sans enlèvement de matière » sert à confronter le tableau au symbole : un procédé de mise en forme ne répond pas à une exigence MRR, un usinage ne répond pas à une exigence NMR."
+    ]
+  },
+  "processes": [
+    {
+      "id": "sawing",
+      "name": "sciage",
+      "aliases": ["sciage", "scie", "scié"],
+      "removal": true,
+      "usual_um": [1.6, 25],
+      "possible_um": [0.8, 50]
+    },
+    {
+      "id": "planing",
+      "name": "rabotage, mortaisage",
+      "aliases": ["rabotage", "raboté", "mortaisage", "mortaisé"],
+      "removal": true,
+      "usual_um": [1.6, 12.5],
+      "possible_um": [0.8, 25]
+    },
+    {
+      "id": "drilling",
+      "name": "perçage",
+      "aliases": ["perçage", "percage", "percé", "perce"],
+      "removal": true,
+      "usual_um": [1.6, 6.3],
+      "possible_um": [0.8, 12.5]
+    },
+    {
+      "id": "edm",
+      "name": "électroérosion",
+      "aliases": ["électroérosion", "electroerosion", "érosion", "erosion"],
+      "removal": true,
+      "usual_um": [1.6, 6.3],
+      "possible_um": [0.8, 12.5]
+    },
+    {
+      "id": "milling",
+      "name": "fraisage",
+      "aliases": ["fraisage", "fraisé", "fraise"],
+      "removal": true,
+      "usual_um": [0.8, 6.3],
+      "possible_um": [0.2, 25]
+    },
+    {
+      "id": "turning",
+      "name": "tournage, alésage à l'outil",
+      "aliases": ["tournage", "tourné", "tourne", "chariotage"],
+      "removal": true,
+      "usual_um": [0.4, 6.3],
+      "possible_um": [0.1, 25]
+    },
+    {
+      "id": "reaming",
+      "name": "alésage à l'alésoir",
+      "aliases": ["alésoir", "alesoir", "alésage", "alesage", "alésé", "alese"],
+      "removal": true,
+      "usual_um": [0.8, 3.2],
+      "possible_um": [0.4, 6.3]
+    },
+    {
+      "id": "broaching",
+      "name": "brochage",
+      "aliases": ["brochage", "broché", "broche"],
+      "removal": true,
+      "usual_um": [0.8, 3.2],
+      "possible_um": [0.4, 6.3]
+    },
+    {
+      "id": "grinding",
+      "name": "rectification",
+      "aliases": ["rectification", "rectifié", "rectifie", "meulage"],
+      "removal": true,
+      "usual_um": [0.1, 1.6],
+      "possible_um": [0.025, 6.3]
+    },
+    {
+      "id": "honing",
+      "name": "pierrage",
+      "aliases": ["pierrage", "pierré", "pierre", "honing"],
+      "removal": true,
+      "usual_um": [0.1, 0.8],
+      "possible_um": [0.025, 1.6]
+    },
+    {
+      "id": "polishing",
+      "name": "polissage",
+      "aliases": ["polissage", "poli"],
+      "removal": true,
+      "usual_um": [0.1, 0.4],
+      "possible_um": [0.025, 0.8]
+    },
+    {
+      "id": "lapping",
+      "name": "rodage",
+      "aliases": ["rodage", "rodé", "rode", "lapping"],
+      "removal": true,
+      "usual_um": [0.05, 0.4],
+      "possible_um": [0.025, 0.8]
+    },
+    {
+      "id": "superfinishing",
+      "name": "superfinition",
+      "aliases": ["superfinition", "superfini"],
+      "removal": true,
+      "usual_um": [0.025, 0.2],
+      "possible_um": [0.025, 0.8]
+    },
+    {
+      "id": "roller_burnishing",
+      "name": "galetage",
+      "aliases": ["galetage", "galeté", "galete"],
+      "removal": false,
+      "usual_um": [0.2, 0.8],
+      "possible_um": [0.1, 1.6]
+    },
+    {
+      "id": "sand_casting",
+      "name": "moulage en sable",
+      "aliases": ["moulage en sable", "sable", "fonderie sable"],
+      "removal": false,
+      "usual_um": [12.5, 25],
+      "possible_um": [6.3, 50]
+    },
+    {
+      "id": "permanent_mould",
+      "name": "moulage en coquille",
+      "aliases": ["coquille", "moulage en coquille"],
+      "removal": false,
+      "usual_um": [1.6, 3.2],
+      "possible_um": [0.8, 6.3]
+    },
+    {
+      "id": "die_casting",
+      "name": "moulage sous pression",
+      "aliases": ["sous pression", "moulage sous pression", "injection"],
+      "removal": false,
+      "usual_um": [0.8, 1.6],
+      "possible_um": [0.4, 3.2]
+    },
+    {
+      "id": "investment_casting",
+      "name": "moulage à la cire perdue",
+      "aliases": ["cire perdue", "moulage à la cire perdue", "microfusion"],
+      "removal": false,
+      "usual_um": [1.6, 3.2],
+      "possible_um": [0.4, 6.3]
+    },
+    {
+      "id": "forging",
+      "name": "forgeage",
+      "aliases": ["forgeage", "forgé", "forge", "matriçage", "matricé"],
+      "removal": false,
+      "usual_um": [3.2, 12.5],
+      "possible_um": [1.6, 25]
+    },
+    {
+      "id": "hot_rolling",
+      "name": "laminage à chaud",
+      "aliases": ["laminage à chaud", "lamine a chaud", "laminé à chaud"],
+      "removal": false,
+      "usual_um": [12.5, 25],
+      "possible_um": [6.3, 50]
+    },
+    {
+      "id": "cold_rolling",
+      "name": "laminage à froid, étirage",
+      "aliases": ["laminage à froid", "laminé à froid", "étirage", "etirage", "étiré", "etire"],
+      "removal": false,
+      "usual_um": [0.8, 3.2],
+      "possible_um": [0.2, 6.3]
+    },
+    {
+      "id": "extrusion",
+      "name": "filage, extrusion",
+      "aliases": ["filage", "filé", "extrusion", "extrudé", "extrude"],
+      "removal": false,
+      "usual_um": [0.8, 3.2],
+      "possible_um": [0.4, 6.3]
+    }
+  ]
+}

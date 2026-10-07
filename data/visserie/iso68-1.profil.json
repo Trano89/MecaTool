@@ -1,0 +1,25 @@
+{
+  "dataset": "iso68-1.profil",
+  "standard": {
+    "id": "ISO 68-1",
+    "edition": "",
+    "title": "Filetages ISO pour usages généraux — Profil de base — Filetages métriques",
+    "scope": "triangle générateur et diamètres de base exprimés en fractions de H",
+    "source": "Saisi sans document normatif ouvert lors de la saisie. Les fractions découlent de la géométrie du profil de base : triangle équilatéral de hauteur H, tronqué de H/8 au sommet et de H/4 au fond.",
+    "verification": {
+      "state": "unverified",
+      "pending": "À confronter au profil de base de l'ISO 68-1, et les diamètres calculés aux tableaux de l'ISO 724."
+    },
+    "notes": [
+      "UNE RÈGLE, PAS UNE TABLE. H = (√3/2)·P, et chaque diamètre de base se déduit du diamètre nominal en retranchant une fraction de H. MecaTool applique la règle au lieu de recopier les tableaux de l'ISO 724.",
+      "√3 n'est pas un nombre décimal : les diamètres obtenus ne sont pas exacts. MecaTool les calcule au femtomètre près, puis les annonce arrondis au micromètre — l'arrondi des tableaux de l'ISO 724.",
+      "d3, diamètre à fond de filet de la vis, n'appartient pas au profil de base : il tient compte du rayon à fond de filet (d3 = d1 − H/6). Il est retenu ici parce que la section résistante de l'ISO 898-1 l'emploie."
+    ]
+  },
+  "triangle": "H = (√3/2)·P",
+  "diameters": [
+    { "symbol": "d2", "name": "diamètre sur flancs (d2 = D2)", "h_fraction": [3, 4] },
+    { "symbol": "d1", "name": "diamètre intérieur de base (d1 = D1)", "h_fraction": [5, 4] },
+    { "symbol": "d3", "name": "diamètre à fond de filet de la vis", "h_fraction": [17, 12] }
+  ]
+}

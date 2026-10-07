@@ -1,0 +1,32 @@
+{
+  "dataset": "iso898.classes-qualite",
+  "standard": {
+    "id": "ISO 898-1",
+    "edition": "",
+    "title": "Caractéristiques mécaniques des éléments de fixation en acier au carbone et en acier allié — Partie 1 : vis, goujons et tiges filetées",
+    "scope": "règle de lecture du symbole de classe de qualité, classes des vis et des écrous associés",
+    "source": "Saisi sans document normatif ouvert lors de la saisie.",
+    "verification": {
+      "state": "unverified",
+      "pending": "À confronter à l'ISO 898-1 (symbole et liste des classes) et à l'ISO 898-2 (classes d'écrous et associations)."
+    },
+    "notes": [
+      "UNE RÈGLE DE LECTURE. Le premier nombre vaut le centième de la résistance à la traction nominale en MPa ; le second vaut dix fois le rapport entre limite d'élasticité nominale et résistance nominale. 8.8 se lit Rm = 800 MPa, Re = 0,8 × 800 = 640 MPa.",
+      "Ce sont des valeurs NOMINALES. Les minimums garantis — Rm,min, Rp0,2,min, charges d'épreuve et de rupture — sont tabulés dans l'ISO 898-1 et diffèrent parfois des nominales (8.8 au-delà de M16, par exemple). MecaTool ne les embarque pas et ne calcule donc aucun effort admissible.",
+      "La classe 9.8 n'est définie que jusqu'à M16.",
+      "Écrous (ISO 898-2) : un écrou se choisit de classe au moins égale au premier nombre de la classe de la vis. Un écrou de classe supérieure peut toujours remplacer un écrou de classe inférieure."
+    ]
+  },
+  "bolt_classes": [
+    { "class": "4.6" },
+    { "class": "4.8" },
+    { "class": "5.6" },
+    { "class": "5.8" },
+    { "class": "6.8" },
+    { "class": "8.8" },
+    { "class": "9.8", "max_d": 16 },
+    { "class": "10.9" },
+    { "class": "12.9" }
+  ],
+  "nut_classes": ["5", "6", "8", "10", "12"]
+}

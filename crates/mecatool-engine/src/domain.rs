@@ -28,9 +28,12 @@ use serde::{Deserialize, Serialize};
 
 use crate::bearing::BearingEngine;
 use crate::error::Result;
+use crate::fasteners::FastenerEngine;
 use crate::geometric::GeometricEngine;
 use crate::iso2768::Iso2768Engine;
 use crate::iso286::Iso286Engine;
+use crate::surface::SurfaceEngine;
+use crate::welding::WeldingEngine;
 
 /// L'etat d'un domaine dans l'outil.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -166,6 +169,9 @@ pub fn registry() -> Result<Vec<Domain>> {
     let iso2768 = Iso2768Engine::new()?;
     let geometric = GeometricEngine::new()?;
     let bearing = BearingEngine::new()?;
+    let surface = SurfaceEngine::new()?;
+    let welding = WeldingEngine::new()?;
+    let fasteners = FastenerEngine::new()?;
 
     let dimensional = iso286.provenance();
 
@@ -217,15 +223,16 @@ pub fn registry() -> Result<Vec<Domain>> {
             &Provenance::new().with(geometric.table().standard().clone()),
             &["⟂ 0.05 A", "perp 0.05 A", "⌖ ø0.2 (M) A B C"],
         ),
-        blocked(
+        // Les etats de surface sont restes bloques tant que la seule source
+        // existait en deux generations incompatibles. Le domaine s'ouvre en se
+        // restreignant a ce qu'elles ont en commun, et le dit dans ses notes.
+        from_provenance(
             "surface",
             "États de surface",
-            "Quelle rugosité pour ce procédé ?",
+            "Que dit cette indication de rugosité, et quel procédé l'obtient ?",
             DomainGroup::Geometry,
-            "Les deux éditions du recueil disponibles ne sont pas interchangeables : \
-             celle de 2022 suit l'ISO 21920, celle de 2014 l'ISO 4287. Mêler deux \
-             générations de paramètres produirait un module faux d'une façon \
-             difficile à repérer.",
+            &surface.provenance(),
+            &["Ra 0.8", "MRR Ra 1.6 ⊥", "N7"],
         ),
         from_provenance(
             "bearing",
@@ -235,21 +242,21 @@ pub fn registry() -> Result<Vec<Domain>> {
             &bearing.provenance(),
             &["6210", "6203-2RS", "NU2313"],
         ),
-        blocked(
+        from_provenance(
             "welding",
             "Soudure",
-            "Que dit ce symbole, et quel niveau de qualité exiger ?",
+            "Que dit ce symbole de soudure, et que tolère son niveau de qualité ?",
             DomainGroup::Components,
-            "Source relevée mais pas encore transcrite : symboles ISO 2553, \
-             numéros de procédés ISO 4063, irrégularités ISO 6520-1 et niveaux \
-             de qualité ISO 5817.",
+            &welding.provenance(),
+            &["135", "MAG", "a5 · ISO 5817-C"],
         ),
-        blocked(
+        from_provenance(
             "fasteners",
             "Visserie",
             "Quel filetage, et quel trou de passage ?",
             DomainGroup::Components,
-            "Source non encore relevée.",
+            &fasteners.provenance(),
+            &["M10", "M12 x 1.5", "M8 8.8"],
         ),
         blocked(
             "materials",
@@ -323,14 +330,28 @@ mod tests {
     }
 
     #[test]
-    fn les_etats_de_surface_expliquent_le_blocage_reel() {
-        // Ce n'est pas un manque de source : c'est que deux sources existent et
-        // qu'elles ne sont pas interchangeables. La nuance compte.
+    fn les_etats_de_surface_ne_melent_pas_deux_generations() {
+        // Le domaine etait bloque parce que deux generations de normes ne sont
+        // pas interchangeables. Il s'ouvre en se restreignant a leur tronc
+        // commun : la nuance doit rester lisible dans ses sources.
         let surface = by_id("surface");
-        assert_eq!(surface.status, DomainStatus::Blocked);
-        let reason = surface.unavailable.unwrap();
-        assert!(reason.contains("21920"));
-        assert!(reason.contains("4287"));
+        assert!(surface.is_available());
+        let engine = SurfaceEngine::new().unwrap();
+        let notes = engine.provenance().references[0].notes.join(" ");
+        assert!(notes.contains("21920"));
+        assert!(notes.contains("4287"));
+    }
+
+    #[test]
+    fn les_trois_nouveaux_domaines_disent_que_leur_source_nest_pas_verifiee() {
+        // Saisies sans document ouvert : utilisables, mais jamais presentees
+        // comme etablies. La reserve doit le dire en toutes lettres.
+        for id in ["surface", "welding", "fasteners"] {
+            let domain = by_id(id);
+            assert_eq!(domain.status, DomainStatus::Reserved, "{id}");
+            let reserve = domain.reserve.as_deref().unwrap();
+            assert!(reserve.contains("non vérifiée"), "{id} : {reserve}");
+        }
     }
 
     #[test]

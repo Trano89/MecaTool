@@ -1,0 +1,33 @@
+{
+  "dataset": "iso1302-1992.classes-n",
+  "standard": {
+    "id": "ISO 1302",
+    "edition": "1992",
+    "title": "Dessins techniques — Méthode d'indication des états de surface",
+    "scope": "classes de rugosité N1 à N12 et leur valeur Ra",
+    "source": "Saisi sans document normatif ouvert lors de la saisie. La correspondance est d'usage courant en atelier ; elle n'a pas été relue sur la norme.",
+    "verification": {
+      "state": "unverified",
+      "pending": "À confronter au tableau des classes de rugosité de l'ISO 1302:1992, ou à un recueil qui le reproduit."
+    },
+    "notes": [
+      "NORME RETIRÉE. Les classes N ont disparu de l'ISO 1302 à l'édition 2002 : elles ne doivent plus figurer sur un plan neuf, où l'on inscrit la valeur Ra elle-même. MecaTool les lit parce qu'elles abondent sur les plans existants, et le rappelle à chaque lecture.",
+      "La correspondance est une simple table : une classe vaut une valeur Ra maximale. Elle ne dit rien du procédé, de la longueur de base ni de la règle d'acceptation.",
+      "Les valeurs doublent d'une classe à la suivante, arrondies : 3,2 puis 6,3 puis 12,5. Le chargement vérifie ce doublement, à l'arrondi près, pour repérer une faute de frappe."
+    ]
+  },
+  "grades": [
+    { "grade": "N1", "ra_um": 0.025 },
+    { "grade": "N2", "ra_um": 0.05 },
+    { "grade": "N3", "ra_um": 0.1 },
+    { "grade": "N4", "ra_um": 0.2 },
+    { "grade": "N5", "ra_um": 0.4 },
+    { "grade": "N6", "ra_um": 0.8 },
+    { "grade": "N7", "ra_um": 1.6 },
+    { "grade": "N8", "ra_um": 3.2 },
+    { "grade": "N9", "ra_um": 6.3 },
+    { "grade": "N10", "ra_um": 12.5 },
+    { "grade": "N11", "ra_um": 25 },
+    { "grade": "N12", "ra_um": 50 }
+  ]
+}

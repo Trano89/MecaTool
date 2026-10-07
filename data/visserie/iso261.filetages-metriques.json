@@ -1,0 +1,53 @@
+{
+  "dataset": "iso261.filetages-metriques",
+  "standard": {
+    "id": "ISO 261",
+    "edition": "",
+    "title": "Filetages métriques ISO pour usages généraux — Vue d'ensemble",
+    "scope": "diamètres nominaux de premier et deuxième choix, pas gros et pas fins associés",
+    "source": "Saisi sans document normatif ouvert lors de la saisie. Les pas gros sont d'usage universel ; les pas fins retenus sont ceux du tableau d'ensemble, hors valeurs entre parenthèses.",
+    "verification": {
+      "state": "unverified",
+      "pending": "À confronter ligne par ligne au tableau d'ensemble de l'ISO 261, ou à son relevé dans le VSM « Extrait de normes » (chapitre éléments de fixation)."
+    },
+    "notes": [
+      "SÉLECTION. Seuls les diamètres de premier et de deuxième choix de M1 à M64 sont embarqués ; le troisième choix ne l'est pas. Un diamètre absent n'est pas un diamètre invalide.",
+      "Les pas que la norme met entre parenthèses — à éviter — ne sont pas embarqués, ni le M14 × 1,25 réservé aux bougies d'allumage.",
+      "Le pas gros s'omet dans la désignation : M10 désigne le pas de 1,5 mm. Un pas fin s'écrit toujours : M10 × 1,25.",
+      "Le premier choix est à préférer au deuxième ; la norme ne l'impose pas, elle l'ordonne."
+    ]
+  },
+  "threads": [
+    { "d": 1, "choice": 1, "coarse": 0.25, "fine": [0.2] },
+    { "d": 1.2, "choice": 1, "coarse": 0.25, "fine": [0.2] },
+    { "d": 1.6, "choice": 1, "coarse": 0.35, "fine": [0.2] },
+    { "d": 2, "choice": 1, "coarse": 0.4, "fine": [0.25] },
+    { "d": 2.5, "choice": 1, "coarse": 0.45, "fine": [0.35] },
+    { "d": 3, "choice": 1, "coarse": 0.5, "fine": [0.35] },
+    { "d": 3.5, "choice": 2, "coarse": 0.6, "fine": [0.35] },
+    { "d": 4, "choice": 1, "coarse": 0.7, "fine": [0.5] },
+    { "d": 5, "choice": 1, "coarse": 0.8, "fine": [0.5] },
+    { "d": 6, "choice": 1, "coarse": 1, "fine": [0.75] },
+    { "d": 8, "choice": 1, "coarse": 1.25, "fine": [1, 0.75] },
+    { "d": 10, "choice": 1, "coarse": 1.5, "fine": [1.25, 1, 0.75] },
+    { "d": 12, "choice": 1, "coarse": 1.75, "fine": [1.5, 1.25, 1] },
+    { "d": 14, "choice": 2, "coarse": 2, "fine": [1.5, 1] },
+    { "d": 16, "choice": 1, "coarse": 2, "fine": [1.5, 1] },
+    { "d": 18, "choice": 2, "coarse": 2.5, "fine": [2, 1.5, 1] },
+    { "d": 20, "choice": 1, "coarse": 2.5, "fine": [2, 1.5, 1] },
+    { "d": 22, "choice": 2, "coarse": 2.5, "fine": [2, 1.5, 1] },
+    { "d": 24, "choice": 1, "coarse": 3, "fine": [2, 1.5, 1] },
+    { "d": 27, "choice": 2, "coarse": 3, "fine": [2, 1.5, 1] },
+    { "d": 30, "choice": 1, "coarse": 3.5, "fine": [2, 1.5, 1] },
+    { "d": 33, "choice": 2, "coarse": 3.5, "fine": [2, 1.5] },
+    { "d": 36, "choice": 1, "coarse": 4, "fine": [3, 2, 1.5] },
+    { "d": 39, "choice": 2, "coarse": 4, "fine": [3, 2, 1.5] },
+    { "d": 42, "choice": 1, "coarse": 4.5, "fine": [4, 3, 2, 1.5] },
+    { "d": 45, "choice": 2, "coarse": 4.5, "fine": [4, 3, 2, 1.5] },
+    { "d": 48, "choice": 1, "coarse": 5, "fine": [4, 3, 2, 1.5] },
+    { "d": 52, "choice": 2, "coarse": 5, "fine": [4, 3, 2, 1.5] },
+    { "d": 56, "choice": 1, "coarse": 5.5, "fine": [4, 3, 2, 1.5] },
+    { "d": 60, "choice": 2, "coarse": 5.5, "fine": [4, 3, 2, 1.5] },
+    { "d": 64, "choice": 1, "coarse": 6, "fine": [4, 3, 2, 1.5] }
+  ]
+}
