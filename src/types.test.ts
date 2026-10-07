@@ -31,6 +31,10 @@ import weldingProcessFixture from "./fixtures/welding-process.json";
 import weldReadingFixture from "./fixtures/weld-reading.json";
 import fastenerCatalogueFixture from "./fixtures/fastener-catalogue.json";
 import threadReportFixture from "./fixtures/thread-report.json";
+import materialsCatalogueFixture from "./fixtures/materials-catalogue.json";
+import steelReadingFixture from "./fixtures/steel-reading.json";
+import thermalFitFixture from "./fixtures/thermal-fit.json";
+import toleranceClassesFixture from "./fixtures/tolerance-classes.json";
 
 import {
   NM_PER_UM,
@@ -53,6 +57,10 @@ import {
   type WeldReading,
   type FastenerCatalogue,
   type ThreadReport,
+  type MaterialsCatalogue,
+  type SteelReading,
+  type ThermalFit,
+  type ClassCatalogue,
 } from "./types";
 
 // Le contrôle de forme se joue ici, à la compilation.
@@ -75,6 +83,10 @@ const weldingProcess = weldingProcessFixture as ProcessReading[];
 const weldReading = weldReadingFixture as WeldReading;
 const fastenerCatalogue = fastenerCatalogueFixture as FastenerCatalogue;
 const threadReport = threadReportFixture as ThreadReport;
+const materialsCatalogue = materialsCatalogueFixture as MaterialsCatalogue;
+const steelReading = steelReadingFixture as SteelReading;
+const thermal = thermalFitFixture as ThermalFit;
+const toleranceClasses = toleranceClassesFixture as ClassCatalogue;
 
 describe("échantillons du moteur", () => {
   it("décrit un ajustement Ø10 H7/g6 exact", () => {
@@ -428,5 +440,40 @@ describe("échantillons des domaines états de surface, soudure et visserie", ()
     expect(states).toContain("verified");
     expect(states).toContain("unverified");
     expect(fastenerCatalogue.threads.length).toBeGreaterThan(20);
+  });
+});
+
+describe("échantillons du domaine matières", () => {
+  it("décompose S355J2 et rend sa limite par épaisseur", () => {
+    expect(steelReading.kind).toBe("use_group");
+    expect(steelReading.group_value).toBe(355);
+    expect(steelReading.impact?.celsius).toBe(-20);
+    expect(steelReading.structural?.rows[0]?.yield_mpa).toBe(355);
+    expect(steelReading.family?.id).toBe("steel");
+  });
+
+  it("décrit un ajustement qui perd son serrage à chaud", () => {
+    // Logement aluminium, arbre acier, Ø50 H7/p6, +80 K : +44 µm de jeu.
+    expect(thermal.clearance_shift).toBe(44_000);
+    expect(thermal.fit?.cold_kind).toBe("interference");
+    expect(thermal.fit?.hot_kind).toBe("clearance");
+    expect(thermal.conclusion.verdict).toBe("incompatible");
+    const states = thermal.provenance.references.map((r) => r.verification.state);
+    expect(states).toContain("verified");
+    expect(states).toContain("unverified");
+  });
+
+  it("ne présente aucune de ses sources comme vérifiée", () => {
+    expect(materialsCatalogue.warnings).toHaveLength(materialsCatalogue.provenance.references.length);
+    expect(materialsCatalogue.families.length).toBeGreaterThan(5);
+  });
+
+  it("propose les classes générales pour composer une chaîne", () => {
+    expect(toleranceClasses.general.map((option) => option.designation)).toEqual([
+      "ISO 2768-f",
+      "ISO 2768-m",
+      "ISO 2768-c",
+      "ISO 2768-v",
+    ]);
   });
 });

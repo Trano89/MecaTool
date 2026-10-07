@@ -114,4 +114,22 @@ describe("écran des états de surface", () => {
     expect(alert).toHaveTextContent("illisible");
     expect(alert).toHaveTextContent("ni un paramètre");
   });
+
+  it("compose l'indication par boutons, sans rien taper", async () => {
+    await show();
+    const symbol = await screen.findByRole("group", { name: "Variante du symbole" });
+    await userEvent.click(within(symbol).getByRole("button", { name: /^MRR/ }));
+    await waitFor(() => expect(surfaceRead).toHaveBeenLastCalledWith("MRR Ra 0.8"));
+
+    const values = screen.getByRole("group", { name: "Valeur (µm)" });
+    // Les valeurs proposées sont celles de la série du moteur, et elles seules.
+    expect(within(values).getAllByRole("button")).toHaveLength(catalogue.grades.length);
+    await userEvent.click(within(values).getByRole("button", { name: "1.6" }));
+    await waitFor(() => expect(surfaceRead).toHaveBeenLastCalledWith("MRR Ra 1.6"));
+
+    const lays = screen.getByRole("group", { name: "Sens des stries" });
+    await userEvent.click(within(lays).getByRole("button", { name: /⊥/ }));
+    await waitFor(() => expect(surfaceRead).toHaveBeenLastCalledWith("MRR Ra 1.6 ⊥"));
+    expect(screen.getByLabelText("Exigence de rugosité")).toHaveValue("MRR Ra 1.6 ⊥");
+  });
 });

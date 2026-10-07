@@ -14,23 +14,71 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import { dimensionChain } from "../api";
+import { dimensionChain, toleranceClasses } from "../api";
+import { ChoiceGroup } from "../components/Choices";
 import { nextRowId, type Row, RowList } from "../components/RowList";
 import { type Option, Select } from "../components/Select";
 import { StatusBox } from "../components/StatusBox";
 import { Why } from "../components/Why";
 import { mm } from "../format";
-import type { AppError, ChainReport, ContributionChart } from "../types";
+import type { AppError, ChainReport, ClassCatalogue, ContributionChart } from "../types";
 
 const DEFAULT_CHAIN = "A = 20 ±0.1\nB = 10 ±0.05\n-C = 5 ±0.02";
+
+/**
+ * D'où viennent les écarts d'un maillon.
+ *
+ * Une tolérance ne se tape pas quand une norme la donne : une cote sans
+ * tolérance relève de l'ISO 2768, une cote tolérancée par classe de l'ISO 286.
+ * Le moteur lit alors les écarts lui-même. La saisie d'écarts reste possible,
+ * en dernier recours, pour une tolérance que le plan porte en clair.
+ */
+type ToleranceMode = "iso2768" | "iso286" | "deviations";
+
+const MODES = [
+  { value: "iso2768", label: "Tolérance générale" },
+  { value: "iso286", label: "Classe ISO 286" },
+  { value: "deviations", label: "Écarts du plan" },
+] as const;
 
 /** Un maillon en cours de composition. */
 interface LinkRow extends Row {
   label: string;
   nominal: string;
+  mode: ToleranceMode;
+  /** Écarts écrits, pour le mode « écarts du plan ». */
   tolerance: string;
+  /** Classe ISO 286 : `h11`, `H7`. */
+  cls: string | null;
+  /** Classe générale : `ISO 2768-m`. */
+  general: string | null;
   decreasing: boolean;
 }
+
+/** Les écarts tels que le moteur les lit, selon le mode retenu. */
+function toleranceText(row: LinkRow): string {
+  switch (row.mode) {
+    case "iso2768":
+      return row.general ?? "";
+    case "iso286":
+      return row.cls ?? "";
+    case "deviations":
+      return row.tolerance.trim();
+  }
+}
+
+/** Les trois maillons de la chaîne d'exemple, déjà composés. */
+const DEFAULT_ROWS: LinkRow[] = [
+  { label: "A", nominal: "20", tolerance: "±0.1", decreasing: false },
+  { label: "B", nominal: "10", tolerance: "±0.05", decreasing: false },
+  { label: "C", nominal: "5", tolerance: "±0.02", decreasing: true },
+].map((row) => ({
+  ...row,
+  id: nextRowId(),
+  mode: "deviations",
+  cls: null,
+  general: null,
+}));
 
 /**
  * Le sens d'un maillon.
@@ -62,7 +110,7 @@ function composeChain(rows: readonly LinkRow[]): string {
       // Sans repère, le signe se porte sur le nominal : le moteur nomme alors
       // le maillon lui-même, A, B, C…
       const nominal = name === "" ? `${sign}${row.nominal.trim()}` : row.nominal.trim();
-      const tolerance = row.tolerance.trim();
+      const tolerance = toleranceText(row);
       return tolerance === "" ? `${head}${nominal}` : `${head}${nominal} ${tolerance}`;
     })
     .join("\n");
@@ -70,11 +118,12 @@ function composeChain(rows: readonly LinkRow[]): string {
 
 export function Chain() {
   const [input, setInput] = useState(DEFAULT_CHAIN);
-  // Le composeur est replie par defaut : la saisie directe est plus rapide pour
-  // qui connait la grammaire, et l'ouvrir d'office encombrerait l'ecran de
-  // celui-la. Il s'ouvre a la demande.
-  const [composing, setComposing] = useState(false);
-  const [rows, setRows] = useState<LinkRow[]>([]);
+  // Le composeur est ouvert par defaut, deja garni de la chaine d'exemple : on
+  // choisit une tolerance plutot que de la taper. La saisie directe reste
+  // au-dessus, pour qui connait la grammaire.
+  const [composing, setComposing] = useState(true);
+  const [rows, setRows] = useState<LinkRow[]>(DEFAULT_ROWS);
+  const [classes, setClasses] = useState<ClassCatalogue | null>(null);
   const [minimum, setMinimum] = useState("");
   const [maximum, setMaximum] = useState("");
   const [statistical, setStatistical] = useState(false);
@@ -116,6 +165,12 @@ export function Chain() {
 
   useEffect(() => {
     void run(input, { statistical, min: minimum, max: maximum });
+    toleranceClasses()
+      .then(setClasses)
+      .catch(() => {
+        // Sans catalogue, seuls les écarts du plan restent proposés : le
+        // composeur ne propose jamais une classe que le moteur n'a pas donnée.
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -152,8 +207,8 @@ export function Chain() {
               onChange={(event) => setInput(event.target.value)}
             />
             <p className="hint">
-              « A = 20 ±0.1 » ou « A = 20 +0.1/-0.05 ». Un signe moins devant le repère marque
-              un maillon <strong>diminuant</strong> : « -C = 5 ±0.02 ».
+              « A = 20 ±0.1 », « A = 20 h11 » ou « A = 20 ISO 2768-m ». Un signe moins devant le
+              repère marque un maillon <strong>diminuant</strong> : « -C = 5 ±0.02 ».
             </p>
           </div>
 
@@ -215,7 +270,10 @@ export function Chain() {
                 id: nextRowId(),
                 label: "",
                 nominal: "",
+                mode: (classes ? "iso2768" : "deviations") as ToleranceMode,
                 tolerance: "±0.1",
+                cls: null,
+                general: classes?.general.find((option) => option.symbol === "m")?.designation ?? null,
                 decreasing: false,
               })}
               addLabel="Ajouter un maillon"
@@ -257,20 +315,62 @@ export function Chain() {
                     />
                   </div>
 
-                  <div className="field" style={{ maxWidth: "150px" }}>
-                    <label htmlFor={`link-tol-${row.id}`} className="visually-hidden">
-                      Tolérance du maillon {index + 1}
-                    </label>
-                    <input
-                      id={`link-tol-${row.id}`}
-                      type="text"
-                      value={row.tolerance}
-                      placeholder="±0.1"
-                      autoComplete="off"
-                      spellCheck={false}
-                      onChange={(event) => update({ ...row, tolerance: event.target.value })}
+                  <ChoiceGroup
+                    legend={`Origine de la tolérance du maillon ${index + 1}`}
+                    hideLegend
+                    options={MODES.filter((mode) => classes !== null || mode.value === "deviations")}
+                    value={row.mode}
+                    onChange={(value) => {
+                      if (value !== null) update({ ...row, mode: value as ToleranceMode });
+                    }}
+                  />
+
+                  {row.mode === "iso2768" && classes ? (
+                    <ChoiceGroup
+                      legend={`Classe générale du maillon ${index + 1}`}
+                      hideLegend
+                      options={classes.general.map((option) => ({
+                        value: option.designation,
+                        label: option.symbol,
+                        title: `${option.designation} — ${option.name}`,
+                      }))}
+                      value={row.general}
+                      onChange={(value) => update({ ...row, general: value })}
                     />
-                  </div>
+                  ) : null}
+
+                  {row.mode === "iso286" && classes ? (
+                    <Select
+                      id={`link-class-${row.id}`}
+                      label={`Classe du maillon ${index + 1}`}
+                      hideLabel
+                      options={[...classes.shaft, ...classes.hole].map((option) => ({
+                        value: option.designation,
+                        label: option.designation,
+                        hint: option.grade,
+                      }))}
+                      value={row.cls}
+                      onChange={(value) => update({ ...row, cls: value })}
+                      placeholder="h11…"
+                    />
+                  ) : null}
+
+                  {row.mode === "deviations" ? (
+                    <div className="field" style={{ maxWidth: "150px" }}>
+                      <label htmlFor={`link-tol-${row.id}`} className="visually-hidden">
+                        Tolérance du maillon {index + 1}
+                      </label>
+                      <input
+                        id={`link-tol-${row.id}`}
+                        type="text"
+                        value={row.tolerance}
+                        placeholder="±0.1"
+                        autoComplete="off"
+                        spellCheck={false}
+                        onChange={(event) => update({ ...row, tolerance: event.target.value })}
+                      />
+                    </div>
+                  ) : null}
 
                   <Select
                     id={`link-dir-${row.id}`}
@@ -282,7 +382,7 @@ export function Chain() {
                   />
                 </>
               )}
-              hint="Repère, cote nominale, tolérance, sens. Un maillon sans cote nominale est ignoré."
+              hint="Repère, cote nominale, origine de la tolérance, sens. La tolérance se choisit : générale (ISO 2768) ou par classe (ISO 286), et le moteur lit les écarts lui-même. Un maillon sans cote nominale est ignoré."
             />
           </div>
         ) : null}

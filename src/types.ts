@@ -275,6 +275,14 @@ export interface Link {
   nominal: Nanometres;
   deviations: Deviations;
   direction: LinkDirection;
+  /** La norme d'où viennent les écarts, quand ils n'ont pas été saisis. */
+  source: LinkSource | null;
+}
+
+/** L'origine normative des écarts d'un maillon : `h7`, `ISO 2768-m`. */
+export interface LinkSource {
+  designation: string;
+  provenance: Provenance;
 }
 
 export interface Contribution {
@@ -312,6 +320,8 @@ export interface ChainAnalysis {
   steps: ReasoningStep[];
   /** Le maillon qui pèse le plus lourd. */
   dominant: string | null;
+  /** Les normes d'où viennent les écarts des maillons qui en citent une. */
+  provenance: Provenance;
 }
 
 export interface ContributionBar {
@@ -796,9 +806,17 @@ export interface ClassOption {
   grade: string;
 }
 
+/** Une classe de tolérance générale ISO 2768-1 : `m`, « moyen », `ISO 2768-m`. */
+export interface GeneralClassOption {
+  symbol: string;
+  name: string;
+  designation: string;
+}
+
 export interface ClassCatalogue {
   hole: ClassOption[];
   shaft: ClassOption[];
+  general: GeneralClassOption[];
   /** Les degrés seuls, du plus fin au plus large. */
   grades: string[];
   provenance: Provenance;
@@ -1266,6 +1284,134 @@ export interface ThreadReport {
   tap_drill_label: string;
   clearance_holes: ClearanceHole[];
   strength: StrengthReading | null;
+  findings: Finding[];
+  conclusion: Conclusion;
+  provenance: Provenance;
+}
+
+/* ---------- Matières ---------- */
+
+export type GroupNumber = "yield" | "tensile" | "hardness";
+
+export interface UseGroup {
+  letter: string;
+  name: string;
+  number: GroupNumber;
+  note: string;
+}
+
+export interface ThicknessBand {
+  above: Nanometres;
+  to: Nanometres;
+}
+
+export interface GradeRow {
+  band: ThicknessBand;
+  yield_mpa: number;
+  tensile_min_mpa: number;
+  tensile_max_mpa: number;
+}
+
+export interface StructuralGrade {
+  grade: string;
+  qualities: string[];
+  rows: GradeRow[];
+}
+
+/** Ordres de grandeur d'une famille, pas les valeurs d'une nuance. */
+export interface MaterialFamily {
+  id: string;
+  name: string;
+  e_gpa: number;
+  /** En millièmes : 300 pour 0,30. */
+  poisson_milli: number;
+  /** En kg/m³. */
+  density: number;
+  /** En dixièmes de µm/(m·K) : 120 pour 12. */
+  alpha_tenths: number;
+}
+
+export interface MaterialsCatalogue {
+  use_groups: UseGroup[];
+  structural_grades: StructuralGrade[];
+  families: MaterialFamily[];
+  provenance: Provenance;
+  warnings: string[];
+}
+
+export type SteelKind =
+  | "use_group"
+  | "non_alloy"
+  | "low_alloy"
+  | "high_alloy"
+  | "high_speed"
+  | "numeric";
+
+export interface DesignationPart {
+  text: string;
+  meaning: string;
+}
+
+export interface ElementContent {
+  element: string;
+  /** En millièmes de pour cent. Nul quand la désignation ne donne pas la teneur. */
+  thousandths_percent: number | null;
+  label: string;
+}
+
+export interface ImpactReading {
+  code: string;
+  joules: number;
+  celsius: number;
+  label: string;
+}
+
+export interface Suffix {
+  code: string;
+  meaning: string;
+}
+
+export interface SteelReading {
+  input: string;
+  kind: SteelKind;
+  kind_label: string;
+  cast: boolean;
+  parts: DesignationPart[];
+  group: UseGroup | null;
+  group_value: number | null;
+  group_value_label: string | null;
+  impact: ImpactReading | null;
+  suffixes: Suffix[];
+  carbon: ElementContent | null;
+  elements: ElementContent[];
+  structural: StructuralGrade | null;
+  family: MaterialFamily | null;
+  family_reason: string;
+  findings: Finding[];
+  conclusion: Conclusion;
+  provenance: Provenance;
+}
+
+export interface ThermalFitLimits {
+  designation: string;
+  cold_min: Nanometres;
+  cold_max: Nanometres;
+  cold_kind: FitKind;
+  hot_min: Nanometres;
+  hot_max: Nanometres;
+  hot_kind: FitKind;
+}
+
+export interface ThermalFit {
+  nominal: Nanometres;
+  delta_t: number;
+  hole_family: MaterialFamily;
+  shaft_family: MaterialFamily;
+  hole_growth: Nanometres;
+  shaft_growth: Nanometres;
+  clearance_shift: Nanometres;
+  clearance_shift_label: string;
+  fit: ThermalFitLimits | null;
   findings: Finding[];
   conclusion: Conclusion;
   provenance: Provenance;

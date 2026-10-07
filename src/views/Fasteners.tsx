@@ -24,6 +24,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { fastenerCatalogue, fastenerRead } from "../api";
+import { ChoiceGroup } from "../components/Choices";
 import { ErrorBox, Findings } from "../components/Findings";
 import { Reserves } from "../components/Reserves";
 import { SourceTag, Sources } from "../components/Sources";
@@ -253,6 +254,90 @@ function Threads({ catalogue }: { catalogue: FastenerCatalogue }) {
   );
 }
 
+/**
+ * La désignation composée par boutons : diamètre, pas, classe de qualité.
+ *
+ * Les diamètres et les pas sont ceux de la table embarquée, et seulement eux :
+ * le pas proposé dépend du diamètre retenu. Le pas gros ne s'écrit pas, comme
+ * sur un plan.
+ */
+function Composer({
+  catalogue,
+  onCompose,
+}: {
+  catalogue: FastenerCatalogue;
+  onCompose: (text: string) => void;
+}) {
+  const [diameter, setDiameter] = useState<string | null>("10");
+  const [pitch, setPitch] = useState<string | null>(null);
+  const [strength, setStrength] = useState<string | null>(null);
+
+  const thread = catalogue.threads.find((option) => nominal(option.d) === diameter);
+
+  const write = (d: string | null, p: string | null, c: string | null) => {
+    if (d === null) return;
+    onCompose([`M${d}`, p ? `x ${p}` : null, c].filter(Boolean).join(" "));
+  };
+
+  return (
+    <div className="composer">
+      <div className="composer-head">
+        <span className="composer-title">Composer la désignation</span>
+        <span className="faint">Écrit dans le champ ci-dessus, et le lit</span>
+      </div>
+      <div className="stack" style={{ gap: "var(--s-5)" }}>
+        <ChoiceGroup
+          legend="Diamètre nominal"
+          layout="chips"
+          options={catalogue.threads.map((option) => ({
+            value: nominal(option.d),
+            label: `M${nominal(option.d)}`,
+            title: option.choice === 1 ? "premier choix" : "deuxième choix",
+          }))}
+          value={diameter}
+          onChange={(d) => {
+            setDiameter(d);
+            // Un pas fin n'a de sens que pour son diamètre : on revient au gros.
+            setPitch(null);
+            write(d, null, strength);
+          }}
+        />
+        {thread ? (
+          <ChoiceGroup
+            legend="Pas (mm)"
+            layout="chips"
+            options={thread.fine.map((value) => ({
+              value: nominal(value),
+              label: `${nominal(value)} fin`,
+            }))}
+            value={pitch}
+            onChange={(p) => {
+              setPitch(p);
+              write(diameter, p, strength);
+            }}
+            noneLabel={`${nominal(thread.coarse)} gros`}
+          />
+        ) : null}
+        <ChoiceGroup
+          legend="Classe de qualité"
+          layout="chips"
+          options={catalogue.bolt_classes.map((option) => ({
+            value: option.class,
+            label: option.class,
+            title: `Rm ${option.tensile_mpa} MPa, Re ${option.yield_mpa} MPa (nominales)`,
+          }))}
+          value={strength}
+          onChange={(c) => {
+            setStrength(c);
+            write(diameter, pitch, c);
+          }}
+          noneLabel="Aucune"
+        />
+      </div>
+    </div>
+  );
+}
+
 export function Fasteners() {
   const [catalogue, setCatalogue] = useState<FastenerCatalogue | null>(null);
   const [input, setInput] = useState("M10");
@@ -322,6 +407,16 @@ export function Fasteners() {
             </button>
           </div>
         </div>
+        {catalogue ? (
+          <Composer
+            catalogue={catalogue}
+            onCompose={(text) => {
+              setInput(text);
+              void read(text);
+            }}
+          />
+        ) : null}
+
         <div className="chips">
           <span className="chips-label">Exemples</span>
           {EXAMPLES.map((example) => (

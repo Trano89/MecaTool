@@ -36,6 +36,7 @@ import { Fasteners } from "./views/Fasteners";
 import { GeneralTolerances } from "./views/GeneralTolerances";
 import { Geometry } from "./views/Geometry";
 import { Home } from "./views/Home";
+import { Materials } from "./views/Materials";
 import { Surface } from "./views/Surface";
 import { Welding } from "./views/Welding";
 
@@ -127,7 +128,7 @@ export function App() {
         domains={catalogue}
         screen={screen}
         onNavigate={navigate}
-        version={info?.app_version ?? "0.1.1"}
+        version={info?.app_version ?? "0.2.0"}
         themeControl={themeControl}
       />
 
@@ -266,6 +267,8 @@ function Screen({ screen, domain, domains, query, onQueryChange, onNavigate }: S
       return <Welding />;
     case "fasteners":
       return <Fasteners />;
+    case "materials":
+      return <Materials />;
     default:
       // Un domaine que le registre annonce et que cette version de l'interface
       // ne sait pas encore rendre. Le dire vaut mieux qu'un écran blanc.

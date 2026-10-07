@@ -20,6 +20,7 @@ import type {
   EngineInfo,
   FastenerCatalogue,
   FitComparison,
+  MaterialsCatalogue,
   GeometricCatalogue,
   GroupAnalysis,
   MeasureKind,
@@ -27,8 +28,10 @@ import type {
   MountingOption,
   ProcessReading,
   Report,
+  SteelReading,
   SurfaceAnalysis,
   SurfaceCatalogue,
+  ThermalFit,
   ThreadReport,
   WeldingCatalogue,
   WeldReading,
@@ -296,4 +299,29 @@ export function fastenerCatalogue(): Promise<FastenerCatalogue> {
 /** Lit une désignation de filetage : « M10 », « M12 x 1.5 », « M8 8.8 ». */
 export function fastenerRead(input: string): Promise<ThreadReport> {
   return call<ThreadReport>("fastener_read", { input });
+}
+
+/** Le catalogue des matières : groupes d'emploi, aciers de construction, familles. */
+export function materialsCatalogue(): Promise<MaterialsCatalogue> {
+  return call<MaterialsCatalogue>("materials_catalogue", {});
+}
+
+/** Décompose une désignation d'acier : « S355J2 », « 42CrMo4 », « X5CrNi18-10 ». */
+export function materialsRead(input: string): Promise<SteelReading> {
+  return call<SteelReading>("materials_read", { input });
+}
+
+/**
+ * Ce que devient un ajustement quand la température change, alésage et arbre
+ * de familles différentes. Les classes sont facultatives, mais vont par deux.
+ */
+export function thermalFit(request: {
+  nominalMm: string;
+  deltaT: string;
+  holeFamily: string;
+  shaftFamily: string;
+  holeClass?: string | undefined;
+  shaftClass?: string | undefined;
+}): Promise<ThermalFit> {
+  return call<ThermalFit>("thermal_fit", { ...request });
 }

@@ -556,17 +556,25 @@ export function Welding() {
             </div>
 
             <div className="row">
-              <div style={{ minWidth: "160px" }}>
-                <label htmlFor="weld-process">Procédé (ISO 4063)</label>
-                <input
+              <div style={{ minWidth: "320px" }}>
+                {/* Le procédé se choisit dans la nomenclature embarquée : un
+                    numéro tapé à la main pourrait n'y pas figurer. */}
+                <Select
                   id="weld-process"
-                  type="text"
-                  value={process}
-                  placeholder="135"
-                  autoComplete="off"
-                  spellCheck={false}
-                  onChange={(event) => setProcess(event.target.value)}
+                  label="Procédé (ISO 4063)"
+                  options={catalogue.processes.map((option) => ({
+                    value: option.number,
+                    label: `${option.number} — ${option.name}`,
+                  }))}
+                  value={process === "" ? null : process}
+                  onChange={setProcess}
+                  placeholder="Aucun"
                 />
+                {process !== "" ? (
+                  <button type="button" className="btn-quiet" onClick={() => setProcess("")}>
+                    Retirer le procédé
+                  </button>
+                ) : null}
               </div>
               <fieldset className="field" style={{ border: 0, padding: 0, margin: 0 }}>
                 <legend className="field-label" style={{ padding: 0 }}>

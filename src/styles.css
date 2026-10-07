@@ -1097,6 +1097,27 @@ button:disabled {
   color: var(--accent);
 }
 
+/* Une puce qui sert de choix : retenue, elle prend l'accent et un trait
+   épaissi, en plus de la coche — lisible sans distinguer la couleur. */
+.chip[aria-pressed="true"] {
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+  color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent-line);
+  font-weight: var(--weight-semibold);
+}
+
+/* Une série de choix n'est pas une rangée d'exemples : ni filet, ni marge. */
+.chips.choice-chips {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.choice-group + .choice-group {
+  margin-top: var(--s-4);
+}
+
 /*
  * Segment : un choix parmi n, tous visibles. Préféré à une liste déroulante
  * quand les options sont peu nombreuses et qu'il est utile de voir ce qu'on

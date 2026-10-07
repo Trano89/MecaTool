@@ -22,7 +22,9 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { surfaceCatalogue, surfaceRead } from "../api";
+import { ChoiceGroup } from "../components/Choices";
 import { ErrorBox, Findings } from "../components/Findings";
+import { Select } from "../components/Select";
 import { Reserves } from "../components/Reserves";
 import { SourceTag, Sources } from "../components/Sources";
 import { StatusBox } from "../components/StatusBox";
@@ -405,6 +407,149 @@ function Vocabulary({ catalogue }: { catalogue: SurfaceCatalogue }) {
   );
 }
 
+/** Ce que le composeur retient, élément par élément du symbole. */
+interface Composition {
+  symbol: string | null;
+  parameter: string | null;
+  value: string | null;
+  max: boolean;
+  lay: string | null;
+  process: string | null;
+}
+
+const INITIAL: Composition = {
+  symbol: null,
+  parameter: "Ra",
+  value: "0.8",
+  max: false,
+  lay: null,
+  process: null,
+};
+
+/**
+ * Écrit l'indication à partir des choix.
+ *
+ * Mise en forme de texte, rien d'autre : c'est la grammaire que le moteur lit
+ * déjà. Le procédé s'écrit par son premier nom d'atelier, que le moteur
+ * reconnaît.
+ */
+function composeIndication(choice: Composition, catalogue: SurfaceCatalogue): string {
+  const process = catalogue.processes.find((option) => option.id === choice.process);
+  return [
+    choice.symbol,
+    choice.parameter,
+    choice.max ? "max" : null,
+    choice.value,
+    choice.lay,
+    process?.aliases[0] ?? null,
+  ]
+    .filter((part): part is string => part !== null && part !== "")
+    .join(" ");
+}
+
+/**
+ * Le symbole composé par boutons : variante, paramètre, valeur, stries,
+ * procédé. Toutes les options viennent du catalogue du moteur — y compris les
+ * valeurs, qui sont celles de la série des classes N.
+ */
+function Composer({
+  catalogue,
+  onCompose,
+}: {
+  catalogue: SurfaceCatalogue;
+  onCompose: (text: string) => void;
+}) {
+  const [choice, setChoice] = useState<Composition>(INITIAL);
+  const change = (patch: Partial<Composition>) => {
+    const next = { ...choice, ...patch };
+    setChoice(next);
+    onCompose(composeIndication(next, catalogue));
+  };
+
+  return (
+    <div className="composer">
+      <div className="composer-head">
+        <span className="composer-title">Composer l'indication</span>
+        <span className="faint">Écrit dans le champ ci-dessus, et le lit</span>
+      </div>
+      <div className="stack" style={{ gap: "var(--s-5)" }}>
+        <ChoiceGroup
+          legend="Variante du symbole"
+          options={catalogue.symbols.map((symbol) => ({
+            value: symbol.code,
+            label: `${symbol.code} — ${symbol.name}`,
+            title: symbol.meaning,
+          }))}
+          value={choice.symbol}
+          onChange={(symbol) => change({ symbol })}
+          noneLabel="Non précisée"
+        />
+        <ChoiceGroup
+          legend="Paramètre"
+          options={catalogue.parameters.map((parameter) => ({
+            value: parameter.symbol,
+            label: parameter.symbol,
+            title: parameter.name,
+          }))}
+          value={choice.parameter}
+          onChange={(parameter) => change({ parameter })}
+        />
+        <ChoiceGroup
+          legend="Valeur (µm)"
+          layout="chips"
+          options={catalogue.grades.map((grade) => ({
+            value: umFine(grade.ra),
+            label: umFine(grade.ra),
+            title: grade.grade,
+          }))}
+          value={choice.value}
+          onChange={(value) => change({ value })}
+        />
+        <ChoiceGroup
+          legend="Règle d'acceptation"
+          options={[
+            { value: "default", label: "Par défaut" },
+            { value: "max", label: "max — règle du maximum" },
+          ]}
+          value={choice.max ? "max" : "default"}
+          onChange={(rule) => change({ max: rule === "max" })}
+        />
+        <ChoiceGroup
+          legend="Sens des stries"
+          layout="chips"
+          options={catalogue.lays.map((lay) => ({
+            value: lay.symbol,
+            label: `${lay.symbol} ${lay.name}`,
+            title: lay.meaning,
+          }))}
+          value={choice.lay}
+          onChange={(lay) => change({ lay })}
+          noneLabel="Non indiqué"
+        />
+        <div style={{ maxWidth: "360px" }}>
+          <Select
+            id="surface-process"
+            label="Procédé indiqué (facultatif)"
+            options={catalogue.processes.map((process) => ({
+              value: process.id,
+              label: process.name,
+              hint: process.removal ? "usinage" : "mise en forme",
+            }))}
+            value={choice.process}
+            onChange={(process) => change({ process })}
+            placeholder="Aucun"
+          />
+          {choice.process ? (
+            <button type="button" className="btn-quiet" onClick={() => change({ process: null })}>
+              Retirer le procédé
+            </button>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function Surface() {
   const [catalogue, setCatalogue] = useState<SurfaceCatalogue | null>(null);
   const [input, setInput] = useState("Ra 0.8");
@@ -474,6 +619,16 @@ export function Surface() {
             </button>
           </div>
         </div>
+
+        {catalogue ? (
+          <Composer
+            catalogue={catalogue}
+            onCompose={(text) => {
+              setInput(text);
+              void read(text);
+            }}
+          />
+        ) : null}
 
         <div className="chips">
           <span className="chips-label">Exemples</span>

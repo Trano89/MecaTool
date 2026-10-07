@@ -10,7 +10,7 @@
  * donne que des valeurs nominales.
  */
 
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -95,5 +95,25 @@ describe("écran de la visserie", () => {
     await userEvent.click(await screen.findByRole("button", { name: "Lire le filetage" }));
     const alert = await screen.findByRole("alert");
     expect(alert).toHaveTextContent("n'existe pas");
+  });
+
+  it("compose la désignation par boutons : diamètre, pas, classe", async () => {
+    vi.mocked(fastenerCatalogue).mockResolvedValue(catalogue);
+    vi.mocked(fastenerRead).mockResolvedValue(report);
+    render(<Fasteners />);
+
+    const diameters = await screen.findByRole("group", { name: "Diamètre nominal" });
+    expect(within(diameters).getAllByRole("button")).toHaveLength(catalogue.threads.length);
+    await userEvent.click(within(diameters).getByRole("button", { name: "M12" }));
+    await waitFor(() => expect(fastenerRead).toHaveBeenLastCalledWith("M12"));
+
+    // Les pas proposés sont ceux de M12, et seulement eux.
+    const pitches = screen.getByRole("group", { name: "Pas (mm)" });
+    await userEvent.click(within(pitches).getByRole("button", { name: /1.5 fin/ }));
+    await waitFor(() => expect(fastenerRead).toHaveBeenLastCalledWith("M12 x 1.5"));
+
+    const classes = screen.getByRole("group", { name: "Classe de qualité" });
+    await userEvent.click(within(classes).getByRole("button", { name: /10.9/ }));
+    await waitFor(() => expect(fastenerRead).toHaveBeenLastCalledWith("M12 x 1.5 10.9"));
   });
 });
