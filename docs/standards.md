@@ -48,8 +48,22 @@ data/
 │   └── iso286-1-2010.shaft-deviations.json   écarts fondamentaux des arbres
 ├── iso2768/
 │   └── iso2768-1-1989.general-tolerances.json   tolérances générales
-└── iso1101/
-    └── iso1101.geometric-characteristics.json   caractéristiques géométriques
+├── iso1101/
+│   └── iso1101.geometric-characteristics.json   caractéristiques géométriques
+├── roulements/                                  symbole d'alésage, classes de montage
+├── surface/          non vérifiés
+│   ├── iso21920.indication.json                 symboles, stries, paramètres
+│   ├── iso1302-1992.classes-n.json              classes N1 à N12 (norme retirée)
+│   └── procedes.rugosite.json                   Ra par procédé, ordres de grandeur
+├── soudure/          non vérifiés
+│   ├── iso4063.procedes.json                    numéros de procédés
+│   ├── iso2553.symboles.json                    symboles et cotes
+│   └── iso5817.niveaux-qualite.json             limites des niveaux B, C, D
+└── visserie/         non vérifiés
+    ├── iso261.filetages-metriques.json          diamètres et pas
+    ├── iso68-1.profil.json                      profil de base, en fractions de H
+    ├── iso273.trous-de-passage.json             trous de passage, séries et classes
+    └── iso898.classes-qualite.json              classes de qualité vis et écrous
 ```
 
 Le fichier ISO 1101 n'a **pas de millésime dans son nom**, à la différence des
@@ -147,6 +161,29 @@ nulle part.
 | Écarts fondamentaux arbres    | ✅ vérifié | 10 lettres : d, e, f, g, h, js, k, m, n, p | ISO 286-2:2010, tableaux 18 à 26 |
 | Tolérances générales ISO 2768-1 | ✅ vérifié | 3 tables × 4 classes | DIN ISO 2768-1:1991-06, tableaux 1 à 3 |
 | Caractéristiques géométriques ISO 1101 | ⚠️ source secondaire | 17 entrées, 4 familles, 22 modificateurs | VSM « Extrait de normes » 2022, p. 174-189, recoupé avec l'édition 2014, p. 90-91 |
+| Indication des états de surface ISO 21920-1 | 🟠 non vérifié | 3 symboles, 7 sens des stries, 6 paramètres | à confronter : ISO 21920-1/-2, ou VSM 2022 § 2.9 |
+| Classes N ISO 1302:1992 | 🟠 non vérifié | N1 à N12 | à confronter : ISO 1302:1992 |
+| Rugosité par procédé | 🟠 non vérifié, non normatif | 22 procédés | à confronter : VSM 2022, p. 211 |
+| Procédés de soudage ISO 4063 | 🟠 non vérifié | 46 numéros, sélection | à confronter : ISO 4063 |
+| Symboles de soudure ISO 2553 | 🟠 non vérifié | 13 symboles élémentaires, 6 supplémentaires | à confronter : ISO 2553 |
+| Niveaux de qualité ISO 5817 | 🟠 non vérifié | 21 lignes de défauts de surface et de géométrie | à confronter : ISO 5817 |
+| Filetages ISO 261 | 🟠 non vérifié | M1 à M64, 1er et 2e choix | à confronter : ISO 261 |
+| Profil de base ISO 68-1 | 🟠 non vérifié | une règle : d2, d1, d3 en fractions de H | à confronter : ISO 68-1, et ISO 724 pour les valeurs |
+| Trous de passage ISO 273 | 🟠 non vérifié | 31 diamètres × 3 séries | à confronter : ISO 273 |
+| Classes de qualité ISO 898-1 | 🟠 non vérifié | 9 classes de vis, 5 d'écrous | à confronter : ISO 898-1 et 898-2 |
+
+**Non vérifié ne veut pas dire inventé, ni fiable.** Les jeux marqués 🟠 ont été
+saisis sans document normatif ouvert : leur champ `source` le dit tel quel, et
+leur champ `pending` nomme la source contre laquelle les confronter. Les
+contrôles de chargement y repèrent déjà les incohérences internes — un niveau
+ISO 5817 plus exigeant qui tolérerait davantage, une borne de rugosité hors de
+la série N, un filetage sans trou de passage — mais ils ne remplacent pas la
+confrontation. Le protocole ci-dessous s'applique à eux comme aux autres.
+
+Deux recoupements indépendants existent déjà, et ne valent pas vérification :
+les diamètres de base calculés par la règle de l'ISO 68-1 retrouvent les valeurs
+d'usage de l'ISO 724 (M6, M8, M10, M12), et la section résistante celles de
+l'ISO 898-1 (M6 à M12).
 
 **Vérifié ne veut pas dire complet.** Les valeurs présentes ont été confrontées à
 la source ; il en manque encore beaucoup (voir ci-dessous).

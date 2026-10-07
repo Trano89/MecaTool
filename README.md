@@ -34,6 +34,12 @@ Voir [docs/domaines.md](docs/domaines.md).
 > reproduit la norme, et non de la norme. L'écran concerné le dit, dès son
 > ouverture. La couverture reste partielle et le moteur refuse explicitement ce
 > qu'il n'a pas. Voir [docs/standards.md](docs/standards.md).
+>
+> 🟠 **États de surface, soudure et visserie : données non vérifiées.** Ces trois
+> domaines fonctionnent, mais leurs données ont été saisies sans document
+> normatif ouvert. Elles portent l'état `unverified`, que chaque écran affiche
+> avant toute saisie, et chaque fichier dit contre quoi le confronter. Ne pas
+> s'en servir pour réceptionner un ouvrage avant cette confrontation.
 
 ## Les domaines
 
@@ -50,9 +56,9 @@ qu'un jeu qui changerait de statut déplacerait le domaine sans que personne ait
 | Chaîne de cotes | Que donne cet empilement ? | aucune — géométrie seule | ✅ |
 | Tolérancement géométrique | Que dit ce cadre, que lui manque-t-il ? | ISO 1101 | ⚠️ recueil |
 | **Roulements** | **Quel alésage, quelle tolérance de portée ?** | **ISO 15 + fabricants** | **⚠️ recueil + recommandation** |
-| États de surface | Quelle rugosité pour ce procédé ? | ISO 21920 / ISO 4287 | ⛔ éditions incompatibles |
-| Soudure | Que dit ce symbole, quel niveau de qualité ? | ISO 2553, 4063, 6520-1, 5817 | ⏳ relevée, non transcrite |
-| Visserie | Quel filetage, quel trou de passage ? | — | ⏳ |
+| **États de surface** | **Que dit cette indication, quel procédé l'obtient ?** | **ISO 21920-1, ISO 1302:1992, ordres de grandeur d'atelier** | **🟠 non vérifiée** |
+| **Soudure** | **Que dit ce symbole, que tolère son niveau de qualité ?** | **ISO 2553, 4063, 5817** | **🟠 non vérifiée** |
+| **Visserie** | **Quel filetage, quel trou de passage ?** | **ISO 261, 68-1, 273, 898-1 + ISO 286** | **🟠 non vérifiée + ✅ confrontée** |
 | Matières | Quelle nuance, quelles propriétés ? | — | ⏳ |
 
 Un domaine sans source **reste visible**, désactivé, avec sa raison. Le masquer
@@ -107,10 +113,10 @@ de la source, citée sous « Pourquoi ? ». Et il ne se déclenche qu'entre zone
 plans ne sont pas commensurables, et comparer leurs seuls nombres conclurait de
 travers. Quand les natures diffèrent, MecaTool le dit au lieu de trancher.
 
-Les **états de surface** restent bloqués : le recueil les couvre, mais son
-édition 2022 suit l'ISO 21920 et celle de 2014 l'ISO 4287, qui ne sont pas
-interchangeables. Plutôt qu'un module mêlant deux générations de paramètres, il
-n'y a pas encore de module d'états de surface.
+Les **états de surface** sont restés bloqués tant que la seule source existait
+en deux générations incompatibles — ISO 21920 d'un côté, ISO 4287 et ISO 1302 de
+l'autre. Ils s'ouvrent désormais en **se restreignant** à ce que les deux ont en
+commun, plutôt qu'en tranchant. Voir plus bas.
 
 ## Le module roulements, et la frontière qu'il rend visible
 
@@ -155,6 +161,64 @@ dit comment un symbole se traduit en diamètre ; elle ne dit pas comment découp
 `623` en série et symbole — série 6 + symbole 23, ou série 62 + symbole 3. Les
 deux sont formellement licites, et seule la connaissance des séries existantes
 trancherait.
+
+## États de surface, soudure, visserie — et leur réserve
+
+Ces trois domaines fonctionnent de bout en bout : moteur, commandes, écrans,
+tests. Leurs données, en revanche, ont été **saisies sans document normatif
+ouvert**. Elles portent donc l'état `unverified`, et c'est ce que chaque écran
+dit avant toute saisie. Ce n'est pas une formalité : la règle absolue autorise
+une donnée non vérifiée, à condition qu'elle se voie.
+
+**États de surface.** Le module lit une indication — `MRR Ra 0.8 ⊥`, `N7`,
+`Rz 6.3 max` — et situe chaque procédé du tableau par rapport à elle : atteinte
+d'ordinaire, avec des soins particuliers, hors d'atteinte, ou *plus fin que
+nécessaire*, ce qui signale un procédé probablement trop cher. Le graphique des
+plages, calculé en Rust, répond à « quelle rugosité pour ce procédé ? » dès
+l'ouverture de l'écran.
+
+```
+Rz 6.3
+🔵 Le tableau des procédés est exprimé en Ra. MecaTool ne convertit pas Rz en
+   Ra : aucune relation fixe ne lie les deux paramètres.
+```
+
+Le blocage sur les deux générations de normes se lève en **retrécissant** le
+périmètre : symboles, sens des stries et paramètres d'amplitude, communs aux
+deux, sont embarqués ; longueurs de base, filtres et règle d'acceptation par
+défaut, qui les distinguent, ne le sont pas — et le raisonnement le dit.
+
+**Soudure.** Un numéro de procédé se lit avec sa hiérarchie (`135` relève de
+`13`, qui relève de `1`) ; un nom d'atelier rend toutes ses lectures (`MAG` →
+135, 136, 138). Un symbole complet se restitue phrase par phrase, avec ce qui
+cloche : une cote `s` sur une soudure d'angle, une soudure alternée d'un seul
+côté, un niveau ISO 5817 appliqué à du brasage. Les limites du niveau se
+chiffrent pour la géométrie saisie :
+
+```
+convexité excessive (503)    h ≤ 1 mm + 0.15 b, max. 4 mm    →  h ≤ 2.5 mm
+```
+
+Comme le module géométrique ne propose aucune valeur, le module soudure **ne
+recommande aucun niveau de qualité** : c'est l'affaire de la norme d'application
+ou du concepteur. Un test échoue si un constat venait à en recommander un.
+
+**Visserie.** `M10` se déplie en pas, profil de base, section résistante,
+perçage avant taraudage et trous de passage. Les diamètres de base suivent la
+*règle* du profil ISO 68-1 plutôt qu'une table, calculés en entiers au
+femtomètre puis annoncés arrondis au micromètre — et retrouvent les valeurs de
+l'ISO 724 (`d2 = 9.026`, `d1 = 8.376`). Les trous de passage passent ensuite au
+moteur ISO 286 :
+
+```
+Trou moyen   Ø11 H13       ISO 273, non vérifiée
+Écarts       EI = 0, ES = +270 µm     ISO 286, confrontée
+```
+
+C'est la frontière déjà rendue visible par les roulements : deux natures de
+source dans un même résultat, chacune avec son étiquette. Aucun effort
+admissible n'est calculé : la classe de qualité donne des valeurs nominales, et
+les minimums garantis de l'ISO 898-1 ne sont pas embarqués.
 
 ## Lancer l'application
 
@@ -294,15 +358,18 @@ secondes d'arc. Les tolérances angulaires générales tombent donc juste.
 - Arrondir silencieusement une valeur non représentable.
 - Présenter une donnée non vérifiée comme une valeur ISO établie.
 - Conclure à une compatibilité sans exigence fonctionnelle.
+- Convertir une rugosité Rz en Ra, ou l'inverse.
+- Recommander un niveau de qualité de soudure.
+- Calculer un effort admissible à partir de valeurs nominales.
 
 Chacun de ces refus est couvert par un test.
 
 ## Développement
 
 ```bash
-cargo test --workspace        # 337 tests : moteur
-cd src-tauri && cargo test    #  29 tests : frontiere Tauri + echantillons
-npm test                      #  63 tests : interface
+cargo test --workspace        # 440 tests : moteur
+cd src-tauri && cargo test    #  36 tests : frontiere Tauri + echantillons
+npm test                      # 103 tests : interface
 cargo clippy --workspace --all-targets
 cargo fmt --all
 ```

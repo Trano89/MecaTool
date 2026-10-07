@@ -3,6 +3,69 @@
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), et le
 projet adopte le [versionnage sémantique](https://semver.org/lang/fr/).
 
+## [Non publié]
+
+### Ajouté — trois domaines ouverts, sur données non vérifiées
+
+Les états de surface, la soudure et la visserie passent de « à venir » à
+**utilisables**. Leurs données ont été saisies **sans document normatif ouvert** :
+elles portent l'état `unverified`, chaque écran l'affiche avant toute saisie, et
+chaque fichier de `data/` dit contre quoi le confronter. Le registre en déduit
+seul l'état « réserve » des trois domaines.
+
+**États de surface** (`data/surface/`)
+
+- Lecture d'une indication : variante du symbole (`APA`, `MRR`, `NMR`),
+  paramètre d'amplitude, limite haute ou basse, règle du maximum, sens des
+  stries, procédé cité. Une classe N (`N7`) se lit en Ra, avec le rappel que
+  l'ISO 1302:1992 qui les définissait est retirée.
+- Rugosité par procédé : chaque procédé est situé par rapport à l'exigence —
+  d'ordinaire, avec des soins, hors d'atteinte, ou plus fin que nécessaire. Le
+  symbole écarte les procédés de l'autre famille, et une contradiction entre
+  symbole et procédé cité est une faute.
+- Graphique des plages par procédé, géométrie calculée en Rust, sur l'échelle
+  des classes N.
+- **Le blocage des deux générations de normes est levé en retrécissant le
+  périmètre** : seul ce que l'ISO 21920 et l'ISO 4287/1302 ont en commun est
+  embarqué. Longueurs de base, filtres et règle d'acceptation par défaut ne le
+  sont pas, et le moteur le dit.
+- Refus : aucune conversion entre Rz et Ra.
+
+**Soudure** (`data/soudure/`)
+
+- Numéros de procédés ISO 4063, avec leur hiérarchie. Un nom d'atelier (`MAG`,
+  `TIG`) rend toutes ses lectures ; un numéro absent n'est pas dit inexistant.
+- Lecture d'un symbole ISO 2553 complet : symbole élémentaire et côté, cote
+  (`a`, `z`, `s`, `d`, `c`), discontinuité `n × l (e)`, symboles
+  supplémentaires, procédé, niveau de qualité. Restitution en clair, constats à
+  l'appui. `z = a·√2` est calculé en entiers et annoncé arrondi.
+- Limites ISO 5817 chiffrées pour la géométrie saisie, niveaux B, C, D. Une
+  limite dont la grandeur manque reste écrite sous sa forme littérale.
+- La validation au chargement vérifie qu'**un niveau plus exigeant ne tolère
+  jamais davantage** : une valeur saisie dans la mauvaise colonne fait tomber le
+  chargement.
+- Refus : aucun niveau de qualité recommandé ; pas de limites ISO 5817 pour le
+  brasage, le soudage par résistance ou par faisceau.
+
+**Visserie** (`data/visserie/`)
+
+- Désignations `M10`, `M12 x 1.5`, `M10-6g`, `M8 8.8`. Pas gros ou fin, choix
+  de diamètre, pas non listé signalé mais calculable.
+- Diamètres de base par la règle du profil ISO 68-1, en entiers au femtomètre,
+  annoncés au micromètre : ils retrouvent les tableaux de l'ISO 724.
+- Section résistante As, perçage avant taraudage `D − P` présenté comme règle
+  d'atelier.
+- Trous de passage ISO 273 en trois séries, **poursuivis jusqu'aux écarts réels
+  par le moteur ISO 286** — deux natures de source dans un même résultat, comme
+  pour les roulements.
+- Classe de qualité lue selon la règle du symbole, écrou associé.
+- Refus : aucun effort admissible, les minimums garantis n'étant pas embarqués.
+
+### Corrigé
+
+- Une rugosité fine s'affichait arrondie au dixième de micromètre : Ra 0,025
+  devenait « 0 ». Un formateur au nanomètre la remplace sur l'écran concerné.
+
 ## [0.1.1] — 2026-09-11
 
 ### Renommé

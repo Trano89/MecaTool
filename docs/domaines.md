@@ -125,10 +125,38 @@ recueil, ou recommandation de fabricant.
 | Chaînes de cotes | Que donne cet empilement ? | — (géométrie) | ✅ sans source externe |
 | Tolérancement géométrique | Que dit ce cadre, que lui manque-t-il ? | ISO 1101 | ⚠️ recueil |
 | **Roulements** | **Quel alésage, quelle tolérance de portée ?** | **ISO 15, fabricants** | **✅ construit** |
-| **Soudure** | **Que dit ce symbole, quel niveau de qualité ?** | **ISO 2553, 4063, 6520-1, 5817** | **⚠️ recueil** |
-| Visserie | Quel filetage, quel trou de passage ? | ISO 261, 273 | ⏳ à relever |
+| **Soudure** | **Que dit ce symbole, que tolère son niveau de qualité ?** | **ISO 2553, 4063, 5817** | **🟠 construit, données non vérifiées** |
+| **Visserie** | **Quel filetage, quel trou de passage ?** | **ISO 261, 68-1, 273, 898-1** | **🟠 construit, données non vérifiées** |
 | Matériaux | Quelle nuance, quelles propriétés ? | EN 10027 et suivantes | ⏳ à relever |
-| États de surface | Quelle rugosité pour ce procédé ? | ISO 21920 | ⛔ éditions incompatibles |
+| **États de surface** | **Que dit cette indication, quel procédé l'obtient ?** | **ISO 21920-1, ISO 1302:1992** | **🟠 construit, données non vérifiées** |
+
+## Ouvrir un domaine sur des données non vérifiées
+
+États de surface, soudure et visserie ont été construits avant que leurs
+sources soient confrontées. C'est permis — la règle absolue interdit de faire
+passer une donnée non vérifiée pour établie, pas de s'en servir — à trois
+conditions, toutes tenues par le code :
+
+1. **L'état se voit.** Les jeux portent `unverified`, le registre en déduit
+   l'état « réserve », et chaque écran affiche les réserves avant la saisie.
+2. **Chaque fichier dit quoi faire.** Le champ `pending` nomme la source contre
+   laquelle confronter le jeu, et le champ `source` dit honnêtement comment il a
+   été saisi.
+3. **Le périmètre est une sélection, et le dit.** Un numéro de procédé, un
+   diamètre ou une imperfection absents ne sont pas déclarés inexistants : le
+   moteur dit qu'il ne les connaît pas.
+
+Le jour où une source est confrontée, seul le bloc `verification` change ; le
+domaine passe de « réserve » à « prêt » sans que personne ait à y penser.
+
+## Les états de surface, et la frontière des générations
+
+Le domaine était bloqué pour une bonne raison : l'ISO 21920 et l'ISO 4287/1302
+ne sont pas interchangeables. Il ne s'ouvre pas en choisissant l'une contre
+l'autre, mais en **ne portant que leur tronc commun** — trois variantes du
+symbole, sept sens des stries, la signification des paramètres d'amplitude. Ce
+qui les distingue reste dehors, et le raisonnement de chaque lecture le dit sous
+« Ce que MecaTool ne fournit pas ».
 
 ## Un quatrième état de source
 
