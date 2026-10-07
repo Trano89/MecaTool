@@ -39,7 +39,9 @@
 
 use serde::{Deserialize, Serialize};
 
-use mecatool_core::{Conclusion, Deviations, Length, LimitsOfSize, ReasoningStep, Unit, Verdict};
+use mecatool_core::{
+    Conclusion, Deviations, Length, LimitsOfSize, Provenance, ReasoningStep, Unit, Verdict,
+};
 
 use crate::error::{EngineError, Result};
 
@@ -84,6 +86,21 @@ pub struct Link {
     pub nominal: Length,
     pub deviations: Deviations,
     pub direction: LinkDirection,
+    /// D'ou viennent les ecarts, quand ils ne sont pas saisis a la main.
+    #[serde(default)]
+    pub source: Option<LinkSource>,
+}
+
+/// L'origine normative des ecarts d'un maillon.
+///
+/// Un maillon ecrit `A = 20 h7` ou `A = 20 ISO 2768-m` ne porte pas ses ecarts :
+/// le moteur les lit dans la norme. La source voyage avec le maillon, pour que
+/// la chaine dise d'ou vient chacune de ses tolerances.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct LinkSource {
+    /// Telle qu'elle s'ecrirait sur le plan : `h7`, `ISO 2768-m`.
+    pub designation: String,
+    pub provenance: Provenance,
 }
 
 impl Link {
@@ -107,7 +124,14 @@ impl Link {
             nominal,
             deviations,
             direction,
+            source: None,
         })
+    }
+
+    /// Rattache le maillon a la norme d'ou viennent ses ecarts.
+    pub fn with_source(mut self, source: LinkSource) -> Self {
+        self.source = Some(source);
+        self
     }
 
     /// Largeur de la tolerance du maillon.
@@ -182,6 +206,10 @@ pub struct ChainAnalysis {
     pub steps: Vec<ReasoningStep>,
     /// Le maillon qui pese le plus lourd.
     pub dominant: Option<String>,
+    /// Les normes d'ou viennent les ecarts des maillons qui en citent une.
+    /// Vide quand tous les ecarts sont saisis a la main.
+    #[serde(default)]
+    pub provenance: Provenance,
 }
 
 impl ChainAnalysis {
@@ -281,6 +309,13 @@ pub fn analyse_chain(links: &[Link], statistical: bool) -> Result<ChainAnalysis>
 
     let steps = reasoning(links, nominal, &limits, total_tolerance);
 
+    let mut provenance = Provenance::new();
+    for link in links {
+        if let Some(source) = &link.source {
+            provenance.merge(&source.provenance);
+        }
+    }
+
     Ok(ChainAnalysis {
         contributions,
         nominal,
@@ -290,6 +325,7 @@ pub fn analyse_chain(links: &[Link], statistical: bool) -> Result<ChainAnalysis>
         statistical,
         steps,
         dominant,
+        provenance,
     })
 }
 

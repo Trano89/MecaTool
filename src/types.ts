@@ -275,6 +275,14 @@ export interface Link {
   nominal: Nanometres;
   deviations: Deviations;
   direction: LinkDirection;
+  /** La norme d'où viennent les écarts, quand ils n'ont pas été saisis. */
+  source: LinkSource | null;
+}
+
+/** L'origine normative des écarts d'un maillon : `h7`, `ISO 2768-m`. */
+export interface LinkSource {
+  designation: string;
+  provenance: Provenance;
 }
 
 export interface Contribution {
@@ -312,6 +320,8 @@ export interface ChainAnalysis {
   steps: ReasoningStep[];
   /** Le maillon qui pèse le plus lourd. */
   dominant: string | null;
+  /** Les normes d'où viennent les écarts des maillons qui en citent une. */
+  provenance: Provenance;
 }
 
 export interface ContributionBar {
@@ -796,10 +806,700 @@ export interface ClassOption {
   grade: string;
 }
 
+/** Une classe de tolérance générale ISO 2768-1 : `m`, « moyen », `ISO 2768-m`. */
+export interface GeneralClassOption {
+  symbol: string;
+  name: string;
+  designation: string;
+}
+
 export interface ClassCatalogue {
   hole: ClassOption[];
   shaft: ClassOption[];
+  general: GeneralClassOption[];
   /** Les degrés seuls, du plus fin au plus large. */
   grades: string[];
+  provenance: Provenance;
+}
+
+/* ---------- États de surface ---------- */
+
+/** La variante du symbole : tout procédé, enlèvement exigé, enlèvement interdit. */
+export type ProcessRequirement = "any" | "removal_required" | "removal_prohibited";
+
+export interface SymbolVariant {
+  id: ProcessRequirement;
+  /** L'écriture en texte, faute de glyphe : `APA`, `MRR`, `NMR`. */
+  code: string;
+  name: string;
+  meaning: string;
+}
+
+export interface LaySymbol {
+  symbol: string;
+  aliases: string[];
+  name: string;
+  meaning: string;
+}
+
+export interface ProfileParameter {
+  symbol: string;
+  name: string;
+  definition: string;
+  note: string | null;
+}
+
+/** Une classe N de l'ISO 1302:1992, retirée — lue, jamais écrite. */
+export interface RoughnessGrade {
+  grade: string;
+  ra: Nanometres;
+}
+
+export interface RaRange {
+  finest: Nanometres;
+  coarsest: Nanometres;
+}
+
+/** Ordres de grandeur d'atelier, sans caractère normatif. */
+export interface ProcessRoughness {
+  id: string;
+  name: string;
+  aliases: string[];
+  /** Vrai pour un usinage, faux pour une mise en forme. */
+  removal: boolean;
+  usual: RaRange;
+  possible: RaRange;
+}
+
+/**
+ * Où se situe un procédé par rapport à la valeur demandée.
+ *
+ * `finer` n'est pas un succès sans nuance : le procédé fait mieux sans effort,
+ * donc probablement plus cher que nécessaire.
+ */
+export type Reach = "usual" | "finer" | "possible" | "out_of_reach";
+
+export interface ProcessFit {
+  process: ProcessRoughness;
+  reach: Reach;
+  reach_label: string;
+  /** Pourquoi le symbole écarte ce procédé, le cas échéant. */
+  excluded: string | null;
+}
+
+export interface ChartSpan {
+  x: number;
+  width: number;
+}
+
+export interface ChartColumn {
+  grade: string;
+  ra_label: string;
+  x: number;
+  width: number;
+}
+
+export interface ChartRow {
+  id: string;
+  name: string;
+  removal: boolean;
+  y: number;
+  height: number;
+  usual: ChartSpan;
+  possible: ChartSpan;
+  reach: Reach | null;
+  excluded: boolean;
+}
+
+/** Les plages par procédé, géométrie calculée par le moteur. */
+export interface RoughnessChart {
+  width: number;
+  height: number;
+  origin: number;
+  columns: ChartColumn[];
+  rows: ChartRow[];
+  marker: { x: number; label: string } | null;
+  caption: string;
+}
+
+export type LimitKind = "upper" | "lower";
+
+export interface SurfaceIndication {
+  requirement: ProcessRequirement | null;
+  parameter: string;
+  value: Nanometres;
+  limit: LimitKind;
+  max_rule: boolean;
+  lay: string | null;
+  process: string | null;
+  grade: string | null;
+  input: string;
+}
+
+export interface SurfaceAnalysis {
+  indication: SurfaceIndication;
+  /** L'indication reconstituée, normalisée : `MRR Ra 0.8 ⊥`. */
+  designation: string;
+  requirement: SymbolVariant | null;
+  parameter: ProfileParameter;
+  lay: LaySymbol | null;
+  grade: RoughnessGrade | null;
+  /** Vide quand la confrontation n'a pas de sens — `process_note` dit pourquoi. */
+  processes: ProcessFit[];
+  process_note: string | null;
+  stated_process: ProcessFit | null;
+  findings: Finding[];
+  chart: RoughnessChart;
+  conclusion: Conclusion;
+  provenance: Provenance;
+}
+
+export interface SurfaceCatalogue {
+  symbols: SymbolVariant[];
+  lays: LaySymbol[];
+  parameters: ProfileParameter[];
+  grades: RoughnessGrade[];
+  processes: ProcessRoughness[];
+  chart: RoughnessChart;
+  provenance: Provenance;
+  warnings: string[];
+}
+
+/* ---------- Soudure ---------- */
+
+export interface WeldingProcess {
+  number: string;
+  /** Le terme préféré de l'ISO 4063. */
+  name: string;
+  /** Les synonymes que la norme donne à la suite. */
+  synonyms: string[];
+  /** Noms d'atelier : des clés de recherche, pas des termes de la norme. */
+  aliases: string[];
+  /** Désignations américaines exactement équivalentes (Annexe B). */
+  us_designations: string[];
+}
+
+/** Une lettre de variante : mode de transfert ou élément additionnel. */
+export interface VariantLetter {
+  letter: string;
+  name: string;
+}
+
+/** Une variante de procédé (ISO 4063, 2.2). */
+export interface ProcessVariant {
+  transfer: VariantLetter | null;
+  /** Le nombre d'électrodes, quand il y en a plus d'une. */
+  electrodes: number | null;
+  additional: VariantLetter | null;
+}
+
+export type JointFamily = "butt" | "fillet" | "other";
+
+export interface SizeLetter {
+  letter: string;
+  name: string;
+  meaning: string;
+}
+
+/**
+ * Un symbole élémentaire.
+ *
+ * Deux jeux, une même norme : `number`, `name`, `full_penetration` et
+ * `multi_part` viennent du tableau 1 de l'ISO 2553:2013 ; `family`, `sizes` et
+ * `both_sides_name` d'une surcouche de cotation lue à l'article 5 de la même
+ * norme. `both_sides_name` n'est renseigné que pour les noms du tableau 2.
+ */
+export interface ElementarySymbol {
+  id: string;
+  number: number;
+  name: string;
+  full_penetration: boolean;
+  multi_part: boolean;
+  note: string | null;
+  both_sides_name: string | null;
+  family: JointFamily;
+  sizes: string[];
+  /** Vrai si la norme exige la cote (soudures évasées, § 5.4.4). */
+  size_required: boolean;
+  /** Le nom d'une lettre propre à ce symbole : `s` = épaisseur du rechargement. */
+  size_names: Record<string, string>;
+}
+
+export interface SupplementarySymbol {
+  id: string;
+  number: number;
+  name: string;
+  meaning: string | null;
+  families: JointFamily[];
+  /** Les numéros de symboles élémentaires sur lesquels la norme le montre aussi. */
+  symbols: number[];
+}
+
+/** Système A (double trait de référence) ou B (trait unique). */
+export interface WeldSystem {
+  id: string;
+  name: string;
+  reference_line: string;
+  note: string | null;
+}
+
+export interface QualityLevel {
+  id: string;
+  name: string;
+  meaning: string;
+}
+
+export interface QualityVariable {
+  symbol: string;
+  meaning: string;
+}
+
+/** La grandeur à laquelle un coefficient s'applique. `weld` vaut s ou a selon le joint. */
+export type QualityBasis = "t" | "a" | "s" | "b" | "weld";
+
+export type Limit =
+  | { kind: "not_permitted" }
+  | { kind: "permitted"; condition: string | null }
+  | {
+      kind: "bound";
+      measure: string;
+      constant: Nanometres;
+      factor_hundredths: number;
+      of: QualityBasis | null;
+      max: Nanometres | null;
+      short: boolean;
+    }
+  | { kind: "min_angle"; degrees: number };
+
+export interface ThicknessRange {
+  from: Nanometres | null;
+  above: Nanometres | null;
+  to: Nanometres | null;
+}
+
+export interface LimitRow {
+  thickness: ThicknessRange;
+  limits: { level: string; limit: Limit }[];
+}
+
+export interface Imperfection {
+  reference: string;
+  iso6520: string;
+  name: string;
+  applies_to: "butt" | "fillet" | "both";
+  remark: string | null;
+  rows: LimitRow[];
+}
+
+export interface ProcessScope {
+  note: string;
+  fusion: string[];
+  /** Une réserve sur un procédé visé : « 31 : acier uniquement ». */
+  conditions: { prefix: string; condition: string }[];
+  excluded: { prefix: string; reason: string }[];
+  /** Ce que la norme dit d'un procédé qu'elle ne cite pas. */
+  not_listed: string;
+}
+
+export type ScopeVerdict =
+  | { kind: "in_scope" }
+  | { kind: "excluded"; reason: string }
+  | { kind: "unknown" };
+
+export interface WeldingCatalogue {
+  processes: WeldingProcess[];
+  systems: WeldSystem[];
+  /** Les règles de la norme : les deux systèmes ne se mélangent pas. */
+  system_rules: string[];
+  sizes: SizeLetter[];
+  elementary: ElementarySymbol[];
+  supplementary: SupplementarySymbol[];
+  levels: QualityLevel[];
+  variables: QualityVariable[];
+  imperfections: Imperfection[];
+  process_scope: ProcessScope;
+  provenance: Provenance;
+  warnings: string[];
+}
+
+export interface ProcessReading {
+  process: WeldingProcess;
+  /** Le numéro avec ses variantes : `131-D`. */
+  code: string;
+  /** La désignation complète : `ISO 4063 - 131-D`. */
+  designation: string;
+  variant: ProcessVariant;
+  /** Pour un procédé hybride, la désignation entière : `522+15`. */
+  hybrid: string | null;
+  /** Du groupe au procédé lui-même. */
+  lineage: WeldingProcess[];
+  is_group: boolean;
+  children: WeldingProcess[];
+  quality_scope: ScopeVerdict;
+  explanation: string;
+}
+
+export type Side = "arrow" | "other" | "both";
+
+/**
+ * Une demande de lecture de symbole.
+ *
+ * Les grandeurs voyagent en **texte**, en millimètres : c'est le moteur qui les
+ * lit. L'interface ne convertit rien.
+ */
+export interface WeldRequest {
+  symbol: string;
+  side: Side;
+  size_letter: string | null;
+  size_mm: string | null;
+  count: string | null;
+  length_mm: string | null;
+  spacing_mm: string | null;
+  staggered: boolean;
+  supplementary: string[];
+  all_around: boolean;
+  field_weld: boolean;
+  process: string | null;
+  level: string | null;
+  thickness_mm: string | null;
+  width_mm: string | null;
+}
+
+export interface SizeReading {
+  letter: string;
+  name: string;
+  value: Nanometres;
+  label: string;
+  /** Vrai pour une cote déduite par √2 : arrondie, et annoncée comme telle. */
+  rounded: boolean;
+}
+
+export interface IntermittentReading {
+  count: number;
+  length: Nanometres;
+  spacing: Nanometres;
+  welded_length: Nanometres;
+  notation: string;
+}
+
+export type LimitStatus = "not_permitted" | "permitted" | "bounded" | "min_angle" | "needs_input";
+
+export interface ImperfectionLimit {
+  reference: string;
+  iso6520: string;
+  name: string;
+  remark: string | null;
+  thickness_label: string;
+  status: LimitStatus;
+  /** La limite telle que la norme l'écrit. */
+  formula: string;
+  value: Nanometres | null;
+  value_label: string | null;
+  /** La grandeur qui manque pour chiffrer. */
+  missing: string | null;
+  rounded: boolean;
+  short: boolean;
+}
+
+export interface QualityAssessment {
+  level: QualityLevel;
+  joint: JointFamily;
+  thickness: Nanometres | null;
+  weld_size: Nanometres | null;
+  width: Nanometres | null;
+  limits: ImperfectionLimit[];
+  notes: string[];
+}
+
+export interface WeldReading {
+  designation: string;
+  symbol: ElementarySymbol;
+  side: Side;
+  /** La lecture en clair, une phrase par élément du symbole. */
+  sentences: string[];
+  size: SizeReading | null;
+  equivalent: SizeReading | null;
+  intermittent: IntermittentReading | null;
+  supplementary: SupplementarySymbol[];
+  process: ProcessReading | null;
+  quality: QualityAssessment | null;
+  findings: Finding[];
+  conclusion: Conclusion;
+  provenance: Provenance;
+}
+
+export const LIMIT_STATUS_LABEL: Record<LimitStatus, string> = {
+  not_permitted: "Non admis",
+  permitted: "Admis",
+  bounded: "Borné",
+  min_angle: "Angle minimal",
+  needs_input: "À chiffrer",
+};
+
+/* ---------- Visserie ---------- */
+
+export interface MetricThread {
+  d: Nanometres;
+  choice: number;
+  coarse: Nanometres;
+  fine: Nanometres[];
+}
+
+export interface ClearanceSeries {
+  id: string;
+  name: string;
+  class: string;
+}
+
+export interface BoltClass {
+  class: string;
+  first: number;
+  second: number;
+  tensile_mpa: number;
+  yield_mpa: number;
+  max_d: number | null;
+}
+
+export interface FastenerCatalogue {
+  threads: MetricThread[];
+  clearance_series: ClearanceSeries[];
+  bolt_classes: BoltClass[];
+  nut_classes: number[];
+  provenance: Provenance;
+  warnings: string[];
+}
+
+export type PitchKind = "coarse" | "fine" | "not_listed";
+
+export interface ThreadDesignation {
+  d: Nanometres;
+  pitch: Nanometres;
+  pitch_kind: PitchKind;
+  explicit_pitch: boolean;
+  tolerance_class: string | null;
+  strength_class: string | null;
+  input: string;
+}
+
+export interface ThreadDimension {
+  symbol: string;
+  name: string;
+  value: Nanometres;
+  label: string;
+  formula: string;
+}
+
+/**
+ * Un trou de passage. Le diamètre et la classe viennent de l'ISO 273 ; les
+ * écarts, du moteur ISO 286 — deux natures de source dans une même ligne.
+ */
+export interface ClearanceHole {
+  series: string;
+  series_name: string;
+  diameter: Nanometres;
+  class: string;
+  designation: string;
+  tolerance: FeatureAnalysis | null;
+  unavailable: string | null;
+}
+
+export interface StrengthReading {
+  class: BoltClass;
+  nut_class: number | null;
+  explanation: string;
+}
+
+export interface ThreadReport {
+  designation: ThreadDesignation;
+  normalised: string;
+  thread: MetricThread;
+  h: ThreadDimension;
+  dimensions: ThreadDimension[];
+  stress_area_hundredths_mm2: number;
+  stress_area_label: string;
+  tap_drill: Nanometres;
+  tap_drill_label: string;
+  clearance_holes: ClearanceHole[];
+  strength: StrengthReading | null;
+  findings: Finding[];
+  conclusion: Conclusion;
+  provenance: Provenance;
+}
+
+/* ---------- Matières ---------- */
+
+/** Ce que porte le nombre d'un groupe d'emploi (EN 10027-1). */
+export type GroupNumber = "yield" | "tensile" | "hardness" | "losses" | "code";
+
+/** Une forme d'écriture du groupe : `H` en a six (C, D, X, CT, DT, XT). */
+export interface GroupForm {
+  prefix: string;
+  meaning?: string;
+  number: GroupNumber;
+  label: string;
+  digits?: number;
+  note: string;
+}
+
+/** Un symbole additionnel ; ses chiffres éventuels se lisent selon `digits`. */
+export interface Suffix {
+  code: string;
+  meaning: string;
+  digits?: "quality" | "sulphur_hundredths";
+}
+
+/** Les symboles additionnels d'un groupe (groupe 1 ou groupe 2 de la norme). */
+export interface SymbolSet {
+  impact: boolean;
+  symbols: Suffix[];
+  any_letter?: string;
+  chemical?: string;
+  digits: boolean;
+}
+
+export interface UseGroup {
+  letter: string;
+  /** Le tableau de l'EN 10027-1 qui le décrit. */
+  table: number;
+  name: string;
+  forms: GroupForm[];
+  group1: SymbolSet;
+  group2: SymbolSet;
+  /** Les types d'un acier magnétique (groupe M). */
+  types?: Suffix[];
+  /** Les tableaux des symboles qui suivent un « + ». */
+  product_tables: number[];
+}
+
+export interface ThicknessBand {
+  above: Nanometres;
+  to: Nanometres;
+}
+
+export interface GradeRow {
+  band: ThicknessBand;
+  yield_mpa: number;
+  tensile_min_mpa: number;
+  tensile_max_mpa: number;
+}
+
+export interface StructuralGrade {
+  grade: string;
+  /** Vide pour une nuance sans qualité (`S185`). */
+  qualities: string[];
+  /** Une restriction d'emploi que la norme attache à la nuance. */
+  restriction?: string;
+  /** Une nuance peut s'arrêter avant le dernier échelon de la table. */
+  rows: GradeRow[];
+}
+
+/** Ordres de grandeur d'une famille, pas les valeurs d'une nuance. */
+export interface MaterialFamily {
+  id: string;
+  name: string;
+  e_gpa: number;
+  /** En millièmes : 300 pour 0,30. */
+  poisson_milli: number;
+  /** En kg/m³. */
+  density: number;
+  /** En dixièmes de µm/(m·K) : 120 pour 12. */
+  alpha_tenths: number;
+}
+
+export interface MaterialsCatalogue {
+  use_groups: UseGroup[];
+  structural_grades: StructuralGrade[];
+  families: MaterialFamily[];
+  provenance: Provenance;
+  warnings: string[];
+}
+
+export type SteelKind =
+  | "use_group"
+  | "non_alloy"
+  | "low_alloy"
+  | "high_alloy"
+  | "high_speed"
+  | "numeric";
+
+export interface DesignationPart {
+  text: string;
+  meaning: string;
+}
+
+export interface ElementContent {
+  element: string;
+  /** En millièmes de pour cent. Nul quand la désignation ne donne pas la teneur. */
+  thousandths_percent: number | null;
+  label: string;
+}
+
+export interface ImpactReading {
+  code: string;
+  joules: number;
+  celsius: number;
+  label: string;
+}
+
+/** Un symbole additionnel lu, avec le groupe de la norme qui le porte. */
+export interface AdditionalSymbol {
+  code: string;
+  group: 1 | 2;
+  meaning: string;
+}
+
+/** Un symbole qui suit un « + » : exigence, revêtement ou traitement. */
+export interface ProductSymbolReading {
+  code: string;
+  tables: number[];
+  meaning: string;
+}
+
+export interface SteelReading {
+  input: string;
+  kind: SteelKind;
+  kind_label: string;
+  cast: boolean;
+  /** Préfixe PM : métallurgie des poudres. */
+  powder_metallurgy: boolean;
+  parts: DesignationPart[];
+  group: UseGroup | null;
+  group_value: number | null;
+  group_value_label: string | null;
+  impact: ImpactReading | null;
+  suffixes: AdditionalSymbol[];
+  product_symbols: ProductSymbolReading[];
+  carbon: ElementContent | null;
+  elements: ElementContent[];
+  structural: StructuralGrade | null;
+  family: MaterialFamily | null;
+  family_reason: string;
+  findings: Finding[];
+  conclusion: Conclusion;
+  provenance: Provenance;
+}
+
+export interface ThermalFitLimits {
+  designation: string;
+  cold_min: Nanometres;
+  cold_max: Nanometres;
+  cold_kind: FitKind;
+  hot_min: Nanometres;
+  hot_max: Nanometres;
+  hot_kind: FitKind;
+}
+
+export interface ThermalFit {
+  nominal: Nanometres;
+  delta_t: number;
+  hole_family: MaterialFamily;
+  shaft_family: MaterialFamily;
+  hole_growth: Nanometres;
+  shaft_growth: Nanometres;
+  clearance_shift: Nanometres;
+  clearance_shift_label: string;
+  fit: ThermalFitLimits | null;
+  findings: Finding[];
+  conclusion: Conclusion;
   provenance: Provenance;
 }

@@ -1,0 +1,592 @@
+{
+  "designation": "a5 soudure d'angle · côté de la flèche · 3 × 100 (50) · 135 / ISO 5817-C",
+  "symbol": {
+    "id": "fillet",
+    "number": 10,
+    "name": "soudure d'angle",
+    "full_penetration": false,
+    "multi_part": false,
+    "note": null,
+    "both_sides_name": null,
+    "family": "fillet",
+    "sizes": [
+      "a",
+      "z"
+    ],
+    "size_required": false,
+    "size_names": {}
+  },
+  "side": "arrow",
+  "sentences": [
+    "Soudure d'angle — côté de la flèche.",
+    "Épaisseur de gorge nominale a = 5 mm — soit z ≈ 7.07 mm (côté), pour un cordon à côtés égaux et à 90°.",
+    "Discontinue : 3 éléments de 100 mm, espacés de 50 mm — 300 mm soudés au total.",
+    "Convexe.",
+    "Procédé 135 : soudage MAG avec fil-électrode fusible (soudage à l'arc sous protection de gaz actif avec fil-électrode fusible).",
+    "Niveau de qualité C (intermédiaire) selon l'ISO 5817."
+  ],
+  "size": {
+    "letter": "a",
+    "name": "épaisseur de gorge nominale",
+    "value": 5000000,
+    "label": "a = 5 mm",
+    "rounded": false
+  },
+  "equivalent": {
+    "letter": "z",
+    "name": "côté",
+    "value": 7071067,
+    "label": "z ≈ 7.07 mm",
+    "rounded": true
+  },
+  "intermittent": {
+    "count": 3,
+    "length": 100000000,
+    "spacing": 50000000,
+    "welded_length": 300000000,
+    "notation": "3 × 100 (50)"
+  },
+  "supplementary": [
+    {
+      "id": "convex",
+      "number": 2,
+      "name": "convexe",
+      "meaning": null,
+      "families": [
+        "butt"
+      ],
+      "symbols": []
+    }
+  ],
+  "process": {
+    "process": {
+      "number": "135",
+      "name": "soudage MAG avec fil-électrode fusible (soudage à l'arc sous protection de gaz actif avec fil-électrode fusible)",
+      "synonyms": [],
+      "aliases": [
+        "mag"
+      ],
+      "us_designations": []
+    },
+    "code": "135",
+    "designation": "ISO 4063 - 135",
+    "variant": {
+      "transfer": null,
+      "electrodes": null,
+      "additional": null
+    },
+    "hybrid": null,
+    "lineage": [
+      {
+        "number": "1",
+        "name": "soudage à l'arc",
+        "synonyms": [],
+        "aliases": [
+          "arc"
+        ],
+        "us_designations": [
+          "AW"
+        ]
+      },
+      {
+        "number": "13",
+        "name": "soudage à l'arc avec électrode fusible sous protection gazeuse",
+        "synonyms": [],
+        "aliases": [
+          "mig/mag"
+        ],
+        "us_designations": [
+          "GMAW"
+        ]
+      },
+      {
+        "number": "135",
+        "name": "soudage MAG avec fil-électrode fusible (soudage à l'arc sous protection de gaz actif avec fil-électrode fusible)",
+        "synonyms": [],
+        "aliases": [
+          "mag"
+        ],
+        "us_designations": []
+      }
+    ],
+    "is_group": false,
+    "children": [],
+    "quality_scope": {
+      "kind": "in_scope"
+    },
+    "explanation": "135 — soudage MAG avec fil-électrode fusible (soudage à l'arc sous protection de gaz actif avec fil-électrode fusible), qui relève de 13 (soudage à l'arc avec électrode fusible sous protection gazeuse), puis de 1 (soudage à l'arc)."
+  },
+  "quality": {
+    "level": {
+      "id": "C",
+      "name": "intermédiaire",
+      "meaning": "Entre B et D : ne tolère jamais davantage que D, ni moins que B."
+    },
+    "joint": "fillet",
+    "thickness": 10000000,
+    "weld_size": 5000000,
+    "width": 10000000,
+    "limits": [
+      {
+        "reference": "1.1",
+        "iso6520": "100",
+        "name": "fissure",
+        "remark": null,
+        "thickness_label": "t ≥ 0.5 mm",
+        "status": "not_permitted",
+        "formula": "non admis",
+        "value": null,
+        "value_label": null,
+        "missing": null,
+        "rounded": false,
+        "short": false
+      },
+      {
+        "reference": "1.2",
+        "iso6520": "104",
+        "name": "fissure de cratère",
+        "remark": null,
+        "thickness_label": "t ≥ 0.5 mm",
+        "status": "not_permitted",
+        "formula": "non admis",
+        "value": null,
+        "value_label": null,
+        "missing": null,
+        "rounded": false,
+        "short": false
+      },
+      {
+        "reference": "1.3",
+        "iso6520": "2017",
+        "name": "piqûre",
+        "remark": "Dimension maximale d'une piqûre isolée : rapportée à s pour une soudure bout à bout, à a pour une soudure d'angle.",
+        "thickness_label": "t > 3 mm",
+        "status": "bounded",
+        "formula": "d ≤ 0.2 a, max. 2 mm",
+        "value": 1000000,
+        "value_label": "d ≤ 1 mm",
+        "missing": null,
+        "rounded": false,
+        "short": false
+      },
+      {
+        "reference": "1.4",
+        "iso6520": "2025",
+        "name": "retassure ouverte de cratère",
+        "remark": null,
+        "thickness_label": "t > 3 mm",
+        "status": "bounded",
+        "formula": "h ≤ 0.1 t, max. 1 mm",
+        "value": 1000000,
+        "value_label": "h ≤ 1 mm",
+        "missing": null,
+        "rounded": false,
+        "short": false
+      },
+      {
+        "reference": "1.5",
+        "iso6520": "401",
+        "name": "manque de fusion (collage)",
+        "remark": null,
+        "thickness_label": "t ≥ 0.5 mm",
+        "status": "not_permitted",
+        "formula": "non admis",
+        "value": null,
+        "value_label": null,
+        "missing": null,
+        "rounded": false,
+        "short": false
+      },
+      {
+        "reference": "1.5",
+        "iso6520": "401",
+        "name": "micromanque de fusion (microcollage)",
+        "remark": "Uniquement détectable par micro-examen.",
+        "thickness_label": "t ≥ 0.5 mm",
+        "status": "permitted",
+        "formula": "admis",
+        "value": null,
+        "value_label": null,
+        "missing": null,
+        "rounded": false,
+        "short": false
+      },
+      {
+        "reference": "1.7",
+        "iso6520": "5011, 5012",
+        "name": "caniveau continu ; morsure, caniveau discontinu",
+        "remark": "Transition douce exigée. N'est pas considéré comme un défaut systématique.",
+        "thickness_label": "t > 3 mm",
+        "status": "bounded",
+        "formula": "h ≤ 0.1 t, max. 0.5 mm",
+        "value": 500000,
+        "value_label": "h ≤ 0.5 mm",
+        "missing": null,
+        "rounded": false,
+        "short": false
+      },
+      {
+        "reference": "1.8",
+        "iso6520": "5013",
+        "name": "caniveau à la racine",
+        "remark": "Transition douce exigée.",
+        "thickness_label": "t > 3 mm",
+        "status": "bounded",
+        "formula": "h ≤ 0.1 t, max. 1 mm (défauts courts)",
+        "value": 1000000,
+        "value_label": "h ≤ 1 mm",
+        "missing": null,
+        "rounded": false,
+        "short": true
+      },
+      {
+        "reference": "1.10",
+        "iso6520": "503",
+        "name": "convexité excessive (soudure d'angle)",
+        "remark": null,
+        "thickness_label": "t ≥ 0.5 mm",
+        "status": "bounded",
+        "formula": "h ≤ 1 mm + 0.15 b, max. 4 mm",
+        "value": 2500000,
+        "value_label": "h ≤ 2.5 mm",
+        "missing": null,
+        "rounded": false,
+        "short": false
+      },
+      {
+        "reference": "1.11",
+        "iso6520": "504",
+        "name": "excès de pénétration",
+        "remark": null,
+        "thickness_label": "t > 3 mm",
+        "status": "bounded",
+        "formula": "h ≤ 1 mm + 0.6 b, max. 4 mm",
+        "value": 4000000,
+        "value_label": "h ≤ 4 mm",
+        "missing": null,
+        "rounded": false,
+        "short": false
+      },
+      {
+        "reference": "1.12",
+        "iso6520": "505",
+        "name": "défaut de raccordement, soudures d'angle",
+        "remark": "α : angle de raccordement de la soudure ; la limite vaut pour les deux pieds du cordon (α1 ≥ α et α2 ≥ α).",
+        "thickness_label": "t ≥ 0.5 mm",
+        "status": "min_angle",
+        "formula": "α ≥ 100°",
+        "value": null,
+        "value_label": null,
+        "missing": null,
+        "rounded": false,
+        "short": false
+      },
+      {
+        "reference": "1.13",
+        "iso6520": "506",
+        "name": "débordement",
+        "remark": null,
+        "thickness_label": "t ≥ 0.5 mm",
+        "status": "not_permitted",
+        "formula": "non admis",
+        "value": null,
+        "value_label": null,
+        "missing": null,
+        "rounded": false,
+        "short": false
+      },
+      {
+        "reference": "1.14",
+        "iso6520": "509, 511",
+        "name": "effondrement ; manque d'épaisseur",
+        "remark": "Transition douce exigée.",
+        "thickness_label": "t > 3 mm",
+        "status": "bounded",
+        "formula": "h ≤ 0.1 t, max. 1 mm (défauts courts)",
+        "value": 1000000,
+        "value_label": "h ≤ 1 mm",
+        "missing": null,
+        "rounded": false,
+        "short": true
+      },
+      {
+        "reference": "1.15",
+        "iso6520": "510",
+        "name": "trou",
+        "remark": null,
+        "thickness_label": "t ≥ 0.5 mm",
+        "status": "not_permitted",
+        "formula": "non admis",
+        "value": null,
+        "value_label": null,
+        "missing": null,
+        "rounded": false,
+        "short": false
+      },
+      {
+        "reference": "1.16",
+        "iso6520": "512",
+        "name": "défaut de symétrie excessif de soudure d'angle",
+        "remark": "Pour les cas où une soudure d'angle asymétrique n'a pas été prescrite.",
+        "thickness_label": "t ≥ 0.5 mm",
+        "status": "bounded",
+        "formula": "h ≤ 2 mm + 0.15 a",
+        "value": 2750000,
+        "value_label": "h ≤ 2.75 mm",
+        "missing": null,
+        "rounded": false,
+        "short": false
+      },
+      {
+        "reference": "1.17",
+        "iso6520": "515",
+        "name": "retassure à la racine",
+        "remark": "Transition douce exigée.",
+        "thickness_label": "t > 3 mm",
+        "status": "bounded",
+        "formula": "h ≤ 0.1 t, max. 1 mm (défauts courts)",
+        "value": 1000000,
+        "value_label": "h ≤ 1 mm",
+        "missing": null,
+        "rounded": false,
+        "short": true
+      },
+      {
+        "reference": "1.18",
+        "iso6520": "516",
+        "name": "rochage",
+        "remark": "Formation spongieuse à la racine, due au bouillonnement du métal fondu à la solidification (par exemple manque de protection envers).",
+        "thickness_label": "t ≥ 0.5 mm",
+        "status": "not_permitted",
+        "formula": "non admis",
+        "value": null,
+        "value_label": null,
+        "missing": null,
+        "rounded": false,
+        "short": false
+      },
+      {
+        "reference": "1.19",
+        "iso6520": "517",
+        "name": "mauvaise reprise",
+        "remark": null,
+        "thickness_label": "t ≥ 0.5 mm",
+        "status": "not_permitted",
+        "formula": "non admis",
+        "value": null,
+        "value_label": null,
+        "missing": null,
+        "rounded": false,
+        "short": false
+      },
+      {
+        "reference": "1.20",
+        "iso6520": "5213",
+        "name": "gorge insuffisante",
+        "remark": "Non applicable aux procédés garantissant une plus grande profondeur de pénétration.",
+        "thickness_label": "t > 3 mm",
+        "status": "bounded",
+        "formula": "h ≤ 0.3 mm + 0.1 a, max. 1 mm (défauts courts)",
+        "value": 800000,
+        "value_label": "h ≤ 0.8 mm",
+        "missing": null,
+        "rounded": false,
+        "short": true
+      },
+      {
+        "reference": "1.21",
+        "iso6520": "5214",
+        "name": "gorge excessive",
+        "remark": "La gorge réelle du cordon d'angle est trop importante.",
+        "thickness_label": "t ≥ 0.5 mm",
+        "status": "bounded",
+        "formula": "h ≤ 1 mm + 0.2 a, max. 4 mm",
+        "value": 2000000,
+        "value_label": "h ≤ 2 mm",
+        "missing": null,
+        "rounded": false,
+        "short": false
+      },
+      {
+        "reference": "1.22",
+        "iso6520": "601",
+        "name": "coup d'arc ou amorçage accidentel",
+        "remark": null,
+        "thickness_label": "t ≥ 0.5 mm",
+        "status": "not_permitted",
+        "formula": "non admis",
+        "value": null,
+        "value_label": null,
+        "missing": null,
+        "rounded": false,
+        "short": false
+      },
+      {
+        "reference": "3.1",
+        "iso6520": "5071",
+        "name": "défaut d'alignement entre tôles (tôles et soudures longitudinales)",
+        "remark": "Écart par rapport à la position correcte : sauf spécification contraire, les axes à mi-épaisseur coïncident. t est la plus faible des épaisseurs.",
+        "thickness_label": "t > 3 mm",
+        "status": "bounded",
+        "formula": "h ≤ 0.15 t, max. 4 mm",
+        "value": 1500000,
+        "value_label": "h ≤ 1.5 mm",
+        "missing": null,
+        "rounded": false,
+        "short": false
+      },
+      {
+        "reference": "3.1",
+        "iso6520": "5072",
+        "name": "défaut d'alignement, soudures circulaires transversales de profils creux",
+        "remark": "Écart par rapport à la position correcte : sauf spécification contraire, les axes à mi-épaisseur coïncident. t est la plus faible des épaisseurs.",
+        "thickness_label": "t ≥ 0.5 mm",
+        "status": "bounded",
+        "formula": "h ≤ 0.5 t, max. 3 mm",
+        "value": 3000000,
+        "value_label": "h ≤ 3 mm",
+        "missing": null,
+        "rounded": false,
+        "short": false
+      },
+      {
+        "reference": "3.2",
+        "iso6520": "617",
+        "name": "mauvais assemblage en soudure d'angle",
+        "remark": "Jeu entre les parties à assembler. Un jeu dépassant la limite peut, dans certains cas, être compensé par une augmentation correspondante de la hauteur du cordon.",
+        "thickness_label": "t > 3 mm",
+        "status": "bounded",
+        "formula": "h ≤ 0.5 mm + 0.2 a, max. 3 mm",
+        "value": 1500000,
+        "value_label": "h ≤ 1.5 mm",
+        "missing": null,
+        "rounded": false,
+        "short": false
+      }
+    ],
+    "notes": [
+      "Sélection de 27 lignes du Tableau 1 de l'ISO 5817:2014 : défauts superficiels et défauts géométriques. Les défauts internes, les défauts multiples, les projections et la coloration du revenu ne sont pas embarqués — une imperfection absente n'est pas une imperfection admise."
+    ]
+  },
+  "findings": [
+    {
+      "code": "supplementary_unusual",
+      "severity": "caution",
+      "message": "L'ISO 2553 ne montre le symbole « convexe » sur aucune soudure d'angle. Ce n'est pas une interdiction : vérifiez qu'il s'applique."
+    }
+  ],
+  "conclusion": {
+    "verdict": "caution",
+    "detail": "Soudure d'angle — côté de la flèche. Épaisseur de gorge nominale a = 5 mm — soit z ≈ 7.07 mm (côté), pour un cordon à côtés égaux et à 90°. Discontinue : 3 éléments de 100 mm, espacés de 50 mm — 300 mm soudés au total. Convexe. Procédé 135 : soudage MAG avec fil-électrode fusible (soudage à l'arc sous protection de gaz actif avec fil-électrode fusible). Niveau de qualité C (intermédiaire) selon l'ISO 5817.",
+    "why": [
+      {
+        "label": "Symbole élémentaire",
+        "expression": "n° 10 — soudure d'angle",
+        "value": "soudure d'angle : se cote en a ou en z"
+      },
+      {
+        "label": "Côté",
+        "expression": "côté de la flèche",
+        "value": "Lu tel que déclaré : le côté se lit selon le système du dessin. Système A : double trait de référence : une ligne continue et une ligne interrompue. Système B : un seul trait de référence. Les systèmes A et B ne doivent pas être mélangés sur un même dessin."
+      },
+      {
+        "label": "Cote principale",
+        "expression": "épaisseur de gorge nominale",
+        "value": "a = 5 mm"
+      },
+      {
+        "label": "Niveau de qualité",
+        "expression": "ISO 5817, niveau C",
+        "value": "Le niveau est fixé par la norme d'application ou par le concepteur. MecaTool dit ce qu'il tolère, il ne le choisit pas."
+      },
+      {
+        "label": "Limites chiffrées",
+        "expression": "24 lignes examinées",
+        "value": "8 non admises, 14 bornées, 1 angles minimaux, 1 admises, 0 en attente d'une grandeur"
+      }
+    ],
+    "warnings": []
+  },
+  "provenance": {
+    "references": [
+      {
+        "id": "ISO 2553",
+        "edition": "2013",
+        "title": "Soudage et techniques connexes — Représentations symboliques sur les dessins — Joints soudés",
+        "scope": "symboles élémentaires et supplémentaires, et les deux systèmes de représentation",
+        "source": "ISO 2553:2013(F), quatrième édition 2013-12-15. Exemplaire sous licence fourni par l'utilisateur.",
+        "verification": {
+          "state": "verified",
+          "against": "ISO 2553:2013(F), Tableau 1 (symboles élémentaires, 22 entrées), Tableau 3 (symboles supplémentaires, 6 entrées) et § 4.2 à 4.4 — lus dans la norme elle-même, couche de texte",
+          "on": "2026-09-13"
+        },
+        "notes": [
+          "PREMIÈRE SOURCE PRIMAIRE du domaine soudure. Contrairement aux données ISO 1101 et ISO 15, celle-ci ne vient pas d'un recueil : elle est lue dans la norme.",
+          "Le recueil VSM 2014 reproduit une édition PÉRIMÉE. Son tableau 135/1 porte quinze symboles numérotés 1 à 13 puis 18 et 19, sous des désignations différentes (« Soudure en I », « Soudure sur bords relevés »). Il cite SN EN 22553, c'est-à-dire l'ISO 2553:1992. La quatrième édition de 2013 a renuméroté et renommé : elle compte vingt-deux symboles élémentaires. MecaTool suit la norme, pas le recueil.",
+          "La numérotation qui semblait « sauter » de 13 à 18 dans le recueil n'était donc pas une lacune de transcription : c'est celle de l'édition antérieure.",
+          "Le changement majeur de 2013 est l'existence de DEUX systèmes, A et B. Ils ne se distinguent pas par les symboles mais par la façon de désigner le côté de la soudure, et la norme interdit de les mélanger.",
+          "Les symboles sont des tracés, non des caractères : la plupart n'ont pas d'équivalent Unicode fidèle. Ce jeu de données porte le vocabulaire — numéros, désignations, règles — et non les glyphes. Forcer un caractère approchant ferait afficher un symbole faux, ce qui est pire que pas de symbole.",
+          "Les dimensions des soudures (a, z, n, l, e) relèvent de l'Article 5 de la norme, non transcrit ici."
+        ]
+      },
+      {
+        "id": "ISO 2553",
+        "edition": "2013",
+        "title": "Soudage et techniques connexes — Représentations symboliques sur les dessins — Joints soudés",
+        "scope": "cotation des symboles élémentaires : famille de joint, cotes principales admises, forme double",
+        "source": "Lu dans l'ISO 2553:2013, article 5 (5.1 à 5.12), tableaux 2, 3 et 5, définitions 3.16 à 3.21, 4.4.3 et 4.5.5. Surcouche indexée sur les numéros du tableau 1 : elle ne reprend ni ne modifie ce tableau, elle lui ajoute ce que sa transcription ne couvre pas.",
+        "verification": {
+          "state": "verified",
+          "against": "ISO 2553:2013(F) : article 5 et tableau 5 (cotes de chaque type de soudure), tableau 2 (soudures bout à bout symétriques), tableau 3, figure 8, figure A.1 et tableau 4 (emploi des symboles supplémentaires), 3.16 à 3.21 (a, z, s, soudures évasées) — lus sur les pages de la norme",
+          "on": "2026-10-07"
+        },
+        "notes": [
+          "DEUX JEUX, UNE MÊME NORME. Les numéros, désignations, symboles supplémentaires et systèmes A et B viennent du jeu iso2553-2013.symbols. Cette surcouche n'ajoute que la cotation : quelle famille, quelles lettres de cote, quel nom pour la forme double. Elle ne remplace aucun mot de ce jeu.",
+          "Le chargement vérifie que la surcouche couvre exactement les numéros du tableau 1, que tout symbole déclaré à pleine pénétration par défaut (1 à 7, 17 et 18, note b du tableau 1) est de la famille bout à bout, et qu'une soudure bout à bout qui ne l'est pas doit toujours être cotée (8 et 9, 5.4.4). Un désaccord fait tomber le chargement.",
+          "FAMILLES. Les soudures évasées 8 et 9 sont des soudures bout à bout (3.20, 3.21 ; tableau 5, n° 1.6 et 1.7) : elles se cotent en s et « doivent toujours être cotées » (5.4.4). Le n° 20 reste hors des familles : la norme le désigne à la fois comme soudure bout à bout à bords relevés et comme soudure en angle extérieure ; toujours à pleine pénétration, il « n'exige pas de cotation » (5.4.3). L'article 5 de l'édition 2013 ne donne aucune cote au n° 22.",
+          "UNE LETTRE, PLUSIEURS GRANDEURS. La norme emploie s pour la profondeur de pénétration d'une soudure bout à bout (5.4.1, tableau 5 n° 1), l'épaisseur de métal fondu d'une soudure sur chant (5.10, n° 7), l'épaisseur du rechargement (5.12, n° 9), la profondeur de remplissage d'un bouchon (5.6, 5.7) et l'épaisseur de gorge à pénétration profonde d'une soudure d'angle (5.5.2, n° 2.2). size_names donne le nom propre à un symbole quand il diffère de celui de la lettre.",
+          "COTES PRINCIPALES SEULEMENT : celles qui se placent à gauche du symbole (5.2). Ne sont pas embarquées la profondeur de remplissage d'un bouchon, inscrite dans le symbole (5.6, 5.7), la forme « s a » de la soudure d'angle à pénétration profonde (5.5.2), les côtés inégaux « z1 z2 » (5.5.1, n° 2.3), ni les cotes de préparation de l'article 6.",
+          "FORMES DOUBLES. Seuls les noms du tableau 2 sont repris : double V, K, double U. Les autres soudures bout à bout et la soudure d'angle peuvent être réalisées des deux côtés (4.4.3, 5.4.2, 5.5.1) sans que la norme leur donne de nom : la surcouche n'en invente pas.",
+          "SYMBOLES SUPPLÉMENTAIRES. families dit sur quelles familles la norme montre le symbole (tableau 3, figure 8, figure A.1) ou le prescrit (4.5.5) ; ce n'est pas une interdiction ailleurs. symbols ajoute des numéros hors de ces familles : en système B, la surépaisseur à la racine, associée au symbole de soudure sur chant (19), désigne la soudure bout à bout à bords relevés et la soudure en angle extérieure (tableau 3, note e ; tableau 4, n° 2 et 4).",
+          "INCOHÉRENCE DE LA NORME, signalée sans être tranchée : 5.4.1 place la profondeur de pénétration « à droite » du symbole élémentaire, alors que 5.2 et le tableau 5 (n° 1.1 et 1.2) placent les cotes de section à gauche. MecaTool ne restitue pas l'emplacement des cotes.",
+          "CHOIX DE MECATOOL, pas de la norme : les limites de l'ISO 5817 ne sont appliquées qu'aux soudures bout à bout à pleine pénétration par défaut et aux soudures d'angle — pas aux soudures évasées, ni aux soudures rangées hors des familles."
+        ]
+      },
+      {
+        "id": "ISO 4063",
+        "edition": "2009",
+        "title": "Soudage et techniques connexes — Nomenclature et numérotation des procédés",
+        "scope": "nomenclature complète de l'article 3 (groupes principaux, groupes, sous-groupes), variantes de procédé (2.2), procédés remplacés ou dépassés (Annexe A) et désignations US (Annexe B)",
+        "source": "NF EN ISO 4063 (février 2011), qui reproduit intégralement l'ISO 4063:2009, version corrigée 2010-03-01. Exemplaire sous licence fourni par l'utilisateur.",
+        "verification": {
+          "state": "verified",
+          "against": "ISO 4063:2009 version corrigée 2010-03-01 (NF EN ISO 4063:2011) : article 2 et Tableaux 1 et 2 (désignation, variantes), article 3 (colonne française, toutes les entrées), Annexe A (procédés remplacés ou dépassés), Annexe B (désignations US) — lus dans la norme elle-même, couche de texte contrôlée sur les pages",
+          "on": "2026-10-07"
+        },
+        "notes": []
+      },
+      {
+        "id": "ISO 5817",
+        "edition": "2014",
+        "title": "Soudage — Assemblages en acier, nickel, titane et leurs alliages soudés par fusion (soudage par faisceau exclu) — Niveaux de qualité par rapport aux défauts",
+        "scope": "défauts superficiels et défauts géométriques du Tableau 1 (sections 1 et 3), niveaux B, C et D, et procédés visés par l'article 1",
+        "source": "Lu dans la norme EN ISO 5817:2014 (version française), reprise sans modification de l'ISO 5817:2014, troisième édition : articles 1 à 5, Tableau 1 et Annexe B, sur les pages de la norme elles-mêmes. Exemplaire sous licence fourni par l'utilisateur.",
+        "verification": {
+          "state": "verified",
+          "against": "ISO 5817:2014(F) — article 1 (domaine d'application, procédés), articles 3 à 5 (défaut court, symboles, évaluation), Tableau 1 lignes 1.1 à 1.22 (pages 5 à 11) et 3.1 à 3.2 (pages 19 et 20), Annexe B — chaque limite lue sur la page de la norme, la couche de texte du tableau étant inexploitable",
+          "on": "2026-10-07"
+        },
+        "notes": [
+          "SÉLECTION. Toutes les lignes embarquées sont lues dans la norme. Ne le sont pas : les défauts internes (section 2 du Tableau 1), les défauts multiples (section 4), les projections (1.23, réf. 602) et la coloration du revenu (1.24, réf. 610), dont la norme laisse l'acceptation dépendre de l'application. Une imperfection absente n'est pas une imperfection admise.",
+          "Les numéros de référence sont ceux de l'ISO 6520-1:2007 ; les numéros de ligne (1.1, 1.2…) sont ceux du Tableau 1.",
+          "La norme s'applique aux épaisseurs de matériau de 0,5 mm et plus (article 1). En dessous, MecaTool refuse de conclure.",
+          "« Défauts courts » (3.3 et 3.4) : pour une soudure de 100 mm ou plus, défauts dont la longueur totale ne dépasse pas 25 mm dans les 100 mm de soudure qui en contiennent le plus ; pour une soudure de moins de 100 mm, défauts dont la longueur totale ne dépasse pas 25 % de la longueur de la soudure.",
+          "Les défauts systématiques ne sont tolérés qu'au niveau D, sous réserve que les autres exigences du Tableau 1 soient satisfaites (article 5). Deux défauts voisins séparés par moins que la grande dimension du plus petit comptent pour un seul (article 5).",
+          "TYPE DE SOUDURE. Une ligne n'est réservée aux soudures bout à bout ou d'angle que lorsque la désignation, les remarques ou la grandeur de référence du tableau le disent (1.3, 1.6, 1.9, 1.10, 1.12, 1.16, 1.20, 1.21, 3.2). Ailleurs, le tableau ne restreint pas, et MecaTool non plus : les figures du tableau sont des exemples.",
+          "LA NORME NE CHOISIT PAS LE NIVEAU. Il convient que le niveau soit défini par la norme d'application ou par le concepteur, en liaison avec le fabricant et l'utilisateur, avant le démarrage de la fabrication (Introduction). MecaTool dit ce qu'un niveau tolère ; il ne recommande pas de niveau.",
+          "La norme ne nomme pas les niveaux : elle les désigne par B, C et D, B étant l'exigence la plus élevée (article 1). Les noms affichés par MecaTool ne disent que leur rang."
+        ]
+      }
+    ]
+  }
+}

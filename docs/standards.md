@@ -48,8 +48,27 @@ data/
 │   └── iso286-1-2010.shaft-deviations.json   écarts fondamentaux des arbres
 ├── iso2768/
 │   └── iso2768-1-1989.general-tolerances.json   tolérances générales
-└── iso1101/
-    └── iso1101.geometric-characteristics.json   caractéristiques géométriques
+├── iso1101/
+│   └── iso1101.geometric-characteristics.json   caractéristiques géométriques
+├── roulements/                                  symbole d'alésage, classes de montage
+├── surface/          non vérifiés
+│   ├── iso21920.indication.json                 symboles, stries, paramètres
+│   ├── iso1302-1992.classes-n.json              classes N1 à N12 (norme retirée)
+│   └── procedes.rugosite.json                   Ra par procédé, ordres de grandeur
+├── soudure/          vérifiés sur la norme
+│   ├── iso4063.procedes.json                    nomenclature — VÉRIFIÉE sur la norme
+│   ├── iso2553-2013.symbols.json                symboles — VÉRIFIÉS sur la norme
+│   ├── iso2553-2013.cotation.json               cotation (article 5) — VÉRIFIÉE sur la norme
+│   └── iso5817.niveaux-qualite.json             niveaux B, C, D — VÉRIFIÉS sur la norme
+├── matieres/         non vérifiés
+│   ├── en10027-1.designation.json               désignation — VÉRIFIÉE (édition 2005)
+│   ├── en10025-2.aciers-construction.json       ReH et Rm — VÉRIFIÉS sur la norme
+│   └── proprietes-physiques.json                E, ν, ρ, α par famille
+└── visserie/         non vérifiés
+    ├── iso261.filetages-metriques.json          diamètres et pas
+    ├── iso68-1.profil.json                      profil de base, en fractions de H
+    ├── iso273.trous-de-passage.json             trous de passage, séries et classes
+    └── iso898.classes-qualite.json              classes de qualité vis et écrous
 ```
 
 Le fichier ISO 1101 n'a **pas de millésime dans son nom**, à la différence des
@@ -147,9 +166,59 @@ nulle part.
 | Écarts fondamentaux arbres    | ✅ vérifié | 10 lettres : d, e, f, g, h, js, k, m, n, p | ISO 286-2:2010, tableaux 18 à 26 |
 | Tolérances générales ISO 2768-1 | ✅ vérifié | 3 tables × 4 classes | DIN ISO 2768-1:1991-06, tableaux 1 à 3 |
 | Caractéristiques géométriques ISO 1101 | ⚠️ source secondaire | 17 entrées, 4 familles, 22 modificateurs | VSM « Extrait de normes » 2022, p. 174-189, recoupé avec l'édition 2014, p. 90-91 |
+| Indication des états de surface ISO 21920-1 | 🟠 non vérifié | 3 symboles, 7 sens des stries, 6 paramètres | à confronter : ISO 21920-1/-2, ou VSM 2022 § 2.9 |
+| Classes N ISO 1302:1992 | 🟠 non vérifié | N1 à N12 | à confronter : ISO 1302:1992 |
+| Rugosité par procédé | 🟠 non vérifié, non normatif | 22 procédés | à confronter : VSM 2022, p. 211 |
+| Procédés de soudage ISO 4063 | ✅ vérifié | nomenclature complète : 157 numéros, variantes (modes de transfert, électrodes, fil froid/chaud), 13 numéros remplacés (Annexe A), désignations US (Annexe B) | ISO 4063:2009 version corrigée 2010 (NF EN ISO 4063:2011), articles 2 et 3, Annexes A et B |
+| Symboles de soudure ISO 2553:2013 | ✅ vérifié | 22 symboles élémentaires, 6 supplémentaires, systèmes A et B | ISO 2553:2013(F), tableaux 1 et 3, § 4.2 à 4.4 |
+| Cotation des symboles ISO 2553:2013 | ✅ vérifié | famille, cotes principales admises et forme double des 22 symboles ; emploi des 6 symboles supplémentaires | ISO 2553:2013(F), article 5, tableaux 2, 3 et 5, § 3.16 à 3.21 |
+| Niveaux de qualité ISO 5817 | ✅ vérifié | 27 lignes : défauts de surface (1.1 à 1.22) et de géométrie (3.1, 3.2) ; procédés visés (article 1) ; défauts internes et multiples non embarqués | ISO 5817:2014 (EN ISO 5817:2014), article 1, Tableau 1, Annexe B |
+| Filetages ISO 261 | 🟠 non vérifié | M1 à M64, 1er et 2e choix | à confronter : ISO 261 |
+| Profil de base ISO 68-1 | 🟠 non vérifié | une règle : d2, d1, d3 en fractions de H | à confronter : ISO 68-1, et ISO 724 pour les valeurs |
+| Trous de passage ISO 273 | 🟠 non vérifié | 31 diamètres × 3 séries | à confronter : ISO 273 |
+| Classes de qualité ISO 898-1 | 🟠 non vérifié | 9 classes de vis, 5 d'écrous | à confronter : ISO 898-1 et 898-2 |
+| Désignation des aciers EN 10027-1 | ✅ vérifié (édition 2005, remplacée par 2016) | règles : 11 groupes d'emploi (Tableaux 2 à 11) et leurs symboles additionnels, résilience, non alliés, facteurs de teneur, fortement alliés, aciers rapides, PM, symboles après « + » (Tableaux 16 à 18) | EN 10027-1:2005, articles 4 à 7, Tableaux 1 à 18 — l'édition 2016 n'a pas été confrontée |
+| Aciers de construction EN 10025-2 | ✅ vérifié | S185, S235, S275, S355, S460, S500 × jusqu'à 9 échelons d'épaisseur (3 à 400 mm) | EN 10025-2:2019, Tableaux 6 et 7, article 1 |
+| Propriétés physiques par famille | 🟠 non vérifié, non normatif | 12 familles : E, ν, ρ, α | à confronter : recueil de propriétés des matériaux |
+
+**Non vérifié ne veut pas dire inventé, ni fiable.** Les jeux marqués 🟠 ont été
+saisis sans document normatif ouvert : leur champ `source` le dit tel quel, et
+leur champ `pending` nomme la source contre laquelle les confronter. Les
+contrôles de chargement y repèrent déjà les incohérences internes — un niveau
+ISO 5817 plus exigeant qui tolérerait davantage, une borne de rugosité hors de
+la série N, un filetage sans trou de passage — mais ils ne remplacent pas la
+confrontation. Le protocole ci-dessous s'applique à eux comme aux autres.
+
+Deux recoupements indépendants existent déjà, et ne valent pas vérification :
+les diamètres de base calculés par la règle de l'ISO 68-1 retrouvent les valeurs
+d'usage de l'ISO 724 (M6, M8, M10, M12), et la section résistante celles de
+l'ISO 898-1 (M6 à M12).
 
 **Vérifié ne veut pas dire complet.** Les valeurs présentes ont été confrontées à
 la source ; il en manque encore beaucoup (voir ci-dessous).
+
+### ISO 2553 : l'édition 2019 face à l'édition 2013
+
+MecaTool suit l'ISO 2553:2013. L'édition 2019 (NF EN ISO 2553:2019) a été lue
+et comparée, sans changer la référence ; voici ce qui la distingue, pour le
+jour où l'on basculera :
+
+- **Tableau 1** : 8 devient « soudure en V à bords évasés », 9 « en demi-V à
+  bord évasé », 11 « soudure en bouchon », 21 « soudure de rechargement ».
+  12 est scindé en 12.1 (résistance par points) et 12.2 (bossage), 20 en 20.1
+  (bout à bout à bords relevés) et 20.2 (angle extérieur) : une numérotation
+  entière ne suffit plus. 12.1, 14 et 22 gagnent la mention « plus de deux
+  parties ». 1 à 7, 10, 17 et 18 sont inchangés.
+- **Tableau 3** : 1 devient « finition affleurée (finition plate) ».
+- **Cotation** : le tableau 5 devient le tableau 6. Nouveau § 5.13 : la
+  soudure par transparence (22) se cote en `d`. `d` devient le diamètre du
+  trou, `c` la largeur du trou allongé.
+- **Systèmes A et B** : règles inchangées.
+
+Deux incohérences de la norme elle-même sont notées dans les données, non
+tranchées : le § 5.4.1 place la profondeur de pénétration à droite du
+symbole, le § 5.2 et le tableau 5 à gauche (2013 comme 2019) ; le § 3.16 de
+2013 imprime « α » pour « a ».
 
 ### Comment la vérification a été faite
 

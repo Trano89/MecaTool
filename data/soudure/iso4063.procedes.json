@@ -1,0 +1,1234 @@
+{
+  "dataset": "iso4063.procedes",
+  "standard": {
+    "id": "ISO 4063",
+    "edition": "2009",
+    "title": "Soudage et techniques connexes — Nomenclature et numérotation des procédés",
+    "scope": "nomenclature complète de l'article 3 (groupes principaux, groupes, sous-groupes), variantes de procédé (2.2), procédés remplacés ou dépassés (Annexe A) et désignations US (Annexe B)",
+    "source": "NF EN ISO 4063 (février 2011), qui reproduit intégralement l'ISO 4063:2009, version corrigée 2010-03-01. Exemplaire sous licence fourni par l'utilisateur.",
+    "verification": {
+      "state": "verified",
+      "against": "ISO 4063:2009 version corrigée 2010-03-01 (NF EN ISO 4063:2011) : article 2 et Tableaux 1 et 2 (désignation, variantes), article 3 (colonne française, toutes les entrées), Annexe A (procédés remplacés ou dépassés), Annexe B (désignations US) — lus dans la norme elle-même, couche de texte contrôlée sur les pages",
+      "on": "2026-10-07"
+    }
+  },
+  "notes": [
+    "NOMENCLATURE COMPLÈTE. Tous les numéros de l'article 3 sont embarqués : un numéro absent n'appartient pas à l'ISO 4063:2009. S'il figure à l'Annexe A, c'est un numéro remplacé ou dépassé, qu'on peut encore rencontrer dans des documents anciens.",
+    "Le nom est le terme préféré de la colonne française, première lettre en minuscule pour se lire dans une phrase ; les synonymes donnés par la norme suivent. Les variantes propres à la Belgique (« BE ») ne sont pas reprises.",
+    "122 : la version française imprime « avec une seul électrode en feuillard » ; l'accord est rétabli ici, sans changer le sens.",
+    "185 relève directement du groupe principal 1 : la norme ne donne pas de groupe 18 dans sa liste principale (181 n'est plus qu'à l'Annexe A).",
+    "Les désignations US de l'Annexe B ne sont reprises que lorsqu'elles sont exactement équivalentes : celles que la norme marque « pas exactement équivalent » ou qui renvoient à l'Annexe A sont écartées, de même que celles qui désignent un mode de transfert (GMAW-P, GMAW-S, GTAW-P).",
+    "L'Annexe A réemploie trois numéros de la liste principale avec un autre sens (43 soudage par forgeage, 923 brasage fort par friction, 953 brasage tendre avec abrasion) : la liste principale prévaut, ces trois entrées ne sont pas reprises.",
+    "Les « aliases » sont des noms d'atelier, des clés de recherche ; ils ne sont pas des termes de la norme."
+  ],
+  "transfer_modes": [
+    {
+      "letter": "D",
+      "name": "transfert par court-circuit"
+    },
+    {
+      "letter": "G",
+      "name": "transfert globulaire"
+    },
+    {
+      "letter": "S",
+      "name": "transfert par pulvérisation"
+    },
+    {
+      "letter": "P",
+      "name": "transfert pulsé"
+    }
+  ],
+  "additional_items": [
+    {
+      "letter": "C",
+      "name": "fil froid"
+    },
+    {
+      "letter": "H",
+      "name": "fil chaud"
+    }
+  ],
+  "processes": [
+    {
+      "number": "1",
+      "name": "soudage à l'arc",
+      "aliases": [
+        "arc"
+      ],
+      "us_designations": [
+        "AW"
+      ]
+    },
+    {
+      "number": "11",
+      "name": "soudage à l'arc avec électrode fusible sans protection gazeuse",
+      "aliases": []
+    },
+    {
+      "number": "111",
+      "name": "soudage manuel à l'arc avec électrode enrobée",
+      "aliases": [
+        "électrode enrobée",
+        "electrode enrobee",
+        "mma",
+        "baguette"
+      ],
+      "us_designations": [
+        "SMAW"
+      ]
+    },
+    {
+      "number": "112",
+      "name": "soudage à l'arc avec électrode enrobée par gravité",
+      "aliases": []
+    },
+    {
+      "number": "114",
+      "name": "soudage à l'arc avec fil fourré autoprotecteur",
+      "aliases": [
+        "fil fourré autoprotecteur",
+        "fil fourre autoprotecteur"
+      ],
+      "us_designations": [
+        "FCAW",
+        "FCAW-S"
+      ]
+    },
+    {
+      "number": "12",
+      "name": "soudage à l'arc sous flux (en poudre)",
+      "aliases": [
+        "arc submergé",
+        "arc submerge",
+        "sous flux"
+      ],
+      "us_designations": [
+        "SAW"
+      ]
+    },
+    {
+      "number": "121",
+      "name": "soudage à l'arc sous flux (en poudre) avec un seul fil",
+      "synonyms": [
+        "soudage à l'arc submergé avec un seul fil-électrode"
+      ],
+      "aliases": []
+    },
+    {
+      "number": "122",
+      "name": "soudage à l'arc sous flux (en poudre) avec une seule électrode en feuillard",
+      "synonyms": [
+        "soudage à l'arc submergé avec électrode en bande"
+      ],
+      "aliases": []
+    },
+    {
+      "number": "124",
+      "name": "soudage à l'arc sous flux (en poudre) avec addition de poudre métallique",
+      "aliases": []
+    },
+    {
+      "number": "125",
+      "name": "soudage à l'arc sous flux (en poudre) avec fil fourré",
+      "aliases": []
+    },
+    {
+      "number": "126",
+      "name": "soudage à l'arc sous flux (en poudre) avec électrode en feuillard fourrée",
+      "aliases": []
+    },
+    {
+      "number": "13",
+      "name": "soudage à l'arc avec électrode fusible sous protection gazeuse",
+      "aliases": [
+        "mig/mag"
+      ],
+      "us_designations": [
+        "GMAW"
+      ]
+    },
+    {
+      "number": "131",
+      "name": "soudage MIG avec fil-électrode fusible (soudage à l'arc sous protection de gaz inerte avec fil-électrode fusible)",
+      "aliases": [
+        "mig"
+      ]
+    },
+    {
+      "number": "132",
+      "name": "soudage MIG avec fil fourré de flux (soudage à l'arc sous protection de gaz inerte avec fil-électrode fourré)",
+      "aliases": [
+        "mig"
+      ]
+    },
+    {
+      "number": "133",
+      "name": "soudage MIG avec fil fourré de poudre métallique (soudage à l'arc sous protection de gaz inerte avec fil fourré de poudre métallique)",
+      "aliases": [
+        "mig"
+      ]
+    },
+    {
+      "number": "135",
+      "name": "soudage MAG avec fil-électrode fusible (soudage à l'arc sous protection de gaz actif avec fil-électrode fusible)",
+      "aliases": [
+        "mag"
+      ]
+    },
+    {
+      "number": "136",
+      "name": "soudage MAG avec fil fourré de flux (soudage à l'arc sous protection de gaz actif avec fil fourré de flux)",
+      "aliases": [
+        "mag"
+      ],
+      "us_designations": [
+        "FCAW",
+        "FCAW-G"
+      ]
+    },
+    {
+      "number": "138",
+      "name": "soudage MAG avec fil fourré de poudre métallique (soudage à l'arc sous protection de gaz actif avec fil-électrode fourré de poudre métallique)",
+      "aliases": [
+        "mag"
+      ]
+    },
+    {
+      "number": "14",
+      "name": "soudage à l'arc avec électrode réfractaire sous protection gazeuse",
+      "aliases": [],
+      "us_designations": [
+        "GTAW"
+      ]
+    },
+    {
+      "number": "141",
+      "name": "soudage TIG avec fil d'apport (soudage à l'arc sous protection de gaz inerte avec électrode de tungstène et fil d'apport)",
+      "aliases": [
+        "tig"
+      ]
+    },
+    {
+      "number": "142",
+      "name": "soudage TIG autogène (soudage à l'arc autogène sous protection de gaz inerte avec électrode de tungstène)",
+      "aliases": [
+        "tig"
+      ]
+    },
+    {
+      "number": "143",
+      "name": "soudage TIG avec fil fourré ou baguette fourrée (soudage à l'arc sous protection de gaz inerte avec électrode de tungstène et fil fourré ou baguette fourrée)",
+      "aliases": [
+        "tig"
+      ]
+    },
+    {
+      "number": "145",
+      "name": "soudage TIG utilisant un gaz réducteur et un apport sous forme de baguette ou de fil (soudage à l'arc sous protection de gaz inerte avec électrode de tungstène utilisant un gaz réducteur et un apport sous forme de baguette ou de fil)",
+      "aliases": [
+        "tig"
+      ]
+    },
+    {
+      "number": "146",
+      "name": "soudage TIG avec gaz réducteur et fil fourré ou baguette fourrée (soudage à l'arc sous protection de gaz réducteur avec électrode de tungstène et fil fourré ou baguette fourrée)",
+      "aliases": [
+        "tig"
+      ]
+    },
+    {
+      "number": "147",
+      "name": "soudage à l'arc avec électrode réfractaire sous protection gazeuse active (soudage TAG)",
+      "aliases": [
+        "tag"
+      ]
+    },
+    {
+      "number": "15",
+      "name": "soudage plasma",
+      "aliases": [
+        "plasma"
+      ],
+      "us_designations": [
+        "PAW"
+      ]
+    },
+    {
+      "number": "151",
+      "name": "soudage plasma-MIG",
+      "aliases": []
+    },
+    {
+      "number": "152",
+      "name": "soudage plasma avec poudre",
+      "aliases": []
+    },
+    {
+      "number": "153",
+      "name": "soudage plasma à arc transféré",
+      "aliases": []
+    },
+    {
+      "number": "154",
+      "name": "soudage plasma à arc non transféré",
+      "aliases": []
+    },
+    {
+      "number": "155",
+      "name": "soudage plasma à arc semi-transféré",
+      "aliases": []
+    },
+    {
+      "number": "185",
+      "name": "soudage à l'arc tournant",
+      "aliases": [],
+      "us_designations": [
+        "MIAW"
+      ]
+    },
+    {
+      "number": "2",
+      "name": "soudage par résistance",
+      "aliases": [
+        "résistance",
+        "resistance"
+      ],
+      "us_designations": [
+        "RW",
+        "RW-PC"
+      ]
+    },
+    {
+      "number": "21",
+      "name": "soudage par résistance par points",
+      "aliases": [
+        "par points",
+        "points"
+      ],
+      "us_designations": [
+        "RSW"
+      ]
+    },
+    {
+      "number": "211",
+      "name": "soudage indirect par résistance par points",
+      "aliases": []
+    },
+    {
+      "number": "212",
+      "name": "soudage direct par résistance par points",
+      "aliases": []
+    },
+    {
+      "number": "22",
+      "name": "soudage à la molette",
+      "aliases": [
+        "molette"
+      ],
+      "us_designations": [
+        "RSEW"
+      ]
+    },
+    {
+      "number": "221",
+      "name": "soudage à la molette par recouvrement",
+      "aliases": []
+    },
+    {
+      "number": "222",
+      "name": "soudage à la molette par écrasement",
+      "aliases": [],
+      "us_designations": [
+        "RSEW-MS"
+      ]
+    },
+    {
+      "number": "223",
+      "name": "soudage à la molette sur bords préparés",
+      "aliases": []
+    },
+    {
+      "number": "224",
+      "name": "soudage à la molette avec fil",
+      "aliases": []
+    },
+    {
+      "number": "225",
+      "name": "soudage en bout à la molette avec feuillard",
+      "aliases": []
+    },
+    {
+      "number": "226",
+      "name": "soudage à la molette avec feuillard",
+      "aliases": []
+    },
+    {
+      "number": "23",
+      "name": "soudage par bossages",
+      "aliases": [
+        "bossages"
+      ],
+      "us_designations": [
+        "PW"
+      ]
+    },
+    {
+      "number": "231",
+      "name": "soudage indirect par bossages",
+      "aliases": []
+    },
+    {
+      "number": "232",
+      "name": "soudage direct par bossages",
+      "aliases": []
+    },
+    {
+      "number": "24",
+      "name": "soudage par étincelage",
+      "aliases": [
+        "étincelage",
+        "etincelage"
+      ],
+      "us_designations": [
+        "FW"
+      ]
+    },
+    {
+      "number": "241",
+      "name": "soudage par étincelage avec préchauffage",
+      "aliases": []
+    },
+    {
+      "number": "242",
+      "name": "soudage par étincelage sans préchauffage",
+      "aliases": []
+    },
+    {
+      "number": "25",
+      "name": "soudage en bout par résistance pure",
+      "aliases": [],
+      "us_designations": [
+        "UW"
+      ]
+    },
+    {
+      "number": "26",
+      "name": "soudage par résistance des goujons",
+      "aliases": []
+    },
+    {
+      "number": "27",
+      "name": "soudage par résistance à haute fréquence",
+      "synonyms": [
+        "soudage par résistance HF"
+      ],
+      "aliases": []
+    },
+    {
+      "number": "29",
+      "name": "autres procédés de soudage par résistance",
+      "aliases": []
+    },
+    {
+      "number": "3",
+      "name": "soudage aux gaz",
+      "aliases": [
+        "gaz"
+      ]
+    },
+    {
+      "number": "31",
+      "name": "soudage oxygaz",
+      "aliases": [
+        "oxygaz"
+      ],
+      "us_designations": [
+        "OFW"
+      ]
+    },
+    {
+      "number": "311",
+      "name": "soudage oxyacétylénique",
+      "aliases": [
+        "oxyacétylénique",
+        "oxyacetylenique",
+        "chalumeau"
+      ],
+      "us_designations": [
+        "OAW"
+      ]
+    },
+    {
+      "number": "312",
+      "name": "soudage oxypropane",
+      "aliases": []
+    },
+    {
+      "number": "313",
+      "name": "soudage oxhydrique",
+      "aliases": [],
+      "us_designations": [
+        "OHW"
+      ]
+    },
+    {
+      "number": "4",
+      "name": "soudage par pression",
+      "aliases": [],
+      "us_designations": [
+        "SSW"
+      ]
+    },
+    {
+      "number": "41",
+      "name": "soudage par ultrasons",
+      "aliases": [],
+      "us_designations": [
+        "USW"
+      ]
+    },
+    {
+      "number": "42",
+      "name": "soudage par friction",
+      "aliases": [
+        "friction"
+      ],
+      "us_designations": [
+        "FRW"
+      ]
+    },
+    {
+      "number": "421",
+      "name": "soudage par friction avec entraînement direct",
+      "aliases": [],
+      "us_designations": [
+        "FRW-DD"
+      ]
+    },
+    {
+      "number": "422",
+      "name": "soudage par friction par inertie",
+      "aliases": [],
+      "us_designations": [
+        "FRW-I"
+      ]
+    },
+    {
+      "number": "423",
+      "name": "soudage par friction des goujons",
+      "aliases": []
+    },
+    {
+      "number": "43",
+      "name": "soudage par friction-malaxage",
+      "aliases": [
+        "friction-malaxage"
+      ],
+      "us_designations": [
+        "FSW"
+      ]
+    },
+    {
+      "number": "44",
+      "name": "soudage par haute énergie mécanique",
+      "aliases": []
+    },
+    {
+      "number": "441",
+      "name": "soudage par explosion",
+      "aliases": [],
+      "us_designations": [
+        "EXW"
+      ]
+    },
+    {
+      "number": "442",
+      "name": "soudage par impulsion magnétique",
+      "aliases": []
+    },
+    {
+      "number": "45",
+      "name": "soudage par diffusion",
+      "aliases": [],
+      "us_designations": [
+        "DFW"
+      ]
+    },
+    {
+      "number": "47",
+      "name": "soudage aux gaz avec pression",
+      "aliases": [],
+      "us_designations": [
+        "PGW"
+      ]
+    },
+    {
+      "number": "48",
+      "name": "soudage avec pression à froid",
+      "aliases": [],
+      "us_designations": [
+        "CW"
+      ]
+    },
+    {
+      "number": "49",
+      "name": "soudage avec pression à chaud",
+      "aliases": [],
+      "us_designations": [
+        "HPW"
+      ]
+    },
+    {
+      "number": "5",
+      "name": "soudage par faisceau",
+      "aliases": [
+        "faisceau"
+      ]
+    },
+    {
+      "number": "51",
+      "name": "soudage par faisceau d'électrons",
+      "aliases": [
+        "faisceau d'électrons",
+        "faisceau d'electrons",
+        "bombardement électronique"
+      ],
+      "us_designations": [
+        "EBW"
+      ]
+    },
+    {
+      "number": "511",
+      "name": "soudage par faisceau d'électrons sous vide",
+      "aliases": [],
+      "us_designations": [
+        "EBW-HV",
+        "EBW-MV"
+      ]
+    },
+    {
+      "number": "512",
+      "name": "soudage par faisceau d'électrons sous atmosphère",
+      "aliases": [],
+      "us_designations": [
+        "EBW-NV"
+      ]
+    },
+    {
+      "number": "513",
+      "name": "soudage par faisceau d'électrons avec addition de gaz de protection",
+      "aliases": []
+    },
+    {
+      "number": "52",
+      "name": "soudage laser",
+      "aliases": [
+        "laser"
+      ],
+      "us_designations": [
+        "LBW"
+      ]
+    },
+    {
+      "number": "521",
+      "name": "soudage avec laser à solide",
+      "aliases": []
+    },
+    {
+      "number": "522",
+      "name": "soudage avec laser à gaz",
+      "aliases": []
+    },
+    {
+      "number": "523",
+      "name": "soudage laser à diodes",
+      "aliases": []
+    },
+    {
+      "number": "7",
+      "name": "autres procédés de soudage",
+      "aliases": []
+    },
+    {
+      "number": "71",
+      "name": "soudage aluminothermique (soudage par aluminothermie)",
+      "aliases": [],
+      "us_designations": [
+        "TW"
+      ]
+    },
+    {
+      "number": "72",
+      "name": "soudage sous laitier (électroconducteur)",
+      "aliases": [
+        "électroslag",
+        "electroslag",
+        "sous laitier"
+      ],
+      "us_designations": [
+        "ESW"
+      ]
+    },
+    {
+      "number": "721",
+      "name": "soudage sous laitier (électroconducteur) avec électrode en bande",
+      "aliases": []
+    },
+    {
+      "number": "722",
+      "name": "soudage sous laitier (électroconducteur) avec fil-électrode",
+      "aliases": []
+    },
+    {
+      "number": "73",
+      "name": "soudage électrogaz",
+      "aliases": [],
+      "us_designations": [
+        "EGW"
+      ]
+    },
+    {
+      "number": "74",
+      "name": "soudage par induction",
+      "aliases": [],
+      "us_designations": [
+        "IW"
+      ]
+    },
+    {
+      "number": "741",
+      "name": "soudage en bout par induction",
+      "aliases": [],
+      "us_designations": [
+        "UW-I"
+      ]
+    },
+    {
+      "number": "742",
+      "name": "soudage à la molette par induction",
+      "aliases": [],
+      "us_designations": [
+        "RSEW-I"
+      ]
+    },
+    {
+      "number": "743",
+      "name": "soudage par induction haute-fréquence",
+      "aliases": []
+    },
+    {
+      "number": "75",
+      "name": "soudage par rayonnement lumineux",
+      "aliases": []
+    },
+    {
+      "number": "753",
+      "name": "soudage par infrarouge",
+      "aliases": []
+    },
+    {
+      "number": "78",
+      "name": "soudage des goujons",
+      "aliases": [
+        "goujons",
+        "goujon"
+      ]
+    },
+    {
+      "number": "783",
+      "name": "soudage à l'arc des goujons par fusion et forgeage avec bague en céramique ou gaz de protection",
+      "aliases": [],
+      "us_designations": [
+        "SW"
+      ]
+    },
+    {
+      "number": "784",
+      "name": "soudage à l'arc des goujons avec cycle court",
+      "aliases": []
+    },
+    {
+      "number": "785",
+      "name": "soudage à l'arc des goujons par décharge de condensateurs",
+      "aliases": [],
+      "us_designations": [
+        "SW"
+      ]
+    },
+    {
+      "number": "786",
+      "name": "soudage à l'arc des goujons par décharge de condensateurs avec amorçage par contact",
+      "aliases": [],
+      "us_designations": [
+        "SW"
+      ]
+    },
+    {
+      "number": "787",
+      "name": "soudage à l'arc des goujons par fusion et forgeage avec bague fusible",
+      "aliases": []
+    },
+    {
+      "number": "8",
+      "name": "coupage et gougeage",
+      "aliases": [
+        "coupage"
+      ],
+      "us_designations": [
+        "TC"
+      ]
+    },
+    {
+      "number": "81",
+      "name": "coupage à la flamme",
+      "aliases": [
+        "oxycoupage"
+      ],
+      "us_designations": [
+        "OC",
+        "OC-P",
+        "OFC",
+        "OFC-A",
+        "OFC-F",
+        "OFC-H",
+        "OFC-N",
+        "OFC-P"
+      ]
+    },
+    {
+      "number": "82",
+      "name": "coupage à l'arc",
+      "aliases": [],
+      "us_designations": [
+        "AC",
+        "GMAC",
+        "GTAC",
+        "SMAC"
+      ]
+    },
+    {
+      "number": "821",
+      "name": "coupage air-arc",
+      "aliases": [],
+      "us_designations": [
+        "CAC-A"
+      ]
+    },
+    {
+      "number": "822",
+      "name": "oxycoupage à l'arc",
+      "aliases": [],
+      "us_designations": [
+        "OAC",
+        "OLC"
+      ]
+    },
+    {
+      "number": "83",
+      "name": "coupage plasma",
+      "aliases": [
+        "coupage plasma"
+      ],
+      "us_designations": [
+        "PAC"
+      ]
+    },
+    {
+      "number": "831",
+      "name": "coupage plasma avec gaz oxydant",
+      "aliases": []
+    },
+    {
+      "number": "832",
+      "name": "coupage plasma sans gaz oxydant",
+      "aliases": []
+    },
+    {
+      "number": "833",
+      "name": "coupage plasma à l'air",
+      "aliases": []
+    },
+    {
+      "number": "834",
+      "name": "coupage plasma haute tolérance",
+      "aliases": []
+    },
+    {
+      "number": "84",
+      "name": "coupage laser",
+      "aliases": [
+        "coupage laser"
+      ],
+      "us_designations": [
+        "LBC",
+        "LBC-A",
+        "LBC-EV",
+        "LBC-IG",
+        "LBC-O"
+      ]
+    },
+    {
+      "number": "86",
+      "name": "gougeage à la flamme",
+      "aliases": []
+    },
+    {
+      "number": "87",
+      "name": "gougeage à l'arc",
+      "aliases": []
+    },
+    {
+      "number": "871",
+      "name": "gougeage air-arc",
+      "aliases": [],
+      "us_designations": [
+        "CAC-A"
+      ]
+    },
+    {
+      "number": "872",
+      "name": "gougeage à l'arc avec jet d'oxygène",
+      "aliases": [],
+      "us_designations": [
+        "OG"
+      ]
+    },
+    {
+      "number": "88",
+      "name": "gougeage plasma",
+      "aliases": []
+    },
+    {
+      "number": "9",
+      "name": "brasage fort, brasage tendre et soudobrasage",
+      "aliases": [
+        "brasage"
+      ],
+      "us_designations": [
+        "B"
+      ]
+    },
+    {
+      "number": "91",
+      "name": "brasage fort avec chauffage local",
+      "aliases": []
+    },
+    {
+      "number": "911",
+      "name": "brasage fort par infrarouge",
+      "aliases": [],
+      "us_designations": [
+        "IRB"
+      ]
+    },
+    {
+      "number": "912",
+      "name": "brasage fort aux gaz",
+      "aliases": [],
+      "us_designations": [
+        "TB"
+      ]
+    },
+    {
+      "number": "913",
+      "name": "brasage fort par faisceau laser",
+      "aliases": [],
+      "us_designations": [
+        "LBBW"
+      ]
+    },
+    {
+      "number": "914",
+      "name": "brasage fort par faisceau d'électrons",
+      "aliases": []
+    },
+    {
+      "number": "916",
+      "name": "brasage fort par induction",
+      "aliases": [],
+      "us_designations": [
+        "IB"
+      ]
+    },
+    {
+      "number": "918",
+      "name": "brasage fort par résistance",
+      "aliases": [],
+      "us_designations": [
+        "RB"
+      ]
+    },
+    {
+      "number": "919",
+      "name": "brasage fort par diffusion",
+      "aliases": [],
+      "us_designations": [
+        "DFB"
+      ]
+    },
+    {
+      "number": "92",
+      "name": "brasage avec chauffage global",
+      "aliases": []
+    },
+    {
+      "number": "921",
+      "name": "brasage fort au four",
+      "aliases": [],
+      "us_designations": [
+        "FB"
+      ]
+    },
+    {
+      "number": "922",
+      "name": "brasage fort sous vide",
+      "aliases": []
+    },
+    {
+      "number": "923",
+      "name": "brasage fort au trempé",
+      "aliases": [],
+      "us_designations": [
+        "DB"
+      ]
+    },
+    {
+      "number": "924",
+      "name": "brasage fort au bain de sel",
+      "aliases": []
+    },
+    {
+      "number": "925",
+      "name": "brasage fort au bain de flux",
+      "aliases": []
+    },
+    {
+      "number": "926",
+      "name": "brasage fort par immersion",
+      "aliases": []
+    },
+    {
+      "number": "93",
+      "name": "autres procédés de brasage fort",
+      "aliases": [],
+      "us_designations": [
+        "EXB"
+      ]
+    },
+    {
+      "number": "94",
+      "name": "brasage tendre avec chauffage local",
+      "aliases": []
+    },
+    {
+      "number": "941",
+      "name": "brasage tendre par infrarouge",
+      "aliases": [],
+      "us_designations": [
+        "IRS"
+      ]
+    },
+    {
+      "number": "942",
+      "name": "brasage tendre aux gaz",
+      "aliases": [],
+      "us_designations": [
+        "TS"
+      ]
+    },
+    {
+      "number": "943",
+      "name": "brasage tendre au fer",
+      "aliases": []
+    },
+    {
+      "number": "944",
+      "name": "brasage tendre à la traîne",
+      "aliases": []
+    },
+    {
+      "number": "945",
+      "name": "brasage tendre par faisceau laser",
+      "aliases": []
+    },
+    {
+      "number": "946",
+      "name": "brasage tendre par induction",
+      "aliases": [],
+      "us_designations": [
+        "IS"
+      ]
+    },
+    {
+      "number": "947",
+      "name": "brasage tendre par ultrasons",
+      "aliases": [],
+      "us_designations": [
+        "USS"
+      ]
+    },
+    {
+      "number": "948",
+      "name": "brasage tendre par résistance",
+      "aliases": [],
+      "us_designations": [
+        "RS"
+      ]
+    },
+    {
+      "number": "949",
+      "name": "brasage tendre par diffusion",
+      "aliases": []
+    },
+    {
+      "number": "95",
+      "name": "brasage tendre avec chauffage global",
+      "aliases": []
+    },
+    {
+      "number": "951",
+      "name": "brasage tendre à la vague",
+      "aliases": [],
+      "us_designations": [
+        "WS"
+      ]
+    },
+    {
+      "number": "953",
+      "name": "brasage tendre au four",
+      "aliases": [],
+      "us_designations": [
+        "FS"
+      ]
+    },
+    {
+      "number": "954",
+      "name": "brasage tendre sous vide",
+      "aliases": []
+    },
+    {
+      "number": "955",
+      "name": "brasage tendre au trempé",
+      "aliases": [],
+      "us_designations": [
+        "DS"
+      ]
+    },
+    {
+      "number": "957",
+      "name": "brasage tendre au bain de sel",
+      "aliases": []
+    },
+    {
+      "number": "96",
+      "name": "autres procédés de brasage tendre",
+      "aliases": []
+    },
+    {
+      "number": "97",
+      "name": "soudobrasage",
+      "aliases": [
+        "soudobrasage"
+      ],
+      "us_designations": [
+        "BW"
+      ]
+    },
+    {
+      "number": "971",
+      "name": "soudobrasage aux gaz",
+      "aliases": []
+    },
+    {
+      "number": "972",
+      "name": "soudobrasage à l'arc",
+      "aliases": [],
+      "us_designations": [
+        "ABW"
+      ]
+    },
+    {
+      "number": "973",
+      "name": "soudobrasage à l'arc sous protection gazeuse",
+      "aliases": []
+    },
+    {
+      "number": "974",
+      "name": "soudobrasage TIG",
+      "aliases": []
+    },
+    {
+      "number": "975",
+      "name": "soudobrasage plasma",
+      "aliases": []
+    },
+    {
+      "number": "976",
+      "name": "soudobrasage laser",
+      "aliases": []
+    },
+    {
+      "number": "977",
+      "name": "soudobrasage par faisceau d'électrons",
+      "aliases": [],
+      "us_designations": [
+        "EBBW"
+      ]
+    }
+  ],
+  "replaced": [
+    {
+      "number": "113",
+      "name": "soudage à l'arc avec fil nu"
+    },
+    {
+      "number": "115",
+      "name": "soudage à l'arc avec fil enrobé"
+    },
+    {
+      "number": "118",
+      "name": "soudage avec électrode couchée"
+    },
+    {
+      "number": "137",
+      "name": "soudage MIG avec fil fourré (soudage à l'arc sous protection de gaz inerte avec fil-électrode fourré)"
+    },
+    {
+      "number": "149",
+      "name": "soudage à l'hydrogène atomique"
+    },
+    {
+      "number": "181",
+      "name": "soudage à l'arc avec électrode de carbone"
+    },
+    {
+      "number": "32",
+      "name": "soudage aérogaz"
+    },
+    {
+      "number": "321",
+      "name": "soudage aéroacétylénique"
+    },
+    {
+      "number": "322",
+      "name": "soudage aéropropane"
+    },
+    {
+      "number": "752",
+      "name": "soudage par image d'arc"
+    },
+    {
+      "number": "77",
+      "name": "soudage par percussion"
+    },
+    {
+      "number": "781",
+      "name": "soudage à l'arc des goujons"
+    },
+    {
+      "number": "917",
+      "name": "brasage fort par ultrasons"
+    }
+  ]
+}

@@ -1,0 +1,141 @@
+{
+  "nominal": 50000000,
+  "delta_t": 80,
+  "hole_family": {
+    "id": "aluminium",
+    "name": "alliage d'aluminium",
+    "e_gpa": 70,
+    "poisson_milli": 330,
+    "density": 2700,
+    "alpha_tenths": 230
+  },
+  "shaft_family": {
+    "id": "steel",
+    "name": "acier non allié ou faiblement allié",
+    "e_gpa": 210,
+    "poisson_milli": 300,
+    "density": 7850,
+    "alpha_tenths": 120
+  },
+  "hole_growth": 92000,
+  "shaft_growth": 48000,
+  "clearance_shift": 44000,
+  "clearance_shift_label": "+44 µm",
+  "fit": {
+    "designation": "Ø50 H7/p6",
+    "cold_min": -42000,
+    "cold_max": -1000,
+    "cold_kind": "interference",
+    "hot_min": 2000,
+    "hot_max": 43000,
+    "hot_kind": "clearance"
+  },
+  "findings": [
+    {
+      "code": "fit_kind_changes",
+      "severity": "caution",
+      "message": "L'ajustement change de nature : serré à froid, avec jeu à ΔT = 80 K."
+    },
+    {
+      "code": "interference_lost",
+      "severity": "error",
+      "message": "Le serrage peut disparaître : la pièce frettée peut tourner ou glisser à cette température."
+    },
+    {
+      "code": "nominal_basis",
+      "severity": "note",
+      "message": "Calculé sur le diamètre nominal, pièces à température uniforme. L'écart dû aux dimensions réelles est du second ordre."
+    }
+  ],
+  "conclusion": {
+    "verdict": "incompatible",
+    "detail": "Le serrage peut disparaître : la pièce frettée peut tourner ou glisser à cette température.",
+    "why": [
+      {
+        "label": "Dilatation de l'alésage",
+        "expression": "Ø × α × ΔT = 50 mm × 23 µm/(m·K) × 80 K",
+        "value": "+92 µm (alliage d'aluminium)"
+      },
+      {
+        "label": "Dilatation de l'arbre",
+        "expression": "Ø × α × ΔT = 50 mm × 12 µm/(m·K) × 80 K",
+        "value": "+48 µm (acier non allié ou faiblement allié)"
+      },
+      {
+        "label": "Variation du jeu",
+        "expression": "dilatation de l'alésage − dilatation de l'arbre",
+        "value": "+44 µm"
+      },
+      {
+        "label": "Jeu à chaud",
+        "expression": "jeu à froid + variation",
+        "value": "+2 µm à +43 µm"
+      }
+    ],
+    "warnings": [
+      "Propriétés physiques par famille (module d'élasticité, coefficient de Poisson, masse volumique et coefficient de dilatation linéique, à température ambiante) : Donnée normative non vérifiée. À confronter à un recueil de propriétés des matériaux (VSM « Extrait de normes », chapitre matériaux, ou fiches de nuances), puis à requalifier en « recommended » avec sa source."
+    ]
+  },
+  "provenance": {
+    "references": [
+      {
+        "id": "Propriétés physiques par famille",
+        "edition": "",
+        "title": "Ordres de grandeur des propriétés physiques des familles de matériaux",
+        "scope": "module d'élasticité, coefficient de Poisson, masse volumique et coefficient de dilatation linéique, à température ambiante",
+        "source": "Valeurs d'usage courant des manuels, saisies sans document ouvert lors de la saisie. Aucune norme ne les fixe pour une famille entière.",
+        "verification": {
+          "state": "unverified",
+          "pending": "À confronter à un recueil de propriétés des matériaux (VSM « Extrait de normes », chapitre matériaux, ou fiches de nuances), puis à requalifier en « recommended » avec sa source."
+        },
+        "notes": [
+          "CE NE SONT PAS LES VALEURS D'UNE NUANCE. Ce sont des valeurs représentatives d'une famille : une nuance précise peut s'en écarter de plusieurs pour cent, une fonte grise de bien davantage selon sa classe.",
+          "Le coefficient de dilatation est donné entre 20 et 100 °C environ. Il varie avec la température ; au-delà, la valeur moyenne sur l'intervalle utile est à rechercher.",
+          "Les plastiques techniques sont donnés à titre d'alerte : leur dilatation est dix fois celle de l'acier, et leurs propriétés dépendent de l'humidité et de la température."
+        ]
+      },
+      {
+        "id": "ISO 286-1",
+        "edition": "2010",
+        "title": "Spécification géométrique des produits (GPS) — Système de codification ISO pour les tolérances sur les tailles linéaires — Partie 1 : Base des tolérances, écarts et ajustements",
+        "scope": "degrés de tolérance normalisés IT",
+        "source": "ISO 286-2:2010, tableau 1 « Values of standard tolerance grades for nominal sizes up to 3 150 mm », qui reproduit le tableau de l'ISO 286-1:2010.",
+        "verification": {
+          "state": "verified",
+          "against": "ISO 286-2:2010(E), tableau 1, page 5 — les 260 cases (20 degrés × 13 échelons) comparées automatiquement par scripts/verify-iso286-tables.py",
+          "on": "2026-09-10"
+        },
+        "notes": [
+          "Toutes les valeurs sont exprimées en micromètres.",
+          "Les échelons de dimensions nominales sont donnés en millimètres, borne basse exclusive et borne haute incluse : la valeur 10 appartient à l'échelon 6..10.",
+          "Ce jeu de données couvre les dimensions nominales jusqu'à 500 mm. Les échelons au-delà de 500 mm ne sont pas saisis : toute demande hors plage doit être refusée, jamais extrapolée.",
+          "ISO 286-1 précise que les degrés IT14 à IT18 ne s'appliquent pas aux dimensions nominales inférieures ou égales à 1 mm. Le moteur applique cette restriction.",
+          "Le premier échelon couvre les dimensions nominales supérieures à 0 et jusqu'à 3 mm inclus.",
+          "Les valeurs publiées résultent d'un arrondi vers des nombres normalisés et ne sont pas reproductibles exactement par la formule du facteur de tolérance i = 0,45 × racine cubique(D) + 0,001 × D. La table fait foi, la formule ne sert que de contrôle de vraisemblance."
+        ]
+      },
+      {
+        "id": "ISO 286-1",
+        "edition": "2010",
+        "title": "Spécification géométrique des produits (GPS) — Système de codification ISO pour les tolérances sur les tailles linéaires — Partie 1 : Base des tolérances, écarts et ajustements",
+        "scope": "écarts fondamentaux des arbres",
+        "source": "ISO 286-2:2010, tableaux 18 à 26, « Limit deviations for shafts ». L'écart fondamental est celui qui ne varie pas avec le degré : l'écart supérieur pour d, e, f, g, h ; l'écart inférieur pour k, m, n, p.",
+        "verification": {
+          "state": "verified",
+          "against": "ISO 286-2:2010(E), tableaux 18 à 26 — 104 cases (8 lettres × 13 échelons) comparées automatiquement par scripts/verify-iso286-tables.py ; k confronté au tableau 24 par lecture directe (écart nul hors des degrés IT4 à IT7, ce que la ligne des écarts inférieurs confirme colonne par colonne) ; js relève de la règle ± IT/2, vérifiée par les tests du moteur et non tabulée comme écart fondamental",
+          "on": "2026-09-10"
+        },
+        "notes": [
+          "Toutes les valeurs sont exprimées en micromètres, et désignent l'écart fondamental : celui des deux écarts que la lettre fixe.",
+          "Lettres a..h : la lettre fixe l'écart supérieur es, négatif ou nul. L'écart inférieur s'en déduit : ei = es - IT.",
+          "Lettres j..zc : la lettre fixe l'écart inférieur ei, positif ou nul. L'écart supérieur s'en déduit : es = ei + IT.",
+          "js : zone symétrique ± IT/2, calculée et non tabulée. Lorsque IT est un nombre impair de micromètres, la demi-valeur tombe sur un demi-micromètre, représenté exactement par le moteur.",
+          "COUVERTURE PARTIELLE. Ce jeu ne contient que les lettres dont les valeurs se répartissent sur les 13 échelons standards : d, e, f, g, h, js, k, m, n, p. Elles couvrent les ajustements avec jeu, incertains et à serrage léger.",
+          "LETTRES ABSENTES ET POURQUOI. Les lettres a, b, c d'une part, et r à zc d'autre part, emploient des échelons de dimensions nominales PLUS FINS que les 13 échelons standards : la plage 30..50 y est scindée en 30..40 et 40..50, la plage 50..80 en 50..65 et 65..80, etc. Les saisir sur les 13 échelons standards produirait des valeurs fausses. Elles seront ajoutées avec leurs propres échelons après vérification sur source primaire.",
+          "La lettre k ne prend sa valeur tabulée que pour les degrés IT4 à IT7 ; pour tous les autres degrés, l'écart fondamental de k est nul.",
+          "Les valeurs publiées résultent d'un arrondi vers des nombres normalisés et ne sont pas reproductibles exactement par les formules d'écart fondamental. La table fait foi."
+        ]
+      }
+    ]
+  }
+}

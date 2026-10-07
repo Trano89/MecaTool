@@ -18,13 +18,24 @@ import type {
   Diagram,
   Domain,
   EngineInfo,
+  FastenerCatalogue,
   FitComparison,
+  MaterialsCatalogue,
   GeometricCatalogue,
   GroupAnalysis,
   MeasureKind,
   MountingAdvice,
   MountingOption,
+  ProcessReading,
   Report,
+  SteelReading,
+  SurfaceAnalysis,
+  SurfaceCatalogue,
+  ThermalFit,
+  ThreadReport,
+  WeldingCatalogue,
+  WeldReading,
+  WeldRequest,
 } from "./types";
 
 /** Vrai lorsque l'application tourne dans la fenêtre Tauri. */
@@ -243,4 +254,74 @@ export function bearingAdvise(
  */
 export function toleranceClasses(): Promise<ClassCatalogue> {
   return call<ClassCatalogue>("tolerance_classes", {});
+}
+
+/**
+ * Le catalogue des états de surface : symboles, stries, paramètres, classes N,
+ * procédés et leur graphique.
+ *
+ * Ses `warnings` sont à lire avant toute saisie : les trois sources du domaine
+ * ne sont pas encore confrontées à leur norme.
+ */
+export function surfaceCatalogue(): Promise<SurfaceCatalogue> {
+  return call<SurfaceCatalogue>("surface_catalogue", {});
+}
+
+/** Lit une indication d'état de surface : « Ra 0.8 », « MRR Ra 1.6 ⊥ », « N7 ». */
+export function surfaceRead(input: string): Promise<SurfaceAnalysis> {
+  return call<SurfaceAnalysis>("surface_read", { input });
+}
+
+/** Le catalogue de la soudure : procédés, symboles, niveaux de qualité. */
+export function weldingCatalogue(): Promise<WeldingCatalogue> {
+  return call<WeldingCatalogue>("welding_catalogue", {});
+}
+
+/**
+ * Les lectures d'un numéro de procédé ou d'un nom d'atelier.
+ *
+ * Plusieurs, parfois : « MAG » désigne 135, 136 et 138.
+ */
+export function weldingProcess(input: string): Promise<ProcessReading[]> {
+  return call<ProcessReading[]>("welding_process", { input });
+}
+
+/** Lit un symbole de soudure complet. Les grandeurs restent en texte. */
+export function weldingRead(request: WeldRequest): Promise<WeldReading> {
+  return call<WeldReading>("welding_read", { request });
+}
+
+/** Le catalogue de la visserie : filetages, séries de trous, classes de qualité. */
+export function fastenerCatalogue(): Promise<FastenerCatalogue> {
+  return call<FastenerCatalogue>("fastener_catalogue", {});
+}
+
+/** Lit une désignation de filetage : « M10 », « M12 x 1.5 », « M8 8.8 ». */
+export function fastenerRead(input: string): Promise<ThreadReport> {
+  return call<ThreadReport>("fastener_read", { input });
+}
+
+/** Le catalogue des matières : groupes d'emploi, aciers de construction, familles. */
+export function materialsCatalogue(): Promise<MaterialsCatalogue> {
+  return call<MaterialsCatalogue>("materials_catalogue", {});
+}
+
+/** Décompose une désignation d'acier : « S355J2 », « 42CrMo4 », « X5CrNi18-10 ». */
+export function materialsRead(input: string): Promise<SteelReading> {
+  return call<SteelReading>("materials_read", { input });
+}
+
+/**
+ * Ce que devient un ajustement quand la température change, alésage et arbre
+ * de familles différentes. Les classes sont facultatives, mais vont par deux.
+ */
+export function thermalFit(request: {
+  nominalMm: string;
+  deltaT: string;
+  holeFamily: string;
+  shaftFamily: string;
+  holeClass?: string | undefined;
+  shaftClass?: string | undefined;
+}): Promise<ThermalFit> {
+  return call<ThermalFit>("thermal_fit", { ...request });
 }

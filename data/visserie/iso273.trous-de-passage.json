@@ -1,0 +1,57 @@
+{
+  "dataset": "iso273.trous-de-passage",
+  "standard": {
+    "id": "ISO 273",
+    "edition": "",
+    "title": "Éléments de fixation — Trous de passage pour boulons et vis",
+    "scope": "diamètres des trous de passage en séries fine, moyenne et large, et leur classe de tolérance",
+    "source": "Saisi sans document normatif ouvert lors de la saisie.",
+    "verification": {
+      "state": "unverified",
+      "pending": "À confronter ligne par ligne au tableau de l'ISO 273, ou à son relevé dans le VSM « Extrait de normes » (chapitre éléments de fixation)."
+    },
+    "notes": [
+      "Trois séries : fine, moyenne et large. La série moyenne est celle des constructions courantes ; la fine sert quand le positionnement compte ; la large laisse du jeu au montage.",
+      "Chaque série porte sa classe de tolérance d'alésage : H12, H13 et H14. MecaTool la passe au moteur ISO 286, qui en calcule les écarts réels — le trou de passage devient une cote tolérancée, comme une portée de roulement.",
+      "Les diamètres embarqués couvrent les mêmes filetages que l'ISO 261 embarquée ; le chargement vérifie que chaque filetage a ses trous."
+    ]
+  },
+  "series": [
+    { "id": "fine", "name": "série fine", "class": "H12" },
+    { "id": "medium", "name": "série moyenne", "class": "H13" },
+    { "id": "coarse", "name": "série large", "class": "H14" }
+  ],
+  "holes": [
+    { "d": 1, "fine": 1.1, "medium": 1.2, "coarse": 1.3 },
+    { "d": 1.2, "fine": 1.3, "medium": 1.4, "coarse": 1.5 },
+    { "d": 1.6, "fine": 1.7, "medium": 1.8, "coarse": 2 },
+    { "d": 2, "fine": 2.2, "medium": 2.4, "coarse": 2.6 },
+    { "d": 2.5, "fine": 2.7, "medium": 2.9, "coarse": 3.1 },
+    { "d": 3, "fine": 3.2, "medium": 3.4, "coarse": 3.6 },
+    { "d": 3.5, "fine": 3.7, "medium": 3.9, "coarse": 4.2 },
+    { "d": 4, "fine": 4.3, "medium": 4.5, "coarse": 4.8 },
+    { "d": 5, "fine": 5.3, "medium": 5.5, "coarse": 5.8 },
+    { "d": 6, "fine": 6.4, "medium": 6.6, "coarse": 7 },
+    { "d": 8, "fine": 8.4, "medium": 9, "coarse": 10 },
+    { "d": 10, "fine": 10.5, "medium": 11, "coarse": 12 },
+    { "d": 12, "fine": 13, "medium": 13.5, "coarse": 14.5 },
+    { "d": 14, "fine": 15, "medium": 15.5, "coarse": 16.5 },
+    { "d": 16, "fine": 17, "medium": 17.5, "coarse": 18.5 },
+    { "d": 18, "fine": 19, "medium": 20, "coarse": 21 },
+    { "d": 20, "fine": 21, "medium": 22, "coarse": 24 },
+    { "d": 22, "fine": 23, "medium": 24, "coarse": 26 },
+    { "d": 24, "fine": 25, "medium": 26, "coarse": 28 },
+    { "d": 27, "fine": 28, "medium": 30, "coarse": 32 },
+    { "d": 30, "fine": 31, "medium": 33, "coarse": 35 },
+    { "d": 33, "fine": 34, "medium": 36, "coarse": 38 },
+    { "d": 36, "fine": 37, "medium": 39, "coarse": 42 },
+    { "d": 39, "fine": 40, "medium": 42, "coarse": 45 },
+    { "d": 42, "fine": 43, "medium": 45, "coarse": 48 },
+    { "d": 45, "fine": 46, "medium": 48, "coarse": 52 },
+    { "d": 48, "fine": 50, "medium": 52, "coarse": 56 },
+    { "d": 52, "fine": 54, "medium": 56, "coarse": 62 },
+    { "d": 56, "fine": 58, "medium": 62, "coarse": 66 },
+    { "d": 60, "fine": 62, "medium": 66, "coarse": 70 },
+    { "d": 64, "fine": 66, "medium": 70, "coarse": 74 }
+  ]
+}

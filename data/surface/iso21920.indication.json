@@ -1,0 +1,125 @@
+{
+  "dataset": "iso21920.indication",
+  "standard": {
+    "id": "ISO 21920-1",
+    "edition": "",
+    "title": "Spécification géométrique des produits (GPS) — État de surface : profil — Indication des états de surface",
+    "scope": "symboles graphiques, sens des stries et paramètres d'amplitude du profil de rugosité",
+    "source": "Saisi sans document normatif ouvert lors de la saisie, à partir des notions communes à l'ISO 1302:2002 et à l'ISO 21920. Rien n'a été recopié d'une table.",
+    "verification": {
+      "state": "unverified",
+      "pending": "À confronter à l'ISO 21920-1 et -2, ou à leur relevé dans le VSM « Extrait de normes » 2022, § 2.9, pages 204 à 211 : symboles, sens des stries et définition des paramètres."
+    },
+    "notes": [
+      "UNE SEULE GÉNÉRATION. Le recueil disponible existe en deux éditions : celle de 2022 suit l'ISO 21920, celle de 2014 l'ISO 4287 et l'ISO 1302. Les deux générations ne sont pas interchangeables. Ce module ne retient que ce qu'elles ont en commun — les trois variantes du symbole, les sept symboles de sens des stries, la signification des paramètres d'amplitude — et refuse ce qui les distingue.",
+      "Ce qui distingue les générations n'est PAS embarqué : longueurs de base et filtres par défaut (ISO 4288 d'un côté, ISO 21920-3 de l'autre), règle d'acceptation par défaut, bandes de transmission. MecaTool ne les devine pas et le dit à l'écran.",
+      "Le millésime de l'ISO 21920-1 n'est pas renseigné : il n'a pas été lu sur un document. MecaTool ne complète pas une citation normative par mémoire.",
+      "Aucune conversion entre Ra et Rz n'est proposée : les deux paramètres mesurent des choses différentes, et aucune relation fixe ne les lie. Un rapport « Rz ≈ 4 à 7 Ra » circule dans les ateliers ; il dépend du procédé et n'a rien de normatif."
+    ]
+  },
+
+  "symbols": [
+    {
+      "id": "any",
+      "code": "APA",
+      "name": "symbole de base",
+      "meaning": "Tout procédé de fabrication est admis. Le symbole seul, sans exigence, n'a pas de sens : il doit porter une indication."
+    },
+    {
+      "id": "removal_required",
+      "code": "MRR",
+      "name": "enlèvement de matière exigé",
+      "meaning": "La surface doit être obtenue par enlèvement de matière — tournage, fraisage, rectification…"
+    },
+    {
+      "id": "removal_prohibited",
+      "code": "NMR",
+      "name": "enlèvement de matière interdit",
+      "meaning": "La surface doit rester telle que le procédé précédent l'a laissée — brute de fonderie, de forge ou de laminage — sans enlèvement de matière."
+    }
+  ],
+
+  "lays": [
+    {
+      "symbol": "=",
+      "aliases": ["parallele", "parallèle"],
+      "name": "parallèles",
+      "meaning": "Stries parallèles au plan de projection de la vue sur laquelle le symbole est porté."
+    },
+    {
+      "symbol": "⊥",
+      "aliases": ["perp", "perpendiculaire"],
+      "name": "perpendiculaires",
+      "meaning": "Stries perpendiculaires au plan de projection de la vue sur laquelle le symbole est porté."
+    },
+    {
+      "symbol": "X",
+      "aliases": ["croisees", "croisées"],
+      "name": "croisées",
+      "meaning": "Stries croisées selon deux directions obliques par rapport au plan de projection."
+    },
+    {
+      "symbol": "M",
+      "aliases": ["multidirectionnelles"],
+      "name": "multidirectionnelles",
+      "meaning": "Stries orientées dans plusieurs directions."
+    },
+    {
+      "symbol": "C",
+      "aliases": ["circulaires"],
+      "name": "circulaires",
+      "meaning": "Stries approximativement circulaires par rapport au centre de la surface."
+    },
+    {
+      "symbol": "R",
+      "aliases": ["radiales"],
+      "name": "radiales",
+      "meaning": "Stries approximativement radiales par rapport au centre de la surface."
+    },
+    {
+      "symbol": "P",
+      "aliases": ["particulaire", "non orientees", "non orientées"],
+      "name": "particulaires",
+      "meaning": "Surface particulaire, non orientée ou à protubérances."
+    }
+  ],
+
+  "parameters": [
+    {
+      "symbol": "Ra",
+      "name": "écart moyen arithmétique",
+      "definition": "Moyenne arithmétique des valeurs absolues des ordonnées du profil de rugosité. Le paramètre le plus répandu : il lisse les accidents isolés, et c'est à la fois sa force et sa limite.",
+      "note": null
+    },
+    {
+      "symbol": "Rq",
+      "name": "écart moyen quadratique",
+      "definition": "Moyenne quadratique des ordonnées du profil de rugosité. Plus sensible que Ra aux pics et creux isolés.",
+      "note": null
+    },
+    {
+      "symbol": "Rp",
+      "name": "hauteur maximale de saillie",
+      "definition": "Hauteur de la plus grande saillie du profil au-dessus de la ligne moyenne.",
+      "note": null
+    },
+    {
+      "symbol": "Rv",
+      "name": "profondeur maximale de creux",
+      "definition": "Profondeur du plus grand creux du profil au-dessous de la ligne moyenne.",
+      "note": null
+    },
+    {
+      "symbol": "Rz",
+      "name": "hauteur maximale du profil",
+      "definition": "Somme de la plus grande saillie et du plus grand creux du profil (Rp + Rv), évaluée par longueur de base. Le nombre de longueurs de base retenu par défaut relève de la norme de spécification.",
+      "note": "Sur des plans anciens, Rz a pu désigner la hauteur sur dix points de l'ISO 4287-1:1984. La définition a changé depuis : une valeur Rz d'un plan ancien ne se compare pas sans précaution à une mesure actuelle."
+    },
+    {
+      "symbol": "Rt",
+      "name": "hauteur totale du profil",
+      "definition": "Distance entre la plus haute saillie et le plus profond creux sur toute la longueur d'évaluation, et non par longueur de base.",
+      "note": null
+    }
+  ]
+}

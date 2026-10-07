@@ -1,0 +1,397 @@
+{
+  "dataset": "en10027-1.designation",
+  "standard": {
+    "id": "EN 10027-1",
+    "edition": "2005",
+    "title": "Systèmes de désignation des aciers — Partie 1 : Désignation symbolique",
+    "scope": "règles de lecture des désignations symboliques : symboles principaux et additionnels des Tableaux 1 à 15 (aciers désignés par leur emploi et leurs caractéristiques, aciers désignés par leur composition chimique), symboles pour les produits en acier des Tableaux 16 à 18",
+    "source": "Lu dans la norme EN 10027-1:2005, version française (NF EN 10027-1, novembre 2005, qui lui donne le statut de norme française). Exemplaire sous licence fourni par l'utilisateur. Ce sont des RÈGLES de lecture, appliquées par le moteur, et non une liste de nuances.",
+    "verification": {
+      "state": "verified",
+      "against": "EN 10027-1:2005 (F) : articles 4.2, 6, 7.1 (préfixes G et PM), 7.2 (groupes 1 et 2, signe +) et 7.4, pages 4 à 6 et 18 ; Tableaux 1 à 11, pages 7 à 18 (lettre, caractéristique portée par le nombre, symboles additionnels des groupes 1 et 2, tableaux de symboles applicables aux produits, notes) ; Tableaux 12 à 15, pages 19 à 22 (teneur en carbone, facteurs de teneur, aciers à 5 % et plus, aciers rapides) ; Tableaux 16, 17 et 18, pages 23 et 24 — chaque symbole relu sur la page de la norme. Édition 2005 seulement : l'EN 10027-1:2016, qui la remplace, n'a pas été confrontée.",
+      "on": "2026-10-07"
+    },
+    "notes": [
+      "ÉDITION REMPLACÉE. La vérification porte sur l'EN 10027-1:2005, la seule édition lue. Elle est remplacée par l'EN 10027-1:2016, qui n'a pas été confrontée : des règles ou des symboles ont pu y changer, et une désignation attribuée selon l'édition 2016 peut se lire autrement.",
+      "UNE RÈGLE, PAS UNE TABLE. Comme le symbole d'alésage des roulements, une désignation d'acier se lit par règles : S355J2 se décompose, il ne se recherche pas dans une liste. MecaTool applique ces règles et ne prétend pas qu'une nuance lue existe dans une norme de produit.",
+      "Structure (4.2, 7.1, 7.2) : symboles principaux, puis symboles additionnels pour l'acier — groupe 1, puis groupe 2, qui ne s'emploie qu'avec le groupe 1 et se place après lui —, puis symboles pour les produits en acier, chacun précédé du signe « + » (Tableaux 16 à 18). Les symboles s'écrivent sans espace.",
+      "Les symboles additionnels dépendent du groupe d'emploi : H se lit « profil creux » pour un acier S (Tableau 1), « température élevée » pour un acier P (Tableau 2). Chaque groupe porte donc ses propres listes, et les tableaux de symboles pour les produits auxquels il renvoie.",
+      "Tableaux 1 et 4 : le groupe 1 d'un acier S, ou d'un acier E dont la résilience est spécifiée, commence par l'énergie de rupture (J = 27 J, K = 40 J, L = 60 J) suivie de la température d'essai (R = 20 °C, 0 = 0 °C, 2 = −20 °C … 6 = −60 °C). Les symboles A, M, N et Q du groupe 1 s'appliquent aux aciers à grain fin (Tableaux 1 à 3, note b).",
+      "Le nombre d'un acier S, P, L, E, B ou H est une limite d'élasticité « pour la gamme d'épaisseur la plus faible » : ReH, ReL, Rp ou Rt selon la norme de produit. Celui d'un acier T est une valeur nominale de Re ; celui d'un acier Y, la résistance nominale à la traction sur quatre chiffres ; celui d'un acier R, la dureté Brinell minimale ; celui d'un acier D n'est pas une caractéristique, mais deux symboles attribués par l'organisme responsable.",
+      "Teneur en carbone (Tableaux 12 à 14) : 100 × la teneur moyenne spécifiée. Le nombre peut être augmenté de 1 pour distinguer deux nuances voisines (note b) : la teneur lue est approchée à 0,01 % près.",
+      "Tableau 13 (aciers non alliés à manganèse moyen ≥ 1 %, aciers non alliés de décolletage, aciers alliés dont chaque élément est < 5 %, hors aciers rapides) : le nombre qui suit les symboles chimiques est la teneur moyenne multipliée par un facteur — 4 pour Cr, Co, Mn, Ni, Si, W ; 10 pour Al, Be, Cu, Mo, Nb, Pb, Ta, Ti, V, Zr ; 100 pour Ce, N, P, S ; 1000 pour B. Les nombres, séparés par un trait d'union, s'appliquent aux éléments dans l'ordre.",
+      "Les symboles chimiques se rangent par teneur moyenne décroissante, puis par ordre alphabétique à teneur égale (Tableaux 13 et 14, note c). MecaTool ne contrôle pas cet ordre : les nombres codés sont arrondis, et ne permettent pas de le juger sans fausse alerte.",
+      "7.4 : pour que la désignation reste courte, des chiffres ou des symboles peuvent être supprimés s'il n'y a pas de confusion possible. Un élément sans nombre est présent, sans teneur indiquée.",
+      "Tableau 14 (X) : la teneur moyenne d'au moins un élément d'alliage est ≥ 5 % ; les nombres sont les teneurs moyennes en pour cent, arrondies à l'entier le plus proche, sans facteur. Un symbole additionnel « -N5 » désigne un élément caractéristique dont la teneur est comprise entre 0,20 % et 1,0 %, suivi de 10 × sa teneur moyenne.",
+      "Tableau 15 : HS suivi des teneurs moyennes en pour cent, arrondies à l'entier le plus proche, dans l'ordre W, Mo, V, Co. Un symbole chimique final (HS6-5-2C) désigne l'élément dont la teneur est plus élevée, pour une même nuance.",
+      "Préfixes (7.1) : G pour un acier spécifié sous forme de pièce moulée (Tableaux 1 à 15), PM pour un acier élaboré par métallurgie des poudres (Tableaux 14 et 15).",
+      "Le chiffre qui suit un symbole chimique additionnel (Tableaux 1, 7, 8 et 12) vaut 10 × la teneur moyenne de la fourchette spécifiée, arrondie à 0,1 %. Celui qui suit E ou R d'un acier non allié (Tableau 12, note d) vaut 100 × la teneur maximale ou moyenne en soufre, arrondie à 0,01 %. Les autres chiffres distinguent des qualités selon la norme de produit.",
+      "+A, +S et +T figurent à la fois au Tableau 17 (revêtement) et au Tableau 18 (traitement) : le tableau du groupe dit lesquels s'appliquent ; s'ils s'appliquent tous les deux, MecaTool donne les deux sens.",
+      "Les teneurs lues sont des teneurs MOYENNES ARRONDIES, telles que la désignation les code. La composition garantie d'une nuance est dans sa norme de produit.",
+      "La désignation numérique de l'EN 10027-2 (1.4301) se reconnaît, mais la table des groupes d'aciers n'est pas embarquée : MecaTool ne dit pas ce qu'elle désigne. Les symboles des Tableaux 16 à 18 peuvent la suivre, après un « + » (7.2, note)."
+    ]
+  },
+  "superseded_by": "EN 10027-1:2016",
+  "use_groups": [
+    {
+      "letter": "S",
+      "table": 1,
+      "name": "acier de construction",
+      "forms": [
+        { "number": "yield", "label": "limite d'élasticité minimale", "note": "Valeur minimale de la limite d'élasticité, en MPa, pour la gamme d'épaisseur la plus faible." }
+      ],
+      "group1": {
+        "impact": true,
+        "symbols": [
+          { "code": "A", "meaning": "durcissement par précipitation (acier à grain fin)" },
+          { "code": "M", "meaning": "laminage thermomécanique (acier à grain fin)" },
+          { "code": "N", "meaning": "normalisé ou laminage normalisant (acier à grain fin)" },
+          { "code": "Q", "meaning": "trempé et revenu (acier à grain fin)" },
+          { "code": "G", "meaning": "autres caractéristiques", "digits": "quality" }
+        ]
+      },
+      "group2": {
+        "digits": true,
+        "chemical": "élément d'alliage spécifié",
+        "symbols": [
+          { "code": "C", "meaning": "formage à froid spécial" },
+          { "code": "D", "meaning": "galvanisation" },
+          { "code": "E", "meaning": "émaillage" },
+          { "code": "F", "meaning": "forgeage" },
+          { "code": "H", "meaning": "profil creux" },
+          { "code": "L", "meaning": "basse température" },
+          { "code": "M", "meaning": "laminage thermomécanique" },
+          { "code": "N", "meaning": "normalisé ou laminage normalisant" },
+          { "code": "O", "meaning": "offshore" },
+          { "code": "P", "meaning": "palplanche" },
+          { "code": "Q", "meaning": "trempé et revenu" },
+          { "code": "S", "meaning": "construction navale" },
+          { "code": "T", "meaning": "tubes" },
+          { "code": "W", "meaning": "résistant à la corrosion atmosphérique" }
+        ]
+      },
+      "product_tables": [16, 17, 18]
+    },
+    {
+      "letter": "P",
+      "table": 2,
+      "name": "acier pour appareils à pression",
+      "forms": [
+        { "number": "yield", "label": "limite d'élasticité minimale", "note": "Valeur minimale de la limite d'élasticité, en MPa, pour la gamme d'épaisseur la plus faible." }
+      ],
+      "group1": {
+        "symbols": [
+          { "code": "B", "meaning": "bouteilles à gaz" },
+          { "code": "M", "meaning": "laminage thermomécanique (acier à grain fin)" },
+          { "code": "N", "meaning": "normalisé ou laminage normalisant (acier à grain fin)" },
+          { "code": "Q", "meaning": "trempé et revenu (acier à grain fin)" },
+          { "code": "S", "meaning": "appareils à pression simples" },
+          { "code": "T", "meaning": "tubes" },
+          { "code": "G", "meaning": "autres caractéristiques", "digits": "quality" }
+        ]
+      },
+      "group2": {
+        "digits": true,
+        "symbols": [
+          { "code": "H", "meaning": "température élevée" },
+          { "code": "L", "meaning": "basse température" },
+          { "code": "R", "meaning": "température ambiante" },
+          { "code": "X", "meaning": "température élevée et basse température" }
+        ]
+      },
+      "product_tables": [16, 17, 18]
+    },
+    {
+      "letter": "L",
+      "table": 3,
+      "name": "acier pour tubes de conduite",
+      "forms": [
+        { "number": "yield", "label": "limite d'élasticité minimale", "note": "Valeur minimale spécifiée de la limite d'élasticité, en MPa, pour la gamme d'épaisseur la plus faible." }
+      ],
+      "group1": {
+        "symbols": [
+          { "code": "M", "meaning": "laminage thermomécanique (acier à grain fin)" },
+          { "code": "N", "meaning": "normalisé ou laminage normalisant (acier à grain fin)" },
+          { "code": "Q", "meaning": "trempé et revenu (acier à grain fin)" },
+          { "code": "G", "meaning": "autres caractéristiques", "digits": "quality" }
+        ]
+      },
+      "group2": {
+        "digits": true,
+        "any_letter": "classe d'exigence"
+      },
+      "product_tables": [16, 17, 18]
+    },
+    {
+      "letter": "E",
+      "table": 4,
+      "name": "acier de construction mécanique",
+      "forms": [
+        { "number": "yield", "label": "limite d'élasticité minimale", "note": "Valeur minimale spécifiée de la limite d'élasticité, en MPa, pour la gamme d'épaisseur la plus faible." }
+      ],
+      "group1": {
+        "impact": true,
+        "symbols": [
+          { "code": "G", "meaning": "autres caractéristiques", "digits": "quality" }
+        ]
+      },
+      "group2": {
+        "symbols": [
+          { "code": "C", "meaning": "destiné à l'étirage à froid" }
+        ]
+      },
+      "product_tables": [18]
+    },
+    {
+      "letter": "B",
+      "table": 5,
+      "name": "acier à béton",
+      "forms": [
+        { "number": "yield", "label": "limite d'élasticité", "note": "Limite d'élasticité, en MPa, pour la gamme d'épaisseur la plus faible." }
+      ],
+      "group1": {
+        "digits": true,
+        "any_letter": "classe de ductilité"
+      },
+      "product_tables": [18]
+    },
+    {
+      "letter": "Y",
+      "table": 6,
+      "name": "acier pour béton précontraint",
+      "forms": [
+        { "number": "tensile", "label": "résistance nominale à la traction (Rm)", "digits": 4, "note": "Résistance nominale à la traction Rm, en MPa, sur quatre chiffres : une valeur de trois chiffres s'écrit précédée d'un zéro." }
+      ],
+      "group1": {
+        "digits": true,
+        "symbols": [
+          { "code": "C", "meaning": "fil étiré à froid — tréfilé" },
+          { "code": "H", "meaning": "barres formées à chaud ou précontraintes" },
+          { "code": "Q", "meaning": "fil pour trempé et revenu" },
+          { "code": "S", "meaning": "toron" },
+          { "code": "G", "meaning": "autres caractéristiques" }
+        ]
+      },
+      "product_tables": [18]
+    },
+    {
+      "letter": "R",
+      "table": 7,
+      "name": "acier pour ou sous forme de rails",
+      "forms": [
+        { "number": "hardness", "label": "dureté Brinell minimale spécifiée", "note": "Dureté Brinell minimale spécifiée, HBW." }
+      ],
+      "group1": {
+        "chemical": "élément additionnel spécifié",
+        "symbols": [
+          { "code": "Cr", "meaning": "allié au chrome" },
+          { "code": "Mn", "meaning": "haute teneur en manganèse" },
+          { "code": "G", "meaning": "autres caractéristiques", "digits": "quality" }
+        ]
+      },
+      "group2": {
+        "symbols": [
+          { "code": "HT", "meaning": "avec traitement thermique" },
+          { "code": "LHT", "meaning": "faiblement allié, traité à chaud" },
+          { "code": "Q", "meaning": "trempé et revenu" }
+        ]
+      },
+      "product_tables": []
+    },
+    {
+      "letter": "D",
+      "table": 8,
+      "name": "produit plat pour formage à froid, hors tableau 9",
+      "forms": [
+        { "prefix": "C", "meaning": "laminé à froid", "number": "code", "label": "symboles caractérisant l'acier", "digits": 2, "note": "Deux symboles attribués par l'organisme responsable pour caractériser l'acier : ce n'est pas une caractéristique mécanique." },
+        { "prefix": "D", "meaning": "laminé à chaud pour formage direct à froid", "number": "code", "label": "symboles caractérisant l'acier", "digits": 2, "note": "Deux symboles attribués par l'organisme responsable pour caractériser l'acier : ce n'est pas une caractéristique mécanique." },
+        { "prefix": "X", "meaning": "conditions de laminage non spécifiées", "number": "code", "label": "symboles caractérisant l'acier", "digits": 2, "note": "Deux symboles attribués par l'organisme responsable pour caractériser l'acier : ce n'est pas une caractéristique mécanique." }
+      ],
+      "group1": {
+        "digits": true,
+        "chemical": "élément supplémentaire spécial",
+        "symbols": [
+          { "code": "D", "meaning": "pour revêtement par immersion à chaud" },
+          { "code": "ED", "meaning": "pour émaillage direct" },
+          { "code": "EK", "meaning": "pour émaillage conventionnel" },
+          { "code": "H", "meaning": "pour sections creuses" },
+          { "code": "T", "meaning": "pour tubes" },
+          { "code": "G", "meaning": "autres caractéristiques" }
+        ]
+      },
+      "product_tables": [17, 18]
+    },
+    {
+      "letter": "H",
+      "table": 9,
+      "name": "produit plat en acier à haute résistance pour formage à froid",
+      "forms": [
+        { "prefix": "C", "meaning": "laminé à froid", "number": "yield", "label": "limite d'élasticité minimale", "note": "Valeur minimale de la limite d'élasticité, en MPa." },
+        { "prefix": "D", "meaning": "laminé à chaud pour formage direct à froid", "number": "yield", "label": "limite d'élasticité minimale", "note": "Valeur minimale de la limite d'élasticité, en MPa." },
+        { "prefix": "X", "meaning": "conditions de laminage non spécifiées", "number": "yield", "label": "limite d'élasticité minimale", "note": "Valeur minimale de la limite d'élasticité, en MPa." },
+        { "prefix": "CT", "meaning": "laminé à froid", "number": "tensile", "label": "résistance à la traction minimale spécifiée", "note": "Valeur minimale spécifiée de la résistance à la traction, en MPa." },
+        { "prefix": "DT", "meaning": "laminé à chaud pour formage direct à froid", "number": "tensile", "label": "résistance à la traction minimale spécifiée", "note": "Valeur minimale spécifiée de la résistance à la traction, en MPa." },
+        { "prefix": "XT", "meaning": "conditions de laminage non spécifiées", "number": "tensile", "label": "résistance à la traction minimale spécifiée", "note": "Valeur minimale spécifiée de la résistance à la traction, en MPa." }
+      ],
+      "group1": {
+        "digits": true,
+        "symbols": [
+          { "code": "B", "meaning": "durcissement à la cuisson" },
+          { "code": "C", "meaning": "phase complexe" },
+          { "code": "I", "meaning": "isotrope" },
+          { "code": "LA", "meaning": "faiblement allié" },
+          { "code": "M", "meaning": "laminage thermomécanique" },
+          { "code": "P", "meaning": "avec phosphore" },
+          { "code": "T", "meaning": "TRIP (plasticité induite par la transformation)" },
+          { "code": "X", "meaning": "biphasé" },
+          { "code": "Y", "meaning": "sans interstitiel" },
+          { "code": "G", "meaning": "autres caractéristiques" }
+        ]
+      },
+      "group2": {
+        "digits": true,
+        "symbols": [
+          { "code": "D", "meaning": "pour revêtement par immersion à chaud" }
+        ]
+      },
+      "product_tables": [17]
+    },
+    {
+      "letter": "T",
+      "table": 10,
+      "name": "fer noir, fer blanc, fer chromé (acier pour emballage)",
+      "forms": [
+        { "prefix": "H", "meaning": "produit recuit continu", "number": "yield", "label": "valeur nominale de la limite d'élasticité (Re)", "note": "Valeur nominale de la limite d'élasticité Re, en MPa, pour les produits recuits en continu." },
+        { "prefix": "S", "meaning": "produit recuit base", "number": "yield", "label": "valeur nominale de la limite d'élasticité (Re)", "note": "Valeur nominale de la limite d'élasticité Re, en MPa, pour les produits recuits base. Aucun symbole de produit n'est affecté au fer noir." }
+      ],
+      "product_tables": [17, 18]
+    },
+    {
+      "letter": "M",
+      "table": 11,
+      "name": "acier électrique",
+      "forms": [
+        { "number": "losses", "label": "pertes totales spécifiées", "note": "Pertes totales spécifiées, en W/kg × 100, puis, après un tiret, 100 × l'épaisseur nominale en mm, puis une lettre de type de produit." }
+      ],
+      "types": [
+        { "code": "A", "meaning": "grains non orientés (pertes à 1,5 T et 50 Hz)" },
+        { "code": "D", "meaning": "non allié semi-fini, sans recuit final (pertes à 1,5 T et 50 Hz)" },
+        { "code": "E", "meaning": "allié semi-fini, sans recuit final (pertes à 1,5 T et 50 Hz)" },
+        { "code": "P", "meaning": "haute perméabilité à grains orientés (pertes à 1,7 T et 50 Hz)" },
+        { "code": "S", "meaning": "conventionnel à grains orientés (pertes à 1,7 T et 50 Hz)" }
+      ],
+      "product_tables": []
+    }
+  ],
+  "impact": {
+    "energies": [
+      { "letter": "J", "joules": 27 },
+      { "letter": "K", "joules": 40 },
+      { "letter": "L", "joules": 60 }
+    ],
+    "temperatures": [
+      { "code": "R", "celsius": 20 },
+      { "code": "0", "celsius": 0 },
+      { "code": "2", "celsius": -20 },
+      { "code": "3", "celsius": -30 },
+      { "code": "4", "celsius": -40 },
+      { "code": "5", "celsius": -50 },
+      { "code": "6", "celsius": -60 }
+    ],
+    "note": "Tableau 1, groupe 1 : une lettre d'énergie de rupture puis un code de température d'essai — J2 se lit 27 J à −20 °C."
+  },
+  "non_alloy": {
+    "table": 12,
+    "group1": {
+      "digits": true,
+      "symbols": [
+        { "code": "C", "meaning": "pour formage à froid, par exemple frappe ou extrusion à froid" },
+        { "code": "D", "meaning": "pour fil pour étirage" },
+        { "code": "E", "meaning": "avec une teneur maximale en soufre spécifiée", "digits": "sulphur_hundredths" },
+        { "code": "R", "meaning": "avec une fourchette de teneur en soufre spécifiée", "digits": "sulphur_hundredths" },
+        { "code": "S", "meaning": "pour ressorts" },
+        { "code": "U", "meaning": "pour outils" },
+        { "code": "W", "meaning": "pour fils pour électrodes de soudage" },
+        { "code": "G", "meaning": "autres caractéristiques" }
+      ]
+    },
+    "group2": {
+      "chemical": "élément d'alliage spécifié"
+    },
+    "product_tables": [18]
+  },
+  "low_alloy": {
+    "table": 13,
+    "product_tables": [16, 18]
+  },
+  "high_alloy": {
+    "table": 14,
+    "product_tables": [16, 18]
+  },
+  "high_speed": {
+    "table": 15,
+    "product_tables": [18]
+  },
+  "numeric_product_tables": [16, 17, 18],
+  "alloy_factors": [
+    { "factor": 4, "elements": ["Cr", "Co", "Mn", "Ni", "Si", "W"] },
+    { "factor": 10, "elements": ["Al", "Be", "Cu", "Mo", "Nb", "Pb", "Ta", "Ti", "V", "Zr"] },
+    { "factor": 100, "elements": ["Ce", "N", "P", "S"] },
+    { "factor": 1000, "elements": ["B"] }
+  ],
+  "high_speed_order": ["W", "Mo", "V", "Co"],
+  "product_symbols": [
+    { "code": "CH", "table": 16, "meaning": "trempabilité à cœur" },
+    { "code": "H", "table": 16, "meaning": "trempabilité" },
+    { "code": "Z15", "table": 16, "meaning": "propriété garantie dans le sens de l'épaisseur ; striction minimale 15 %" },
+    { "code": "Z25", "table": 16, "meaning": "propriété garantie dans le sens de l'épaisseur ; striction minimale 25 %" },
+    { "code": "Z35", "table": 16, "meaning": "propriété garantie dans le sens de l'épaisseur ; striction minimale 35 %" },
+
+    { "code": "A", "table": 17, "meaning": "revêtement d'aluminium par immersion à chaud" },
+    { "code": "AS", "table": 17, "meaning": "revêtement d'alliage aluminium-silicium" },
+    { "code": "AZ", "table": 17, "meaning": "revêtement d'alliage aluminium-zinc (> 50 % Al)" },
+    { "code": "CE", "table": 17, "meaning": "revêtement électrolytique de chrome/oxyde de chrome (ECCS)" },
+    { "code": "CU", "table": 17, "meaning": "revêtement de cuivre" },
+    { "code": "IC", "table": 17, "meaning": "revêtement inorganique" },
+    { "code": "OC", "table": 17, "meaning": "revêtement organique" },
+    { "code": "S", "table": 17, "meaning": "revêtement d'étain par immersion à chaud" },
+    { "code": "SE", "table": 17, "meaning": "revêtement électrolytique d'étain" },
+    { "code": "T", "table": 17, "meaning": "revêtement d'alliage plomb-étain par immersion à chaud" },
+    { "code": "TE", "table": 17, "meaning": "revêtement électrolytique d'alliage plomb-étain" },
+    { "code": "Z", "table": 17, "meaning": "revêtement de zinc par immersion à chaud (galvanisation)" },
+    { "code": "ZA", "table": 17, "meaning": "revêtement de zinc-aluminium (> 50 % Zn) par immersion à chaud" },
+    { "code": "ZE", "table": 17, "meaning": "revêtement électrolytique de zinc" },
+    { "code": "ZF", "table": 17, "meaning": "revêtement de zinc-fer par immersion à chaud" },
+    { "code": "ZN", "table": 17, "meaning": "revêtement électrolytique d'alliage zinc-nickel" },
+
+    { "code": "A", "table": 18, "meaning": "recuit d'adoucissement" },
+    { "code": "AC", "table": 18, "meaning": "recuit de globularisation des carbures" },
+    { "code": "AR", "table": 18, "meaning": "brut de laminage (sans conditions particulières de laminage ni de traitement thermique)" },
+    { "code": "AT", "table": 18, "meaning": "recuit de mise en solution" },
+    { "code": "C", "table": 18, "meaning": "écroui à froid" },
+    { "code": "C", "table": 18, "value": true, "meaning": "écroui à froid en vue d'obtenir une résistance minimale à la traction de {n} MPa" },
+    { "code": "CP", "table": 18, "value": true, "meaning": "écroui à froid en vue d'obtenir une limite conventionnelle d'élasticité minimale à 0,2 % de {n} MPa" },
+    { "code": "CR", "table": 18, "meaning": "laminé à froid" },
+    { "code": "DC", "table": 18, "meaning": "conditions de livraison laissées au choix du producteur" },
+    { "code": "FP", "table": 18, "meaning": "traitement pour une structure ferrite-perlite et une fourchette de dureté" },
+    { "code": "HC", "table": 18, "meaning": "laminé à chaud puis écroui à froid" },
+    { "code": "I", "table": 18, "meaning": "traitement isotherme" },
+    { "code": "LC", "table": 18, "meaning": "légèrement écroui à froid (skin-pass : planage ou étirage à froid)" },
+    { "code": "M", "table": 18, "meaning": "laminage thermomécanique" },
+    { "code": "N", "table": 18, "meaning": "normalisé ou laminage normalisant" },
+    { "code": "NT", "table": 18, "meaning": "normalisé et revenu" },
+    { "code": "P", "table": 18, "meaning": "durci par précipitation" },
+    { "code": "Q", "table": 18, "meaning": "trempé" },
+    { "code": "QA", "table": 18, "meaning": "trempé à l'air" },
+    { "code": "QO", "table": 18, "meaning": "trempé à l'huile" },
+    { "code": "QT", "table": 18, "meaning": "trempé et revenu" },
+    { "code": "QW", "table": 18, "meaning": "trempé à l'eau" },
+    { "code": "RA", "table": 18, "meaning": "recuit de recristallisation" },
+    { "code": "S", "table": 18, "meaning": "traitement pour cisaillage à froid" },
+    { "code": "SR", "table": 18, "meaning": "relaxation des contraintes" },
+    { "code": "T", "table": 18, "meaning": "revenu" },
+    { "code": "TH", "table": 18, "meaning": "traitement pour une fourchette de dureté" },
+    { "code": "U", "table": 18, "meaning": "non traité" },
+    { "code": "WW", "table": 18, "meaning": "corroyé à chaud" }
+  ]
+}

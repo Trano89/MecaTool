@@ -24,6 +24,17 @@ import geometryFixture from "./fixtures/geometric-group.json";
 import domainsFixture from "./fixtures/domains.json";
 import bearingCatalogueFixture from "./fixtures/bearing-catalogue.json";
 import bearingAdviceFixture from "./fixtures/bearing-advice.json";
+import surfaceCatalogueFixture from "./fixtures/surface-catalogue.json";
+import surfaceAnalysisFixture from "./fixtures/surface-analysis.json";
+import weldingCatalogueFixture from "./fixtures/welding-catalogue.json";
+import weldingProcessFixture from "./fixtures/welding-process.json";
+import weldReadingFixture from "./fixtures/weld-reading.json";
+import fastenerCatalogueFixture from "./fixtures/fastener-catalogue.json";
+import threadReportFixture from "./fixtures/thread-report.json";
+import materialsCatalogueFixture from "./fixtures/materials-catalogue.json";
+import steelReadingFixture from "./fixtures/steel-reading.json";
+import thermalFitFixture from "./fixtures/thermal-fit.json";
+import toleranceClassesFixture from "./fixtures/tolerance-classes.json";
 
 import {
   NM_PER_UM,
@@ -39,6 +50,17 @@ import {
   type GroupAnalysis,
   type MountingAdvice,
   type SearchReport,
+  type SurfaceAnalysis,
+  type SurfaceCatalogue,
+  type WeldingCatalogue,
+  type ProcessReading,
+  type WeldReading,
+  type FastenerCatalogue,
+  type ThreadReport,
+  type MaterialsCatalogue,
+  type SteelReading,
+  type ThermalFit,
+  type ClassCatalogue,
 } from "./types";
 
 // Le contrôle de forme se joue ici, à la compilation.
@@ -54,6 +76,17 @@ const geometry = geometryFixture as GroupAnalysis;
 const registry = domainsFixture as Domain[];
 const bearings = bearingCatalogueFixture as BearingCatalogue;
 const advice = bearingAdviceFixture as MountingAdvice;
+const surfaceCatalogue = surfaceCatalogueFixture as SurfaceCatalogue;
+const surfaceAnalysis = surfaceAnalysisFixture as SurfaceAnalysis;
+const weldingCatalogue = weldingCatalogueFixture as WeldingCatalogue;
+const weldingProcess = weldingProcessFixture as ProcessReading[];
+const weldReading = weldReadingFixture as WeldReading;
+const fastenerCatalogue = fastenerCatalogueFixture as FastenerCatalogue;
+const threadReport = threadReportFixture as ThreadReport;
+const materialsCatalogue = materialsCatalogueFixture as MaterialsCatalogue;
+const steelReading = steelReadingFixture as SteelReading;
+const thermal = thermalFitFixture as ThermalFit;
+const toleranceClasses = toleranceClassesFixture as ClassCatalogue;
 
 describe("échantillons du moteur", () => {
   it("décrit un ajustement Ø10 H7/g6 exact", () => {
@@ -334,5 +367,127 @@ describe("échantillons du moteur", () => {
         expect(reference.verification.on).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       }
     }
+  });
+});
+
+describe("échantillons des domaines états de surface, soudure et visserie", () => {
+  it("portent une réserve par source non vérifiée, et aucune autre", () => {
+    // Une réserve par source saisie sans document ouvert. Le tableau des
+    // symboles de soudure, lu dans l'ISO 2553:2013, n'en porte pas.
+    for (const catalogue of [surfaceCatalogue, weldingCatalogue, fastenerCatalogue]) {
+      const unverified = catalogue.provenance.references.filter(
+        (reference) => reference.verification.state === "unverified",
+      );
+      expect(catalogue.warnings.length).toBe(unverified.length);
+      for (const reference of catalogue.provenance.references) {
+        expect(["unverified", "verified"]).toContain(reference.verification.state);
+      }
+    }
+    // Toutes les sources de la soudure ont été lues dans les normes : ISO 2553
+    // (symboles et cotation), ISO 4063 et ISO 5817.
+    expect(
+      weldingCatalogue.provenance.references.map(
+        (reference) => `${reference.id}:${reference.edition}:${reference.verification.state}`,
+      ),
+    ).toEqual([
+      "ISO 2553:2013:verified",
+      "ISO 2553:2013:verified",
+      "ISO 4063:2009:verified",
+      "ISO 5817:2014:verified",
+    ]);
+    expect(weldingCatalogue.warnings).toHaveLength(0);
+    expect(weldingCatalogue.elementary).toHaveLength(22);
+    expect(weldingCatalogue.systems.map((system) => system.id)).toEqual(["A", "B"]);
+  });
+
+  it("décrit une indication de surface et son graphique", () => {
+    expect(surfaceAnalysis.designation).toBe("MRR Ra 0.8 ⊥ (fraisage)");
+    expect(surfaceAnalysis.indication.value).toBe(800);
+    expect(surfaceAnalysis.grade?.grade).toBe("N6");
+    // Le repère tombe au milieu de la colonne N6, calculé par le moteur.
+    const n6 = surfaceAnalysis.chart.columns.find((column) => column.grade === "N6")!;
+    expect(surfaceAnalysis.chart.marker?.x).toBeCloseTo(n6.x + n6.width / 2);
+    // Une exigence MRR écarte les procédés de mise en forme.
+    for (const fit of surfaceAnalysis.processes) {
+      expect(fit.excluded !== null).toBe(!fit.process.removal);
+    }
+  });
+
+  it("décrit les lectures d'un nom d'atelier", () => {
+    expect(weldingProcess.map((reading) => reading.process.number)).toEqual([
+      "135",
+      "136",
+      "138",
+    ]);
+    expect(weldingProcess[0]!.quality_scope.kind).toBe("in_scope");
+  });
+
+  it("décrit un symbole de soudure chiffré", () => {
+    expect(weldReading.size?.value).toBe(5_000_000);
+    // z = a·√2, arrondi et annoncé comme tel.
+    expect(weldReading.equivalent?.rounded).toBe(true);
+    expect(weldReading.equivalent?.label).toBe("z ≈ 7.07 mm");
+    expect(weldReading.intermittent?.welded_length).toBe(300_000_000);
+    const convexity = weldReading.quality!.limits.find((limit) => limit.iso6520 === "503")!;
+    expect(convexity.value).toBe(2_500_000);
+    expect(weldingCatalogue.levels.map((level) => level.id)).toEqual(["B", "C", "D"]);
+  });
+
+  it("décrit un filetage, jusqu'aux écarts de ses trous", () => {
+    expect(threadReport.normalised).toBe("M10");
+    const d2 = threadReport.dimensions.find((dimension) => dimension.symbol === "d2")!;
+    expect(d2.value).toBe(9_026_000);
+    expect(threadReport.tap_drill).toBe(8_500_000);
+    const medium = threadReport.clearance_holes.find((hole) => hole.series === "medium")!;
+    expect(medium.tolerance?.tolerance.deviations.upper).toBe(270_000);
+    // Deux natures de source dans un même résultat.
+    const states = threadReport.provenance.references.map(
+      (reference) => reference.verification.state,
+    );
+    expect(states).toContain("verified");
+    expect(states).toContain("unverified");
+    expect(fastenerCatalogue.threads.length).toBeGreaterThan(20);
+  });
+});
+
+describe("échantillons du domaine matières", () => {
+  it("décompose S355J2 et rend sa limite par épaisseur", () => {
+    expect(steelReading.kind).toBe("use_group");
+    expect(steelReading.group_value).toBe(355);
+    expect(steelReading.impact?.celsius).toBe(-20);
+    expect(steelReading.structural?.rows[0]?.yield_mpa).toBe(355);
+    expect(steelReading.family?.id).toBe("steel");
+  });
+
+  it("décrit un ajustement qui perd son serrage à chaud", () => {
+    // Logement aluminium, arbre acier, Ø50 H7/p6, +80 K : +44 µm de jeu.
+    expect(thermal.clearance_shift).toBe(44_000);
+    expect(thermal.fit?.cold_kind).toBe("interference");
+    expect(thermal.fit?.hot_kind).toBe("clearance");
+    expect(thermal.conclusion.verdict).toBe("incompatible");
+    const states = thermal.provenance.references.map((r) => r.verification.state);
+    expect(states).toContain("verified");
+    expect(states).toContain("unverified");
+  });
+
+  it("porte une réserve par source non vérifiée, et l'EN 10025-2 lue dans la norme", () => {
+    const unverified = materialsCatalogue.provenance.references.filter(
+      (reference) => reference.verification.state !== "verified",
+    );
+    expect(materialsCatalogue.warnings).toHaveLength(unverified.length);
+    expect(
+      materialsCatalogue.provenance.references.find((reference) => reference.id === "EN 10025-2")
+        ?.verification.state,
+    ).toBe("verified");
+    expect(materialsCatalogue.families.length).toBeGreaterThan(5);
+  });
+
+  it("propose les classes générales pour composer une chaîne", () => {
+    expect(toleranceClasses.general.map((option) => option.designation)).toEqual([
+      "ISO 2768-f",
+      "ISO 2768-m",
+      "ISO 2768-c",
+      "ISO 2768-v",
+    ]);
   });
 });

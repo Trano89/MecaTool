@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { deviation, mm, nominal, um, umLabel } from "./format";
+import { deviation, mm, nominal, um, umFine, umLabel } from "./format";
 
 describe("mise en forme des longueurs", () => {
   it("écrit les cotes en millimètres comme sur un plan", () => {
@@ -49,5 +49,12 @@ describe("mise en forme des longueurs", () => {
     expect(nominal(20_000_000)).toBe("20");
     expect(nominal(25_400_000)).toBe("25.4");
     expect(nominal(10_000_000)).toBe("10");
+  });
+
+  it("écrit les rugosités fines sans les écraser à zéro", () => {
+    // Ra 0,025 arrondi au dixième deviendrait « 0 » : faux, et d'apparence exacte.
+    expect(umFine(25)).toBe("0.025");
+    expect(umFine(1_600)).toBe("1.6");
+    expect(umFine(50_000)).toBe("50");
   });
 });

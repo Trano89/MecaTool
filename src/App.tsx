@@ -13,10 +13,10 @@
  * n'imposent pas de refonte à chaque fois.
  *
  * Le bandeau sur l'état des données normatives est permanent et non masquable.
- * Les domaines qui portent une réserve propre — géométrie, roulements — la
- * répètent sur leur écran, avant toute saisie : c'est là qu'elle est utile, et
- * un avertissement affiché partout finirait par ne plus rien vouloir dire nulle
- * part.
+ * Les domaines qui portent une réserve propre — géométrie, roulements, états
+ * de surface, soudure, visserie — la répètent sur leur écran, avant toute
+ * saisie : c'est là qu'elle est utile, et un avertissement affiché partout
+ * finirait par ne plus rien vouloir dire nulle part.
  */
 
 import { useCallback, useEffect, useState } from "react";
@@ -32,9 +32,13 @@ import { Bearings } from "./views/Bearings";
 import { Calculate, type Query } from "./views/Calculate";
 import { Chain } from "./views/Chain";
 import { Compare } from "./views/Compare";
+import { Fasteners } from "./views/Fasteners";
 import { GeneralTolerances } from "./views/GeneralTolerances";
 import { Geometry } from "./views/Geometry";
 import { Home } from "./views/Home";
+import { Materials } from "./views/Materials";
+import { Surface } from "./views/Surface";
+import { Welding } from "./views/Welding";
 
 const THEMES: readonly Theme[] = ["light", "dark", "system"];
 
@@ -124,7 +128,7 @@ export function App() {
         domains={catalogue}
         screen={screen}
         onNavigate={navigate}
-        version={info?.app_version ?? "0.1.1"}
+        version={info?.app_version ?? "0.3.0"}
         themeControl={themeControl}
       />
 
@@ -257,6 +261,14 @@ function Screen({ screen, domain, domains, query, onQueryChange, onNavigate }: S
       return <Geometry />;
     case "bearing":
       return <Bearings />;
+    case "surface":
+      return <Surface />;
+    case "welding":
+      return <Welding />;
+    case "fasteners":
+      return <Fasteners />;
+    case "materials":
+      return <Materials />;
     default:
       // Un domaine que le registre annonce et que cette version de l'interface
       // ne sait pas encore rendre. Le dire vaut mieux qu'un écran blanc.

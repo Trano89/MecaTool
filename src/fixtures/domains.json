@@ -89,14 +89,22 @@
   {
     "id": "surface",
     "name": "États de surface",
-    "question": "Quelle rugosité pour ce procédé ?",
+    "question": "Que dit cette indication de rugosité, et quel procédé l'obtient ?",
     "group": "geometry",
     "group_label": "Géométrie",
-    "status": "blocked",
-    "sources": [],
-    "reserve": null,
-    "unavailable": "Les deux éditions du recueil disponibles ne sont pas interchangeables : celle de 2022 suit l'ISO 21920, celle de 2014 l'ISO 4287. Mêler deux générations de paramètres produirait un module faux d'une façon difficile à repérer.",
-    "examples": []
+    "status": "reserved",
+    "sources": [
+      "ISO 21920-1",
+      "ISO 1302:1992",
+      "Rugosité par procédé"
+    ],
+    "reserve": "ISO 21920-1 (symboles graphiques, sens des stries et paramètres d'amplitude du profil de rugosité) : Donnée normative non vérifiée. À confronter à l'ISO 21920-1 et -2, ou à leur relevé dans le VSM « Extrait de normes » 2022, § 2.9, pages 204 à 211 : symboles, sens des stries et définition des paramètres.",
+    "unavailable": null,
+    "examples": [
+      "Ra 0.8",
+      "MRR Ra 1.6 ⊥",
+      "N7"
+    ]
   },
   {
     "id": "bearing",
@@ -120,14 +128,23 @@
   {
     "id": "welding",
     "name": "Soudure",
-    "question": "Que dit ce symbole, et quel niveau de qualité exiger ?",
+    "question": "Que dit ce symbole de soudure, et que tolère son niveau de qualité ?",
     "group": "components",
     "group_label": "Composants",
-    "status": "blocked",
-    "sources": [],
+    "status": "ready",
+    "sources": [
+      "ISO 2553:2013",
+      "ISO 2553:2013",
+      "ISO 4063:2009",
+      "ISO 5817:2014"
+    ],
     "reserve": null,
-    "unavailable": "Source relevée mais pas encore transcrite : symboles ISO 2553, numéros de procédés ISO 4063, irrégularités ISO 6520-1 et niveaux de qualité ISO 5817.",
-    "examples": []
+    "unavailable": null,
+    "examples": [
+      "135",
+      "MAG",
+      "a5 · ISO 5817-C"
+    ]
   },
   {
     "id": "fasteners",
@@ -135,22 +152,39 @@
     "question": "Quel filetage, et quel trou de passage ?",
     "group": "components",
     "group_label": "Composants",
-    "status": "blocked",
-    "sources": [],
-    "reserve": null,
-    "unavailable": "Source non encore relevée.",
-    "examples": []
+    "status": "reserved",
+    "sources": [
+      "ISO 261",
+      "ISO 68-1",
+      "ISO 273",
+      "ISO 898-1"
+    ],
+    "reserve": "ISO 261 (diamètres nominaux de premier et deuxième choix, pas gros et pas fins associés) : Donnée normative non vérifiée. À confronter ligne par ligne au tableau d'ensemble de l'ISO 261, ou à son relevé dans le VSM « Extrait de normes » (chapitre éléments de fixation).",
+    "unavailable": null,
+    "examples": [
+      "M10",
+      "M12 x 1.5",
+      "M8 8.8"
+    ]
   },
   {
     "id": "materials",
     "name": "Matières",
-    "question": "Quelle nuance, et quelles propriétés ?",
+    "question": "Quelle nuance, quelles propriétés, et que devient l'ajustement à chaud ?",
     "group": "materials",
     "group_label": "Matières",
-    "status": "blocked",
-    "sources": [],
-    "reserve": null,
-    "unavailable": "Source non encore relevée.",
-    "examples": []
+    "status": "reserved",
+    "sources": [
+      "EN 10027-1:2005",
+      "EN 10025-2:2019",
+      "Propriétés physiques par famille"
+    ],
+    "reserve": "Propriétés physiques par famille (module d'élasticité, coefficient de Poisson, masse volumique et coefficient de dilatation linéique, à température ambiante) : Donnée normative non vérifiée. À confronter à un recueil de propriétés des matériaux (VSM « Extrait de normes », chapitre matériaux, ou fiches de nuances), puis à requalifier en « recommended » avec sa source.",
+    "unavailable": null,
+    "examples": [
+      "S355J2",
+      "42CrMo4",
+      "X5CrNi18-10"
+    ]
   }
 ]

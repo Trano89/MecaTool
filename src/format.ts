@@ -49,6 +49,16 @@ export function um(nm: Nanometres): string {
   return trim(toDecimalString(nm, NM_PER_UM, 1));
 }
 
+/**
+ * Une rugosité en micromètres, au nanomètre près : `"0.025"`, `"1.6"`.
+ *
+ * `um` arrondit au dixième, ce qui suffit pour un écart ISO 286 mais ferait de
+ * Ra 0,025 un « 0 » : une valeur fausse d'apparence exacte.
+ */
+export function umFine(nm: Nanometres): string {
+  return trim(toDecimalString(nm, NM_PER_UM, 3));
+}
+
 /** Une valeur en micromètres, unité comprise : `"15 µm"`. */
 export function umLabel(nm: Nanometres): string {
   return `${um(nm)} µm`;

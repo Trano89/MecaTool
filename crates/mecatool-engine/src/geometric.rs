@@ -89,7 +89,7 @@ pub struct Finding {
 }
 
 impl Finding {
-    fn new(code: &str, severity: Severity, message: impl Into<String>) -> Self {
+    pub(crate) fn new(code: &str, severity: Severity, message: impl Into<String>) -> Self {
         Finding {
             code: code.to_string(),
             severity,

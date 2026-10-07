@@ -33,8 +33,12 @@ pub mod error;
 pub mod iso1101;
 pub mod iso2768;
 pub mod iso286;
+pub mod matieres;
 pub mod roulements;
+pub mod soudure;
+pub mod surface;
 pub mod value;
+pub mod visserie;
 
 pub use error::{Result, StandardsError};
 pub use iso1101::{
@@ -45,7 +49,25 @@ pub use iso2768::{
     GeneralClass, GeneralDeviation, GeneralLookup, GeneralRange, GeneralToleranceTable, MeasureKind,
 };
 pub use iso286::{DeviationSide, ItGradeTable, ItValue, ShaftDeviation, ShaftDeviationTable};
+pub use matieres::{
+    DesignationRules, GradeRow, GroupNumber, MaterialFamily, MaterialFamilyTable, StructuralGrade,
+    StructuralSteelTable, ThicknessBand, UseGroup,
+};
 pub use roulements::{
     BearingFamily, BoreDesignation, DiameterRange, LoadRegime, MountingCase, MountingRow,
     ShaftMountingTable,
+};
+pub use soudure::{
+    AppliesTo, Basis, ElementarySymbol, Imperfection, JointFamily, LevelLimit, Limit, LimitRow,
+    ProcessScope, QualityLevel, QualityTable, QualityVariable, ScopeExclusion, ScopeVerdict,
+    SizeLetter, SupplementarySymbol, ThicknessRange, WeldSymbolTable, WeldingProcess,
+    WeldingProcessTable,
+};
+pub use surface::{
+    GradeTable, IndicationTable, LaySymbol, ProcessRequirement, ProcessRoughness, ProcessTable,
+    ProfileParameter, RaRange, RoughnessGrade, SymbolVariant,
+};
+pub use visserie::{
+    BasicDiameter, BasicProfile, BoltClass, ClearanceRow, ClearanceSeries, ClearanceTable,
+    MetricThread, StrengthTable, ThreadTable,
 };

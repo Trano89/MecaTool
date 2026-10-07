@@ -17,19 +17,32 @@ use mecatool_engine::chain::{
 use mecatool_engine::compare::{compare_fits, FitComparison};
 use mecatool_engine::diagram::{fit_diagram, Diagram, DiagramMode, DiagramOptions};
 use mecatool_engine::domain::Domain;
+use mecatool_engine::fasteners::{FastenerEngine, ThreadReport};
 use mecatool_engine::geometric::{GeometricEngine, GroupAnalysis};
 use mecatool_engine::iso2768::{ClassComparison, Iso2768Engine};
 use mecatool_engine::iso286::{
     classification_conclusion, FeatureAnalysis, FitAnalysis, Iso286Engine,
 };
+use mecatool_engine::materials::{MaterialsEngine, SteelReading, ThermalFit};
 use mecatool_engine::parser::{
     parse, parse_chain, parse_clearance_window, parse_comparison, ParsedInput,
 };
 use mecatool_engine::requirement::{verify_clearance, ClearanceRequirement, Verification};
 use mecatool_engine::search::{find_fits, SearchOptions, SearchResult};
+use mecatool_engine::surface::{RoughnessChart, SurfaceAnalysis, SurfaceEngine};
+use mecatool_engine::welding::{ProcessReading, WeldReading, WeldRequest, WeldingEngine};
 use mecatool_engine::EngineError;
 use mecatool_standards::iso2768::MeasureKind;
+use mecatool_standards::matieres::{MaterialFamily, StructuralGrade, UseGroup};
 use mecatool_standards::roulements::{BearingFamily, LoadRegime, MountingCase};
+use mecatool_standards::soudure::{
+    ElementarySymbol, Imperfection, ProcessScope, QualityLevel, QualityVariable, SizeLetter,
+    SupplementarySymbol, WeldSystem, WeldingProcess,
+};
+use mecatool_standards::surface::{
+    LaySymbol, ProcessRoughness, ProfileParameter, RoughnessGrade, SymbolVariant,
+};
+use mecatool_standards::visserie::{BoltClass, ClearanceSeries, MetricThread};
 use mecatool_standards::{Characteristic, FamilyDefinition, Modifier};
 use serde::{Deserialize, Serialize};
 
@@ -237,9 +250,23 @@ pub struct ClassOption {
 pub struct ClassCatalogue {
     pub hole: Vec<ClassOption>,
     pub shaft: Vec<ClassOption>,
+    /// Les classes de tolerance generale de l'ISO 2768-1, du plus fin au plus
+    /// grossier : pour qu'une cote sans tolerance se choisisse, elle aussi.
+    pub general: Vec<GeneralClassOption>,
     /// Les degres seuls, du plus fin au plus large.
     pub grades: Vec<String>,
     pub provenance: Provenance,
+}
+
+/// Une classe de tolerance generale proposable.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GeneralClassOption {
+    /// `m`.
+    pub symbol: String,
+    /// `moyen`.
+    pub name: String,
+    /// `ISO 2768-m`, telle que la chaine de cotes la lit.
+    pub designation: String,
 }
 
 #[tauri::command]
@@ -266,6 +293,14 @@ pub fn tolerance_classes() -> Result<ClassCatalogue, AppError> {
     Ok(ClassCatalogue {
         hole: options(mecatool_core::Feature::Hole),
         shaft: options(mecatool_core::Feature::Shaft),
+        general: mecatool_standards::iso2768::ALL_CLASSES
+            .iter()
+            .map(|class| GeneralClassOption {
+                symbol: class.symbol().to_string(),
+                name: class.name_fr().to_string(),
+                designation: class.designation(),
+            })
+            .collect(),
         grades: mecatool_core::Grade::all()
             .map(|grade| grade.name().to_string())
             .collect(),
@@ -344,6 +379,209 @@ fn parse_bore(bore_mm: &str) -> Result<Length, AppError> {
         message: format!("Alésage illisible : « {bore_mm} »."),
         hint: Some(source.to_string()),
     })
+}
+
+/// Ce qu'il faut pour peupler l'ecran des etats de surface avant toute saisie.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SurfaceCatalogue {
+    pub symbols: Vec<SymbolVariant>,
+    pub lays: Vec<LaySymbol>,
+    pub parameters: Vec<ProfileParameter>,
+    pub grades: Vec<RoughnessGrade>,
+    pub processes: Vec<ProcessRoughness>,
+    /// Les plages de tous les procedes, sans exigence.
+    pub chart: RoughnessChart,
+    pub provenance: Provenance,
+    /// Les reserves de source, a afficher des l'ouverture de l'ecran.
+    pub warnings: Vec<String>,
+}
+
+#[tauri::command]
+pub fn surface_catalogue() -> Result<SurfaceCatalogue, AppError> {
+    let engine = SurfaceEngine::new()?;
+    let indication = engine.indication_table();
+    let provenance = engine.provenance();
+    Ok(SurfaceCatalogue {
+        symbols: indication.symbols().to_vec(),
+        lays: indication.lays().to_vec(),
+        parameters: indication.parameters().to_vec(),
+        grades: engine.grades().to_vec(),
+        processes: engine.processes().to_vec(),
+        chart: engine.catalogue_chart(),
+        warnings: provenance.warnings_fr(),
+        provenance,
+    })
+}
+
+/// Lit une indication d'etat de surface : `Ra 0.8`, `MRR Ra 1.6 ⊥`, `N7`.
+#[tauri::command]
+pub fn surface_read(input: String) -> Result<SurfaceAnalysis, AppError> {
+    Ok(SurfaceEngine::new()?.read(&input)?)
+}
+
+/// Ce qu'il faut pour peupler l'ecran de la soudure avant toute saisie.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct WeldingCatalogue {
+    pub processes: Vec<WeldingProcess>,
+    /// Les systemes A et B, et les regles qui les separent.
+    pub systems: Vec<WeldSystem>,
+    pub system_rules: Vec<String>,
+    pub sizes: Vec<SizeLetter>,
+    pub elementary: Vec<ElementarySymbol>,
+    pub supplementary: Vec<SupplementarySymbol>,
+    pub levels: Vec<QualityLevel>,
+    pub variables: Vec<QualityVariable>,
+    pub imperfections: Vec<Imperfection>,
+    pub process_scope: ProcessScope,
+    pub provenance: Provenance,
+    pub warnings: Vec<String>,
+}
+
+#[tauri::command]
+pub fn welding_catalogue() -> Result<WeldingCatalogue, AppError> {
+    let engine = WeldingEngine::new()?;
+    let symbols = engine.symbol_table();
+    let quality = engine.quality_table();
+    let provenance = engine.provenance();
+    Ok(WeldingCatalogue {
+        processes: engine.process_table().processes().to_vec(),
+        systems: symbols.systems().to_vec(),
+        system_rules: symbols.system_rules().to_vec(),
+        sizes: symbols.sizes().to_vec(),
+        elementary: symbols.elementary().to_vec(),
+        supplementary: symbols.supplementary().to_vec(),
+        levels: quality.levels().to_vec(),
+        variables: quality.variables().to_vec(),
+        imperfections: quality.imperfections().to_vec(),
+        process_scope: quality.process_scope().clone(),
+        warnings: provenance.warnings_fr(),
+        provenance,
+    })
+}
+
+/// Les lectures d'un numero de procede ou d'un nom d'atelier.
+///
+/// Plusieurs, parfois : « MAG » designe 135, 136 et 138, et le moteur ne
+/// choisit pas a la place de l'utilisateur.
+#[tauri::command]
+pub fn welding_process(input: String) -> Result<Vec<ProcessReading>, AppError> {
+    Ok(WeldingEngine::new()?.read_process(&input)?)
+}
+
+/// Lit un symbole de soudure complet.
+///
+/// Les grandeurs voyagent en texte, en millimetres : c'est le moteur qui les
+/// lit.
+#[tauri::command]
+pub fn welding_read(request: WeldRequest) -> Result<WeldReading, AppError> {
+    Ok(WeldingEngine::new()?.read_weld(&request)?)
+}
+
+/// Ce qu'il faut pour peupler l'ecran de la visserie avant toute saisie.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FastenerCatalogue {
+    pub threads: Vec<MetricThread>,
+    pub clearance_series: Vec<ClearanceSeries>,
+    pub bolt_classes: Vec<BoltClass>,
+    pub nut_classes: Vec<u32>,
+    pub provenance: Provenance,
+    pub warnings: Vec<String>,
+}
+
+#[tauri::command]
+pub fn fastener_catalogue() -> Result<FastenerCatalogue, AppError> {
+    let engine = FastenerEngine::new()?;
+    let provenance = engine.provenance();
+    Ok(FastenerCatalogue {
+        threads: engine.thread_table().threads().to_vec(),
+        clearance_series: engine.clearance_table().series().to_vec(),
+        bolt_classes: engine.strength_table().bolt_classes().to_vec(),
+        nut_classes: engine.strength_table().nut_classes().to_vec(),
+        warnings: provenance.warnings_fr(),
+        provenance,
+    })
+}
+
+/// Lit une designation de filetage : `M10`, `M12 x 1.5`, `M8 8.8`.
+#[tauri::command]
+pub fn fastener_read(input: String) -> Result<ThreadReport, AppError> {
+    Ok(FastenerEngine::new()?.read(&input)?)
+}
+
+/// Ce qu'il faut pour peupler l'ecran des matieres avant toute saisie.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MaterialsCatalogue {
+    pub use_groups: Vec<UseGroup>,
+    /// Les nuances d'aciers de construction embarquees, et leurs qualites.
+    pub structural_grades: Vec<StructuralGrade>,
+    pub families: Vec<MaterialFamily>,
+    pub provenance: Provenance,
+    pub warnings: Vec<String>,
+}
+
+#[tauri::command]
+pub fn materials_catalogue() -> Result<MaterialsCatalogue, AppError> {
+    let engine = MaterialsEngine::new()?;
+    let provenance = engine.provenance();
+    Ok(MaterialsCatalogue {
+        use_groups: engine.rules().use_groups().to_vec(),
+        structural_grades: engine.structural_grades().to_vec(),
+        families: engine.families().to_vec(),
+        warnings: provenance.warnings_fr(),
+        provenance,
+    })
+}
+
+/// Decompose une designation d'acier : `S355J2`, `42CrMo4`, `X5CrNi18-10`.
+#[tauri::command]
+pub fn materials_read(input: String) -> Result<SteelReading, AppError> {
+    Ok(MaterialsEngine::new()?.read(&input)?)
+}
+
+/// Ce que devient un ajustement quand la temperature change.
+///
+/// Les classes sont facultatives : sans elles, seule la variation du jeu est
+/// rendue. Les grandeurs arrivent en texte, et c'est le moteur qui les lit.
+#[tauri::command]
+pub fn thermal_fit(
+    nominal_mm: String,
+    delta_t: String,
+    hole_family: String,
+    shaft_family: String,
+    hole_class: Option<String>,
+    shaft_class: Option<String>,
+) -> Result<ThermalFit, AppError> {
+    let nominal =
+        Length::parse(nominal_mm.trim(), Unit::Millimetre).map_err(|source| AppError {
+            message: format!("Diamètre illisible : « {nominal_mm} »."),
+            hint: Some(source.to_string()),
+        })?;
+    let delta: i32 = delta_t.trim().parse().map_err(|_| AppError {
+        message: format!("Écart de température illisible : « {delta_t} »."),
+        hint: Some("Un nombre entier de kelvins, par exemple « 80 » ou « -40 ».".into()),
+    })?;
+    let present = |text: Option<String>| text.filter(|t| !t.trim().is_empty());
+    let classes = match (present(hole_class), present(shaft_class)) {
+        (Some(hole), Some(shaft)) => Some((
+            mecatool_core::ToleranceClass::parse(&hole).map_err(EngineError::from)?,
+            mecatool_core::ToleranceClass::parse(&shaft).map_err(EngineError::from)?,
+        )),
+        (None, None) => None,
+        _ => {
+            return Err(AppError::simple(
+                "Un ajustement demande les deux classes, alésage et arbre — ou aucune.",
+            ))
+        }
+    };
+    Ok(
+        MaterialsEngine::new()?.thermal_fit(
+            nominal,
+            delta,
+            &hole_family,
+            &shaft_family,
+            classes,
+        )?,
+    )
 }
 
 /// Le resultat d'une chaine de cotes.
@@ -908,6 +1146,181 @@ mod tests {
         let bearings =
             serde_json::to_string_pretty(&bearing_catalogue().unwrap()).expect("sérialisation");
         std::fs::write(dir.join("bearing-catalogue.json"), bearings + "\n").expect("écriture");
+        // Les trois domaines ouverts en 0.2. Chaque echantillon couvre a la fois
+        // une lecture reussie et des constats : une indication qui cite un
+        // procede, un symbole complet avec niveau de qualite, un filetage avec
+        // sa classe de qualite.
+        let write = |name: &str, json: String| {
+            std::fs::write(dir.join(name), json + "\n").expect("écriture");
+        };
+        write(
+            "surface-catalogue.json",
+            serde_json::to_string_pretty(&surface_catalogue().unwrap()).expect("sérialisation"),
+        );
+        write(
+            "surface-analysis.json",
+            serde_json::to_string_pretty(&surface_read("MRR Ra 0.8 ⊥ fraisé".into()).unwrap())
+                .expect("sérialisation"),
+        );
+        write(
+            "welding-catalogue.json",
+            serde_json::to_string_pretty(&welding_catalogue().unwrap()).expect("sérialisation"),
+        );
+        write(
+            "welding-process.json",
+            serde_json::to_string_pretty(&welding_process("MAG".into()).unwrap())
+                .expect("sérialisation"),
+        );
+        write(
+            "weld-reading.json",
+            serde_json::to_string_pretty(&welding_read(sample_weld()).unwrap())
+                .expect("sérialisation"),
+        );
+        write(
+            "fastener-catalogue.json",
+            serde_json::to_string_pretty(&fastener_catalogue().unwrap()).expect("sérialisation"),
+        );
+        write(
+            "materials-catalogue.json",
+            serde_json::to_string_pretty(&materials_catalogue().unwrap()).expect("sérialisation"),
+        );
+        write(
+            "steel-reading.json",
+            serde_json::to_string_pretty(&materials_read("S355J2".into()).unwrap())
+                .expect("sérialisation"),
+        );
+        // Un logement aluminium sur un arbre acier, Ø50 H7/p6 a +80 K : le
+        // serrage disparait. L'echantillon porte le cas qui fait conclure.
+        write(
+            "thermal-fit.json",
+            serde_json::to_string_pretty(
+                &thermal_fit(
+                    "50".into(),
+                    "80".into(),
+                    "aluminium".into(),
+                    "steel".into(),
+                    Some("H7".into()),
+                    Some("p6".into()),
+                )
+                .unwrap(),
+            )
+            .expect("sérialisation"),
+        );
+        write(
+            "thread-report.json",
+            serde_json::to_string_pretty(&fastener_read("M10 8.8".into()).unwrap())
+                .expect("sérialisation"),
+        );
+    }
+
+    /// Un cordon d'angle a5 discontinu, MAG, niveau C : l'echantillon couvre
+    /// la cote equivalente, la discontinuite, le procede et les limites.
+    fn sample_weld() -> WeldRequest {
+        WeldRequest {
+            symbol: "fillet".into(),
+            size_letter: Some("a".into()),
+            size_mm: Some("5".into()),
+            count: Some("3".into()),
+            length_mm: Some("100".into()),
+            spacing_mm: Some("50".into()),
+            supplementary: vec!["convex".into()],
+            process: Some("135".into()),
+            level: Some("C".into()),
+            thickness_mm: Some("10".into()),
+            width_mm: Some("10".into()),
+            ..WeldRequest::default()
+        }
+    }
+
+    #[test]
+    fn une_indication_de_surface_traverse_la_frontiere() {
+        let analysis = surface_read("Ra 0.8".into()).unwrap();
+        assert_eq!(analysis.designation, "Ra 0.8");
+        assert!(!analysis.processes.is_empty());
+        let catalogue = surface_catalogue().unwrap();
+        assert_eq!(catalogue.warnings.len(), 3);
+        assert_eq!(catalogue.chart.rows.len(), catalogue.processes.len());
+    }
+
+    #[test]
+    fn une_indication_illisible_rend_une_piste_daction() {
+        let err = surface_read("bidule".into()).unwrap_err();
+        assert!(err.message.contains("illisible"));
+        assert!(err.hint.is_some());
+    }
+
+    #[test]
+    fn un_symbole_de_soudure_traverse_la_frontiere() {
+        let reading = welding_read(sample_weld()).unwrap();
+        assert!(reading.designation.contains("a5"));
+        assert!(reading.quality.is_some());
+        let readings = welding_process("MAG".into()).unwrap();
+        assert_eq!(readings.len(), 3);
+    }
+
+    #[test]
+    fn un_symbole_inconnu_dit_lesquels_existent() {
+        let err = welding_read(WeldRequest {
+            symbol: "bidule".into(),
+            ..WeldRequest::default()
+        })
+        .unwrap_err();
+        assert!(err.hint.unwrap().contains("fillet"));
+    }
+
+    #[test]
+    fn un_filetage_traverse_la_frontiere_avec_ses_trous() {
+        let report = fastener_read("M10".into()).unwrap();
+        assert_eq!(report.normalised, "M10");
+        assert_eq!(report.clearance_holes.len(), 3);
+        let catalogue = fastener_catalogue().unwrap();
+        assert_eq!(catalogue.warnings.len(), 4);
+    }
+
+    #[test]
+    fn une_nuance_et_un_ajustement_a_chaud_traversent_la_frontiere() {
+        let reading = materials_read("42CrMo4".into()).unwrap();
+        assert_eq!(reading.elements.len(), 2);
+        let thermal = thermal_fit(
+            "50".into(),
+            "80".into(),
+            "aluminium".into(),
+            "steel".into(),
+            None,
+            None,
+        )
+        .unwrap();
+        assert_eq!(thermal.clearance_shift_label, "+44 µm");
+        // Une reserve par source qui n'est pas verifiee, et seulement elles.
+        let catalogue = materials_catalogue().unwrap();
+        let unverified = catalogue
+            .provenance
+            .references
+            .iter()
+            .filter(|r| !r.verification.is_verified())
+            .count();
+        assert_eq!(catalogue.warnings.len(), unverified);
+    }
+
+    #[test]
+    fn une_seule_classe_est_refusee() {
+        let err = thermal_fit(
+            "50".into(),
+            "80".into(),
+            "aluminium".into(),
+            "steel".into(),
+            Some("H7".into()),
+            None,
+        )
+        .unwrap_err();
+        assert!(err.message.contains("les deux classes"));
+    }
+
+    #[test]
+    fn les_nouveaux_domaines_ne_chargent_pas_le_bandeau_global() {
+        // Leurs reserves s'affichent sur leur ecran. Le bandeau general reste
+        // celui des donnees de l'ajustement, confrontees a leur source.
+        assert!(engine_info().unwrap().warnings.is_empty());
     }
 
     #[test]
@@ -946,9 +1359,10 @@ mod tests {
         assert!(registry.len() >= 10);
 
         // Un domaine bloqué doit arriver avec sa raison : la navigation
-        // l'affichera grisé, mais elle doit pouvoir dire pourquoi.
+        // l'affichera grisé, mais elle doit pouvoir dire pourquoi. Tous les
+        // domaines du registre sont ouverts aujourd'hui ; la règle tient pour
+        // le prochain.
         let bloques: Vec<_> = registry.iter().filter(|d| !d.is_available()).collect();
-        assert!(!bloques.is_empty());
         for domain in bloques {
             assert!(domain.unavailable.is_some(), "{}", domain.id);
         }

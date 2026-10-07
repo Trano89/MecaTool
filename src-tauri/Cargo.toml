@@ -9,7 +9,7 @@
 [package]
 name = "mecatool-app"
 description = "Application de bureau MecaTool"
-version = "0.1.1"
+version = "0.3.0"
 edition = "2021"
 rust-version = "1.82"
 license = "MIT OR Apache-2.0"

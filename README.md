@@ -34,6 +34,20 @@ Voir [docs/domaines.md](docs/domaines.md).
 > reproduit la norme, et non de la norme. L'écran concerné le dit, dès son
 > ouverture. La couverture reste partielle et le moteur refuse explicitement ce
 > qu'il n'a pas. Voir [docs/standards.md](docs/standards.md).
+>
+> ✅ **Soudure : données lues dans les normes.** ISO 2553:2013 (symboles et
+> cotation), ISO 4063:2009 (nomenclature complète) et ISO 5817:2014.
+>
+> ✅ **Matières : désignation et aciers de construction lus dans les normes.**
+> EN 10027-1 (édition 2005, remplacée depuis par celle de 2016 : chaque lecture
+> le rappelle) et EN 10025-2:2019. Les propriétés physiques par famille restent
+> des ordres de grandeur non vérifiés.
+>
+> 🟠 **États de surface et visserie : données non vérifiées.** Elles ont été
+> saisies sans document normatif ouvert. Elles portent l'état `unverified`, que
+> chaque écran affiche avant toute saisie, et chaque fichier dit contre quoi le
+> confronter. Ne pas s'en servir pour réceptionner un ouvrage avant cette
+> confrontation.
 
 ## Les domaines
 
@@ -50,10 +64,10 @@ qu'un jeu qui changerait de statut déplacerait le domaine sans que personne ait
 | Chaîne de cotes | Que donne cet empilement ? | aucune — géométrie seule | ✅ |
 | Tolérancement géométrique | Que dit ce cadre, que lui manque-t-il ? | ISO 1101 | ⚠️ recueil |
 | **Roulements** | **Quel alésage, quelle tolérance de portée ?** | **ISO 15 + fabricants** | **⚠️ recueil + recommandation** |
-| États de surface | Quelle rugosité pour ce procédé ? | ISO 21920 / ISO 4287 | ⛔ éditions incompatibles |
-| Soudure | Que dit ce symbole, quel niveau de qualité ? | ISO 2553, 4063, 6520-1, 5817 | ⏳ relevée, non transcrite |
-| Visserie | Quel filetage, quel trou de passage ? | — | ⏳ |
-| Matières | Quelle nuance, quelles propriétés ? | — | ⏳ |
+| **États de surface** | **Que dit cette indication, quel procédé l'obtient ?** | **ISO 21920-1, ISO 1302:1992, ordres de grandeur d'atelier** | **🟠 non vérifiée** |
+| **Soudure** | **Que dit ce symbole, que tolère son niveau de qualité ?** | **ISO 2553:2013, ISO 4063:2009, ISO 5817:2014** | **✅ confrontée** |
+| **Visserie** | **Quel filetage, quel trou de passage ?** | **ISO 261, 68-1, 273, 898-1 + ISO 286** | **🟠 non vérifiée + ✅ confrontée** |
+| **Matières** | **Quelle nuance, quelles propriétés, et que devient l'ajustement à chaud ?** | **EN 10027-1:2005, EN 10025-2:2019, ordres de grandeur + ISO 286** | **✅ confrontée + 🟠 ordres de grandeur non vérifiés** |
 
 Un domaine sans source **reste visible**, désactivé, avec sa raison. Le masquer
 laisserait croire qu'il n'existe pas ; l'afficher sans réserve laisserait croire
@@ -107,10 +121,10 @@ de la source, citée sous « Pourquoi ? ». Et il ne se déclenche qu'entre zone
 plans ne sont pas commensurables, et comparer leurs seuls nombres conclurait de
 travers. Quand les natures diffèrent, MecaTool le dit au lieu de trancher.
 
-Les **états de surface** restent bloqués : le recueil les couvre, mais son
-édition 2022 suit l'ISO 21920 et celle de 2014 l'ISO 4287, qui ne sont pas
-interchangeables. Plutôt qu'un module mêlant deux générations de paramètres, il
-n'y a pas encore de module d'états de surface.
+Les **états de surface** sont restés bloqués tant que la seule source existait
+en deux générations incompatibles — ISO 21920 d'un côté, ISO 4287 et ISO 1302 de
+l'autre. Ils s'ouvrent désormais en **se restreignant** à ce que les deux ont en
+commun, plutôt qu'en tranchant. Voir plus bas.
 
 ## Le module roulements, et la frontière qu'il rend visible
 
@@ -156,6 +170,102 @@ dit comment un symbole se traduit en diamètre ; elle ne dit pas comment découp
 deux sont formellement licites, et seule la connaissance des séries existantes
 trancherait.
 
+## États de surface, soudure, visserie, matières — et leur réserve
+
+Ces domaines fonctionnent de bout en bout : moteur, commandes, écrans, tests.
+La soudure, l'EN 10027-1 et l'EN 10025-2 ont été confrontées aux normes
+elles-mêmes. Les
+autres données ont été **saisies sans document normatif ouvert** : elles
+portent l'état `unverified`, et c'est ce que chaque écran dit avant toute
+saisie. Ce n'est pas une formalité : la règle absolue autorise
+une donnée non vérifiée, à condition qu'elle se voie.
+
+**États de surface.** Le module lit une indication — `MRR Ra 0.8 ⊥`, `N7`,
+`Rz 6.3 max` — et situe chaque procédé du tableau par rapport à elle : atteinte
+d'ordinaire, avec des soins particuliers, hors d'atteinte, ou *plus fin que
+nécessaire*, ce qui signale un procédé probablement trop cher. Le graphique des
+plages, calculé en Rust, répond à « quelle rugosité pour ce procédé ? » dès
+l'ouverture de l'écran.
+
+```
+Rz 6.3
+🔵 Le tableau des procédés est exprimé en Ra. MecaTool ne convertit pas Rz en
+   Ra : aucune relation fixe ne lie les deux paramètres.
+```
+
+Le blocage sur les deux générations de normes se lève en **retrécissant** le
+périmètre : symboles, sens des stries et paramètres d'amplitude, communs aux
+deux, sont embarqués ; longueurs de base, filtres et règle d'acceptation par
+défaut, qui les distinguent, ne le sont pas — et le raisonnement le dit.
+
+**Soudure.** ✅ Toutes les données de la soudure sont **lues dans les normes
+elles-mêmes**. Les symboles et leur cotation viennent de l'ISO 2553:2013 —
+vingt-deux symboles élémentaires, six supplémentaires, les systèmes A et B,
+l'article 5 — et non du recueil, qui reproduit l'édition de 1992. La
+nomenclature ISO 4063:2009 est embarquée **en entier** : un numéro se lit avec
+sa hiérarchie (`135` relève de `13`, qui relève de `1`) et ses variantes
+(`131-D`, `121-C`, `522+15`) ; un numéro remplacé (`137`) renvoie à l'Annexe A ;
+un nom d'atelier rend toutes ses lectures (`MAG` → 135, 136, 138), une
+désignation US la sienne (`SMAW` → 111). Les niveaux de qualité viennent de
+l'ISO 5817:2014, avec les procédés qu'elle vise. Un symbole complet se restitue phrase par phrase, avec ce qui
+cloche : une cote `s` sur une soudure d'angle, une soudure alternée d'un seul
+côté, une soudure évasée sans sa cote obligatoire, un niveau ISO 5817 appliqué à
+du brasage ou à un procédé qu'elle ne vise pas. Les limites du niveau se
+chiffrent pour la géométrie saisie :
+
+```
+convexité excessive (503)    h ≤ 1 mm + 0.15 b, max. 4 mm    →  h ≤ 2.5 mm
+```
+
+Comme le module géométrique ne propose aucune valeur, le module soudure **ne
+recommande aucun niveau de qualité** : c'est l'affaire de la norme d'application
+ou du concepteur. Un test échoue si un constat venait à en recommander un.
+
+**Visserie.** `M10` se déplie en pas, profil de base, section résistante,
+perçage avant taraudage et trous de passage. Les diamètres de base suivent la
+*règle* du profil ISO 68-1 plutôt qu'une table, calculés en entiers au
+femtomètre puis annoncés arrondis au micromètre — et retrouvent les valeurs de
+l'ISO 724 (`d2 = 9.026`, `d1 = 8.376`). Les trous de passage passent ensuite au
+moteur ISO 286 :
+
+```
+Trou moyen   Ø11 H13       ISO 273, non vérifiée
+Écarts       EI = 0, ES = +270 µm     ISO 286, confrontée
+```
+
+C'est la frontière déjà rendue visible par les roulements : deux natures de
+source dans un même résultat, chacune avec son étiquette. Aucun effort
+admissible n'est calculé : la classe de qualité donne des valeurs nominales, et
+les minimums garantis de l'ISO 898-1 ne sont pas embarqués.
+
+## Matières, et l'ajustement à chaud
+
+Une désignation d'acier se **lit par règles** : `S355J2` donne un acier de
+construction, 355 MPa pour la plus petite épaisseur, 27 J à −20 °C ; `42CrMo4`
+donne 0,42 % de carbone et 1 % de chrome (4 / 4) ; `X5CrNi18-10` donne 18 % de
+chrome et 10 % de nickel, sans facteur. Pour un acier de construction embarqué,
+la limite d'élasticité se lit **pour l'épaisseur choisie** : S355 ne garantit
+355 MPa que jusqu'à 16 mm.
+
+Le domaine alimente ensuite celui des ajustements :
+
+```
+Logement aluminium, arbre acier, Ø50 H7/p6, ΔT = +80 K
+  jeu à froid   −42 µm à −1 µm    serré
+  jeu à chaud    +2 µm à +43 µm   avec jeu
+🔴 Le serrage peut disparaître : la pièce frettée peut tourner à cette température.
+```
+
+## Choisir plutôt que taper
+
+Une tolérance, une classe, un pas ou une valeur de rugosité se **choisissent**
+parmi ce que le moteur connaît, par boutons ou par listes. Un maillon de chaîne
+de cotes s'écrit `A = 20 h11` ou `A = 20 ISO 2768-m` : le moteur lit les écarts
+lui-même, et la chaîne dit d'où vient chacun. Restent saisis au clavier les
+diamètres et les exigences fonctionnelles — une liste de diamètres « usuels »
+serait une valeur inventée — et la valeur d'une tolérance géométrique, que
+l'ISO 1101 laisse au concepteur.
+
 ## Lancer l'application
 
 ```bash
@@ -179,7 +289,7 @@ cargo run -p mecatool-cli -- "Ø10 H7/g6"
 ```
 
 ```
-MECATOOL 0.1.1 — Ajustement Ø10 H7/g6
+MECATOOL 0.3.0 — Ajustement Ø10 H7/g6
 ================================================================
 
 ALÉSAGE H7
@@ -294,15 +404,19 @@ secondes d'arc. Les tolérances angulaires générales tombent donc juste.
 - Arrondir silencieusement une valeur non représentable.
 - Présenter une donnée non vérifiée comme une valeur ISO établie.
 - Conclure à une compatibilité sans exigence fonctionnelle.
+- Convertir une rugosité Rz en Ra, ou l'inverse.
+- Recommander un niveau de qualité de soudure.
+- Calculer un effort admissible à partir de valeurs nominales.
+- Affirmer qu'une nuance d'acier existe parce que sa désignation est bien formée.
 
 Chacun de ces refus est couvert par un test.
 
 ## Développement
 
 ```bash
-cargo test --workspace        # 337 tests : moteur
-cd src-tauri && cargo test    #  29 tests : frontiere Tauri + echantillons
-npm test                      #  63 tests : interface
+cargo test --workspace        # 476 tests : moteur
+cd src-tauri && cargo test    #  38 tests : frontiere Tauri + echantillons
+npm test                      # 116 tests : interface
 cargo clippy --workspace --all-targets
 cargo fmt --all
 ```

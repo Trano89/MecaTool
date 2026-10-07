@@ -1,0 +1,1317 @@
+{
+  "use_groups": [
+    {
+      "letter": "S",
+      "table": 1,
+      "name": "acier de construction",
+      "forms": [
+        {
+          "prefix": "",
+          "number": "yield",
+          "label": "limite d'élasticité minimale",
+          "note": "Valeur minimale de la limite d'élasticité, en MPa, pour la gamme d'épaisseur la plus faible."
+        }
+      ],
+      "group1": {
+        "impact": true,
+        "symbols": [
+          {
+            "code": "A",
+            "meaning": "durcissement par précipitation (acier à grain fin)"
+          },
+          {
+            "code": "M",
+            "meaning": "laminage thermomécanique (acier à grain fin)"
+          },
+          {
+            "code": "N",
+            "meaning": "normalisé ou laminage normalisant (acier à grain fin)"
+          },
+          {
+            "code": "Q",
+            "meaning": "trempé et revenu (acier à grain fin)"
+          },
+          {
+            "code": "G",
+            "meaning": "autres caractéristiques",
+            "digits": "quality"
+          }
+        ],
+        "digits": false
+      },
+      "group2": {
+        "impact": false,
+        "symbols": [
+          {
+            "code": "C",
+            "meaning": "formage à froid spécial"
+          },
+          {
+            "code": "D",
+            "meaning": "galvanisation"
+          },
+          {
+            "code": "E",
+            "meaning": "émaillage"
+          },
+          {
+            "code": "F",
+            "meaning": "forgeage"
+          },
+          {
+            "code": "H",
+            "meaning": "profil creux"
+          },
+          {
+            "code": "L",
+            "meaning": "basse température"
+          },
+          {
+            "code": "M",
+            "meaning": "laminage thermomécanique"
+          },
+          {
+            "code": "N",
+            "meaning": "normalisé ou laminage normalisant"
+          },
+          {
+            "code": "O",
+            "meaning": "offshore"
+          },
+          {
+            "code": "P",
+            "meaning": "palplanche"
+          },
+          {
+            "code": "Q",
+            "meaning": "trempé et revenu"
+          },
+          {
+            "code": "S",
+            "meaning": "construction navale"
+          },
+          {
+            "code": "T",
+            "meaning": "tubes"
+          },
+          {
+            "code": "W",
+            "meaning": "résistant à la corrosion atmosphérique"
+          }
+        ],
+        "chemical": "élément d'alliage spécifié",
+        "digits": true
+      },
+      "product_tables": [
+        16,
+        17,
+        18
+      ]
+    },
+    {
+      "letter": "P",
+      "table": 2,
+      "name": "acier pour appareils à pression",
+      "forms": [
+        {
+          "prefix": "",
+          "number": "yield",
+          "label": "limite d'élasticité minimale",
+          "note": "Valeur minimale de la limite d'élasticité, en MPa, pour la gamme d'épaisseur la plus faible."
+        }
+      ],
+      "group1": {
+        "impact": false,
+        "symbols": [
+          {
+            "code": "B",
+            "meaning": "bouteilles à gaz"
+          },
+          {
+            "code": "M",
+            "meaning": "laminage thermomécanique (acier à grain fin)"
+          },
+          {
+            "code": "N",
+            "meaning": "normalisé ou laminage normalisant (acier à grain fin)"
+          },
+          {
+            "code": "Q",
+            "meaning": "trempé et revenu (acier à grain fin)"
+          },
+          {
+            "code": "S",
+            "meaning": "appareils à pression simples"
+          },
+          {
+            "code": "T",
+            "meaning": "tubes"
+          },
+          {
+            "code": "G",
+            "meaning": "autres caractéristiques",
+            "digits": "quality"
+          }
+        ],
+        "digits": false
+      },
+      "group2": {
+        "impact": false,
+        "symbols": [
+          {
+            "code": "H",
+            "meaning": "température élevée"
+          },
+          {
+            "code": "L",
+            "meaning": "basse température"
+          },
+          {
+            "code": "R",
+            "meaning": "température ambiante"
+          },
+          {
+            "code": "X",
+            "meaning": "température élevée et basse température"
+          }
+        ],
+        "digits": true
+      },
+      "product_tables": [
+        16,
+        17,
+        18
+      ]
+    },
+    {
+      "letter": "L",
+      "table": 3,
+      "name": "acier pour tubes de conduite",
+      "forms": [
+        {
+          "prefix": "",
+          "number": "yield",
+          "label": "limite d'élasticité minimale",
+          "note": "Valeur minimale spécifiée de la limite d'élasticité, en MPa, pour la gamme d'épaisseur la plus faible."
+        }
+      ],
+      "group1": {
+        "impact": false,
+        "symbols": [
+          {
+            "code": "M",
+            "meaning": "laminage thermomécanique (acier à grain fin)"
+          },
+          {
+            "code": "N",
+            "meaning": "normalisé ou laminage normalisant (acier à grain fin)"
+          },
+          {
+            "code": "Q",
+            "meaning": "trempé et revenu (acier à grain fin)"
+          },
+          {
+            "code": "G",
+            "meaning": "autres caractéristiques",
+            "digits": "quality"
+          }
+        ],
+        "digits": false
+      },
+      "group2": {
+        "impact": false,
+        "symbols": [],
+        "any_letter": "classe d'exigence",
+        "digits": true
+      },
+      "product_tables": [
+        16,
+        17,
+        18
+      ]
+    },
+    {
+      "letter": "E",
+      "table": 4,
+      "name": "acier de construction mécanique",
+      "forms": [
+        {
+          "prefix": "",
+          "number": "yield",
+          "label": "limite d'élasticité minimale",
+          "note": "Valeur minimale spécifiée de la limite d'élasticité, en MPa, pour la gamme d'épaisseur la plus faible."
+        }
+      ],
+      "group1": {
+        "impact": true,
+        "symbols": [
+          {
+            "code": "G",
+            "meaning": "autres caractéristiques",
+            "digits": "quality"
+          }
+        ],
+        "digits": false
+      },
+      "group2": {
+        "impact": false,
+        "symbols": [
+          {
+            "code": "C",
+            "meaning": "destiné à l'étirage à froid"
+          }
+        ],
+        "digits": false
+      },
+      "product_tables": [
+        18
+      ]
+    },
+    {
+      "letter": "B",
+      "table": 5,
+      "name": "acier à béton",
+      "forms": [
+        {
+          "prefix": "",
+          "number": "yield",
+          "label": "limite d'élasticité",
+          "note": "Limite d'élasticité, en MPa, pour la gamme d'épaisseur la plus faible."
+        }
+      ],
+      "group1": {
+        "impact": false,
+        "symbols": [],
+        "any_letter": "classe de ductilité",
+        "digits": true
+      },
+      "group2": {
+        "impact": false,
+        "symbols": [],
+        "digits": false
+      },
+      "product_tables": [
+        18
+      ]
+    },
+    {
+      "letter": "Y",
+      "table": 6,
+      "name": "acier pour béton précontraint",
+      "forms": [
+        {
+          "prefix": "",
+          "number": "tensile",
+          "label": "résistance nominale à la traction (Rm)",
+          "digits": 4,
+          "note": "Résistance nominale à la traction Rm, en MPa, sur quatre chiffres : une valeur de trois chiffres s'écrit précédée d'un zéro."
+        }
+      ],
+      "group1": {
+        "impact": false,
+        "symbols": [
+          {
+            "code": "C",
+            "meaning": "fil étiré à froid — tréfilé"
+          },
+          {
+            "code": "H",
+            "meaning": "barres formées à chaud ou précontraintes"
+          },
+          {
+            "code": "Q",
+            "meaning": "fil pour trempé et revenu"
+          },
+          {
+            "code": "S",
+            "meaning": "toron"
+          },
+          {
+            "code": "G",
+            "meaning": "autres caractéristiques"
+          }
+        ],
+        "digits": true
+      },
+      "group2": {
+        "impact": false,
+        "symbols": [],
+        "digits": false
+      },
+      "product_tables": [
+        18
+      ]
+    },
+    {
+      "letter": "R",
+      "table": 7,
+      "name": "acier pour ou sous forme de rails",
+      "forms": [
+        {
+          "prefix": "",
+          "number": "hardness",
+          "label": "dureté Brinell minimale spécifiée",
+          "note": "Dureté Brinell minimale spécifiée, HBW."
+        }
+      ],
+      "group1": {
+        "impact": false,
+        "symbols": [
+          {
+            "code": "Cr",
+            "meaning": "allié au chrome"
+          },
+          {
+            "code": "Mn",
+            "meaning": "haute teneur en manganèse"
+          },
+          {
+            "code": "G",
+            "meaning": "autres caractéristiques",
+            "digits": "quality"
+          }
+        ],
+        "chemical": "élément additionnel spécifié",
+        "digits": false
+      },
+      "group2": {
+        "impact": false,
+        "symbols": [
+          {
+            "code": "HT",
+            "meaning": "avec traitement thermique"
+          },
+          {
+            "code": "LHT",
+            "meaning": "faiblement allié, traité à chaud"
+          },
+          {
+            "code": "Q",
+            "meaning": "trempé et revenu"
+          }
+        ],
+        "digits": false
+      },
+      "product_tables": []
+    },
+    {
+      "letter": "D",
+      "table": 8,
+      "name": "produit plat pour formage à froid, hors tableau 9",
+      "forms": [
+        {
+          "prefix": "C",
+          "meaning": "laminé à froid",
+          "number": "code",
+          "label": "symboles caractérisant l'acier",
+          "digits": 2,
+          "note": "Deux symboles attribués par l'organisme responsable pour caractériser l'acier : ce n'est pas une caractéristique mécanique."
+        },
+        {
+          "prefix": "D",
+          "meaning": "laminé à chaud pour formage direct à froid",
+          "number": "code",
+          "label": "symboles caractérisant l'acier",
+          "digits": 2,
+          "note": "Deux symboles attribués par l'organisme responsable pour caractériser l'acier : ce n'est pas une caractéristique mécanique."
+        },
+        {
+          "prefix": "X",
+          "meaning": "conditions de laminage non spécifiées",
+          "number": "code",
+          "label": "symboles caractérisant l'acier",
+          "digits": 2,
+          "note": "Deux symboles attribués par l'organisme responsable pour caractériser l'acier : ce n'est pas une caractéristique mécanique."
+        }
+      ],
+      "group1": {
+        "impact": false,
+        "symbols": [
+          {
+            "code": "D",
+            "meaning": "pour revêtement par immersion à chaud"
+          },
+          {
+            "code": "ED",
+            "meaning": "pour émaillage direct"
+          },
+          {
+            "code": "EK",
+            "meaning": "pour émaillage conventionnel"
+          },
+          {
+            "code": "H",
+            "meaning": "pour sections creuses"
+          },
+          {
+            "code": "T",
+            "meaning": "pour tubes"
+          },
+          {
+            "code": "G",
+            "meaning": "autres caractéristiques"
+          }
+        ],
+        "chemical": "élément supplémentaire spécial",
+        "digits": true
+      },
+      "group2": {
+        "impact": false,
+        "symbols": [],
+        "digits": false
+      },
+      "product_tables": [
+        17,
+        18
+      ]
+    },
+    {
+      "letter": "H",
+      "table": 9,
+      "name": "produit plat en acier à haute résistance pour formage à froid",
+      "forms": [
+        {
+          "prefix": "C",
+          "meaning": "laminé à froid",
+          "number": "yield",
+          "label": "limite d'élasticité minimale",
+          "note": "Valeur minimale de la limite d'élasticité, en MPa."
+        },
+        {
+          "prefix": "D",
+          "meaning": "laminé à chaud pour formage direct à froid",
+          "number": "yield",
+          "label": "limite d'élasticité minimale",
+          "note": "Valeur minimale de la limite d'élasticité, en MPa."
+        },
+        {
+          "prefix": "X",
+          "meaning": "conditions de laminage non spécifiées",
+          "number": "yield",
+          "label": "limite d'élasticité minimale",
+          "note": "Valeur minimale de la limite d'élasticité, en MPa."
+        },
+        {
+          "prefix": "CT",
+          "meaning": "laminé à froid",
+          "number": "tensile",
+          "label": "résistance à la traction minimale spécifiée",
+          "note": "Valeur minimale spécifiée de la résistance à la traction, en MPa."
+        },
+        {
+          "prefix": "DT",
+          "meaning": "laminé à chaud pour formage direct à froid",
+          "number": "tensile",
+          "label": "résistance à la traction minimale spécifiée",
+          "note": "Valeur minimale spécifiée de la résistance à la traction, en MPa."
+        },
+        {
+          "prefix": "XT",
+          "meaning": "conditions de laminage non spécifiées",
+          "number": "tensile",
+          "label": "résistance à la traction minimale spécifiée",
+          "note": "Valeur minimale spécifiée de la résistance à la traction, en MPa."
+        }
+      ],
+      "group1": {
+        "impact": false,
+        "symbols": [
+          {
+            "code": "B",
+            "meaning": "durcissement à la cuisson"
+          },
+          {
+            "code": "C",
+            "meaning": "phase complexe"
+          },
+          {
+            "code": "I",
+            "meaning": "isotrope"
+          },
+          {
+            "code": "LA",
+            "meaning": "faiblement allié"
+          },
+          {
+            "code": "M",
+            "meaning": "laminage thermomécanique"
+          },
+          {
+            "code": "P",
+            "meaning": "avec phosphore"
+          },
+          {
+            "code": "T",
+            "meaning": "TRIP (plasticité induite par la transformation)"
+          },
+          {
+            "code": "X",
+            "meaning": "biphasé"
+          },
+          {
+            "code": "Y",
+            "meaning": "sans interstitiel"
+          },
+          {
+            "code": "G",
+            "meaning": "autres caractéristiques"
+          }
+        ],
+        "digits": true
+      },
+      "group2": {
+        "impact": false,
+        "symbols": [
+          {
+            "code": "D",
+            "meaning": "pour revêtement par immersion à chaud"
+          }
+        ],
+        "digits": true
+      },
+      "product_tables": [
+        17
+      ]
+    },
+    {
+      "letter": "T",
+      "table": 10,
+      "name": "fer noir, fer blanc, fer chromé (acier pour emballage)",
+      "forms": [
+        {
+          "prefix": "H",
+          "meaning": "produit recuit continu",
+          "number": "yield",
+          "label": "valeur nominale de la limite d'élasticité (Re)",
+          "note": "Valeur nominale de la limite d'élasticité Re, en MPa, pour les produits recuits en continu."
+        },
+        {
+          "prefix": "S",
+          "meaning": "produit recuit base",
+          "number": "yield",
+          "label": "valeur nominale de la limite d'élasticité (Re)",
+          "note": "Valeur nominale de la limite d'élasticité Re, en MPa, pour les produits recuits base. Aucun symbole de produit n'est affecté au fer noir."
+        }
+      ],
+      "group1": {
+        "impact": false,
+        "symbols": [],
+        "digits": false
+      },
+      "group2": {
+        "impact": false,
+        "symbols": [],
+        "digits": false
+      },
+      "product_tables": [
+        17,
+        18
+      ]
+    },
+    {
+      "letter": "M",
+      "table": 11,
+      "name": "acier électrique",
+      "forms": [
+        {
+          "prefix": "",
+          "number": "losses",
+          "label": "pertes totales spécifiées",
+          "note": "Pertes totales spécifiées, en W/kg × 100, puis, après un tiret, 100 × l'épaisseur nominale en mm, puis une lettre de type de produit."
+        }
+      ],
+      "group1": {
+        "impact": false,
+        "symbols": [],
+        "digits": false
+      },
+      "group2": {
+        "impact": false,
+        "symbols": [],
+        "digits": false
+      },
+      "types": [
+        {
+          "code": "A",
+          "meaning": "grains non orientés (pertes à 1,5 T et 50 Hz)"
+        },
+        {
+          "code": "D",
+          "meaning": "non allié semi-fini, sans recuit final (pertes à 1,5 T et 50 Hz)"
+        },
+        {
+          "code": "E",
+          "meaning": "allié semi-fini, sans recuit final (pertes à 1,5 T et 50 Hz)"
+        },
+        {
+          "code": "P",
+          "meaning": "haute perméabilité à grains orientés (pertes à 1,7 T et 50 Hz)"
+        },
+        {
+          "code": "S",
+          "meaning": "conventionnel à grains orientés (pertes à 1,7 T et 50 Hz)"
+        }
+      ],
+      "product_tables": []
+    }
+  ],
+  "structural_grades": [
+    {
+      "grade": "S185",
+      "qualities": [],
+      "rows": [
+        {
+          "band": {
+            "above": 0,
+            "to": 16000000
+          },
+          "yield_mpa": 185,
+          "tensile_min_mpa": 290,
+          "tensile_max_mpa": 510
+        },
+        {
+          "band": {
+            "above": 16000000,
+            "to": 40000000
+          },
+          "yield_mpa": 175,
+          "tensile_min_mpa": 290,
+          "tensile_max_mpa": 510
+        },
+        {
+          "band": {
+            "above": 40000000,
+            "to": 63000000
+          },
+          "yield_mpa": 175,
+          "tensile_min_mpa": 290,
+          "tensile_max_mpa": 510
+        },
+        {
+          "band": {
+            "above": 63000000,
+            "to": 80000000
+          },
+          "yield_mpa": 175,
+          "tensile_min_mpa": 290,
+          "tensile_max_mpa": 510
+        },
+        {
+          "band": {
+            "above": 80000000,
+            "to": 100000000
+          },
+          "yield_mpa": 175,
+          "tensile_min_mpa": 290,
+          "tensile_max_mpa": 510
+        },
+        {
+          "band": {
+            "above": 100000000,
+            "to": 150000000
+          },
+          "yield_mpa": 165,
+          "tensile_min_mpa": 280,
+          "tensile_max_mpa": 500
+        },
+        {
+          "band": {
+            "above": 150000000,
+            "to": 200000000
+          },
+          "yield_mpa": 155,
+          "tensile_min_mpa": 270,
+          "tensile_max_mpa": 490
+        },
+        {
+          "band": {
+            "above": 200000000,
+            "to": 250000000
+          },
+          "yield_mpa": 145,
+          "tensile_min_mpa": 270,
+          "tensile_max_mpa": 490
+        }
+      ]
+    },
+    {
+      "grade": "S235",
+      "qualities": [
+        "JR",
+        "J0",
+        "J2"
+      ],
+      "rows": [
+        {
+          "band": {
+            "above": 0,
+            "to": 16000000
+          },
+          "yield_mpa": 235,
+          "tensile_min_mpa": 360,
+          "tensile_max_mpa": 510
+        },
+        {
+          "band": {
+            "above": 16000000,
+            "to": 40000000
+          },
+          "yield_mpa": 225,
+          "tensile_min_mpa": 360,
+          "tensile_max_mpa": 510
+        },
+        {
+          "band": {
+            "above": 40000000,
+            "to": 63000000
+          },
+          "yield_mpa": 215,
+          "tensile_min_mpa": 360,
+          "tensile_max_mpa": 510
+        },
+        {
+          "band": {
+            "above": 63000000,
+            "to": 80000000
+          },
+          "yield_mpa": 215,
+          "tensile_min_mpa": 360,
+          "tensile_max_mpa": 510
+        },
+        {
+          "band": {
+            "above": 80000000,
+            "to": 100000000
+          },
+          "yield_mpa": 215,
+          "tensile_min_mpa": 360,
+          "tensile_max_mpa": 510
+        },
+        {
+          "band": {
+            "above": 100000000,
+            "to": 150000000
+          },
+          "yield_mpa": 195,
+          "tensile_min_mpa": 350,
+          "tensile_max_mpa": 500
+        },
+        {
+          "band": {
+            "above": 150000000,
+            "to": 200000000
+          },
+          "yield_mpa": 185,
+          "tensile_min_mpa": 340,
+          "tensile_max_mpa": 490
+        },
+        {
+          "band": {
+            "above": 200000000,
+            "to": 250000000
+          },
+          "yield_mpa": 175,
+          "tensile_min_mpa": 340,
+          "tensile_max_mpa": 490
+        },
+        {
+          "band": {
+            "above": 250000000,
+            "to": 400000000
+          },
+          "yield_mpa": 165,
+          "tensile_min_mpa": 330,
+          "tensile_max_mpa": 480
+        }
+      ]
+    },
+    {
+      "grade": "S275",
+      "qualities": [
+        "JR",
+        "J0",
+        "J2"
+      ],
+      "rows": [
+        {
+          "band": {
+            "above": 0,
+            "to": 16000000
+          },
+          "yield_mpa": 275,
+          "tensile_min_mpa": 410,
+          "tensile_max_mpa": 560
+        },
+        {
+          "band": {
+            "above": 16000000,
+            "to": 40000000
+          },
+          "yield_mpa": 265,
+          "tensile_min_mpa": 410,
+          "tensile_max_mpa": 560
+        },
+        {
+          "band": {
+            "above": 40000000,
+            "to": 63000000
+          },
+          "yield_mpa": 255,
+          "tensile_min_mpa": 410,
+          "tensile_max_mpa": 560
+        },
+        {
+          "band": {
+            "above": 63000000,
+            "to": 80000000
+          },
+          "yield_mpa": 245,
+          "tensile_min_mpa": 410,
+          "tensile_max_mpa": 560
+        },
+        {
+          "band": {
+            "above": 80000000,
+            "to": 100000000
+          },
+          "yield_mpa": 235,
+          "tensile_min_mpa": 410,
+          "tensile_max_mpa": 560
+        },
+        {
+          "band": {
+            "above": 100000000,
+            "to": 150000000
+          },
+          "yield_mpa": 225,
+          "tensile_min_mpa": 400,
+          "tensile_max_mpa": 540
+        },
+        {
+          "band": {
+            "above": 150000000,
+            "to": 200000000
+          },
+          "yield_mpa": 215,
+          "tensile_min_mpa": 380,
+          "tensile_max_mpa": 540
+        },
+        {
+          "band": {
+            "above": 200000000,
+            "to": 250000000
+          },
+          "yield_mpa": 205,
+          "tensile_min_mpa": 380,
+          "tensile_max_mpa": 540
+        },
+        {
+          "band": {
+            "above": 250000000,
+            "to": 400000000
+          },
+          "yield_mpa": 195,
+          "tensile_min_mpa": 380,
+          "tensile_max_mpa": 540
+        }
+      ]
+    },
+    {
+      "grade": "S355",
+      "qualities": [
+        "JR",
+        "J0",
+        "J2",
+        "K2"
+      ],
+      "rows": [
+        {
+          "band": {
+            "above": 0,
+            "to": 16000000
+          },
+          "yield_mpa": 355,
+          "tensile_min_mpa": 470,
+          "tensile_max_mpa": 630
+        },
+        {
+          "band": {
+            "above": 16000000,
+            "to": 40000000
+          },
+          "yield_mpa": 345,
+          "tensile_min_mpa": 470,
+          "tensile_max_mpa": 630
+        },
+        {
+          "band": {
+            "above": 40000000,
+            "to": 63000000
+          },
+          "yield_mpa": 335,
+          "tensile_min_mpa": 470,
+          "tensile_max_mpa": 630
+        },
+        {
+          "band": {
+            "above": 63000000,
+            "to": 80000000
+          },
+          "yield_mpa": 325,
+          "tensile_min_mpa": 470,
+          "tensile_max_mpa": 630
+        },
+        {
+          "band": {
+            "above": 80000000,
+            "to": 100000000
+          },
+          "yield_mpa": 315,
+          "tensile_min_mpa": 470,
+          "tensile_max_mpa": 630
+        },
+        {
+          "band": {
+            "above": 100000000,
+            "to": 150000000
+          },
+          "yield_mpa": 295,
+          "tensile_min_mpa": 450,
+          "tensile_max_mpa": 600
+        },
+        {
+          "band": {
+            "above": 150000000,
+            "to": 200000000
+          },
+          "yield_mpa": 285,
+          "tensile_min_mpa": 450,
+          "tensile_max_mpa": 600
+        },
+        {
+          "band": {
+            "above": 200000000,
+            "to": 250000000
+          },
+          "yield_mpa": 275,
+          "tensile_min_mpa": 450,
+          "tensile_max_mpa": 600
+        },
+        {
+          "band": {
+            "above": 250000000,
+            "to": 400000000
+          },
+          "yield_mpa": 265,
+          "tensile_min_mpa": 450,
+          "tensile_max_mpa": 600
+        }
+      ]
+    },
+    {
+      "grade": "S460",
+      "qualities": [
+        "JR",
+        "J0",
+        "J2",
+        "K2"
+      ],
+      "restriction": "Produits longs seulement, de 3 à 150 mm d'épaisseur (EN 10025-2:2019, Article 1 et Tableau 6, note b).",
+      "rows": [
+        {
+          "band": {
+            "above": 0,
+            "to": 16000000
+          },
+          "yield_mpa": 460,
+          "tensile_min_mpa": 550,
+          "tensile_max_mpa": 720
+        },
+        {
+          "band": {
+            "above": 16000000,
+            "to": 40000000
+          },
+          "yield_mpa": 440,
+          "tensile_min_mpa": 550,
+          "tensile_max_mpa": 720
+        },
+        {
+          "band": {
+            "above": 40000000,
+            "to": 63000000
+          },
+          "yield_mpa": 420,
+          "tensile_min_mpa": 550,
+          "tensile_max_mpa": 720
+        },
+        {
+          "band": {
+            "above": 63000000,
+            "to": 80000000
+          },
+          "yield_mpa": 400,
+          "tensile_min_mpa": 550,
+          "tensile_max_mpa": 720
+        },
+        {
+          "band": {
+            "above": 80000000,
+            "to": 100000000
+          },
+          "yield_mpa": 390,
+          "tensile_min_mpa": 550,
+          "tensile_max_mpa": 720
+        },
+        {
+          "band": {
+            "above": 100000000,
+            "to": 150000000
+          },
+          "yield_mpa": 390,
+          "tensile_min_mpa": 530,
+          "tensile_max_mpa": 700
+        }
+      ]
+    },
+    {
+      "grade": "S500",
+      "qualities": [
+        "J0"
+      ],
+      "restriction": "Produits longs seulement, de 3 à 150 mm d'épaisseur (EN 10025-2:2019, Article 1 et Tableau 6, note b).",
+      "rows": [
+        {
+          "band": {
+            "above": 0,
+            "to": 16000000
+          },
+          "yield_mpa": 500,
+          "tensile_min_mpa": 580,
+          "tensile_max_mpa": 760
+        },
+        {
+          "band": {
+            "above": 16000000,
+            "to": 40000000
+          },
+          "yield_mpa": 480,
+          "tensile_min_mpa": 580,
+          "tensile_max_mpa": 760
+        },
+        {
+          "band": {
+            "above": 40000000,
+            "to": 63000000
+          },
+          "yield_mpa": 460,
+          "tensile_min_mpa": 580,
+          "tensile_max_mpa": 760
+        },
+        {
+          "band": {
+            "above": 63000000,
+            "to": 80000000
+          },
+          "yield_mpa": 450,
+          "tensile_min_mpa": 580,
+          "tensile_max_mpa": 760
+        },
+        {
+          "band": {
+            "above": 80000000,
+            "to": 100000000
+          },
+          "yield_mpa": 450,
+          "tensile_min_mpa": 580,
+          "tensile_max_mpa": 760
+        },
+        {
+          "band": {
+            "above": 100000000,
+            "to": 150000000
+          },
+          "yield_mpa": 450,
+          "tensile_min_mpa": 560,
+          "tensile_max_mpa": 750
+        }
+      ]
+    }
+  ],
+  "families": [
+    {
+      "id": "steel",
+      "name": "acier non allié ou faiblement allié",
+      "e_gpa": 210,
+      "poisson_milli": 300,
+      "density": 7850,
+      "alpha_tenths": 120
+    },
+    {
+      "id": "stainless_austenitic",
+      "name": "acier inoxydable austénitique",
+      "e_gpa": 200,
+      "poisson_milli": 300,
+      "density": 7900,
+      "alpha_tenths": 160
+    },
+    {
+      "id": "stainless_ferritic",
+      "name": "acier inoxydable ferritique ou martensitique",
+      "e_gpa": 210,
+      "poisson_milli": 300,
+      "density": 7700,
+      "alpha_tenths": 105
+    },
+    {
+      "id": "grey_iron",
+      "name": "fonte à graphite lamellaire",
+      "e_gpa": 110,
+      "poisson_milli": 260,
+      "density": 7200,
+      "alpha_tenths": 110
+    },
+    {
+      "id": "ductile_iron",
+      "name": "fonte à graphite sphéroïdal",
+      "e_gpa": 170,
+      "poisson_milli": 280,
+      "density": 7100,
+      "alpha_tenths": 125
+    },
+    {
+      "id": "aluminium",
+      "name": "alliage d'aluminium",
+      "e_gpa": 70,
+      "poisson_milli": 330,
+      "density": 2700,
+      "alpha_tenths": 230
+    },
+    {
+      "id": "copper",
+      "name": "cuivre",
+      "e_gpa": 120,
+      "poisson_milli": 340,
+      "density": 8900,
+      "alpha_tenths": 170
+    },
+    {
+      "id": "brass",
+      "name": "laiton",
+      "e_gpa": 100,
+      "poisson_milli": 340,
+      "density": 8500,
+      "alpha_tenths": 190
+    },
+    {
+      "id": "bronze",
+      "name": "bronze",
+      "e_gpa": 110,
+      "poisson_milli": 340,
+      "density": 8800,
+      "alpha_tenths": 180
+    },
+    {
+      "id": "titanium",
+      "name": "alliage de titane",
+      "e_gpa": 110,
+      "poisson_milli": 330,
+      "density": 4500,
+      "alpha_tenths": 86
+    },
+    {
+      "id": "polyamide",
+      "name": "polyamide (PA 6)",
+      "e_gpa": 3,
+      "poisson_milli": 390,
+      "density": 1140,
+      "alpha_tenths": 900
+    },
+    {
+      "id": "acetal",
+      "name": "polyacétal (POM)",
+      "e_gpa": 3,
+      "poisson_milli": 350,
+      "density": 1410,
+      "alpha_tenths": 1100
+    }
+  ],
+  "provenance": {
+    "references": [
+      {
+        "id": "EN 10027-1",
+        "edition": "2005",
+        "title": "Systèmes de désignation des aciers — Partie 1 : Désignation symbolique",
+        "scope": "règles de lecture des désignations symboliques : symboles principaux et additionnels des Tableaux 1 à 15 (aciers désignés par leur emploi et leurs caractéristiques, aciers désignés par leur composition chimique), symboles pour les produits en acier des Tableaux 16 à 18",
+        "source": "Lu dans la norme EN 10027-1:2005, version française (NF EN 10027-1, novembre 2005, qui lui donne le statut de norme française). Exemplaire sous licence fourni par l'utilisateur. Ce sont des RÈGLES de lecture, appliquées par le moteur, et non une liste de nuances.",
+        "verification": {
+          "state": "verified",
+          "against": "EN 10027-1:2005 (F) : articles 4.2, 6, 7.1 (préfixes G et PM), 7.2 (groupes 1 et 2, signe +) et 7.4, pages 4 à 6 et 18 ; Tableaux 1 à 11, pages 7 à 18 (lettre, caractéristique portée par le nombre, symboles additionnels des groupes 1 et 2, tableaux de symboles applicables aux produits, notes) ; Tableaux 12 à 15, pages 19 à 22 (teneur en carbone, facteurs de teneur, aciers à 5 % et plus, aciers rapides) ; Tableaux 16, 17 et 18, pages 23 et 24 — chaque symbole relu sur la page de la norme. Édition 2005 seulement : l'EN 10027-1:2016, qui la remplace, n'a pas été confrontée.",
+          "on": "2026-10-07"
+        },
+        "notes": [
+          "ÉDITION REMPLACÉE. La vérification porte sur l'EN 10027-1:2005, la seule édition lue. Elle est remplacée par l'EN 10027-1:2016, qui n'a pas été confrontée : des règles ou des symboles ont pu y changer, et une désignation attribuée selon l'édition 2016 peut se lire autrement.",
+          "UNE RÈGLE, PAS UNE TABLE. Comme le symbole d'alésage des roulements, une désignation d'acier se lit par règles : S355J2 se décompose, il ne se recherche pas dans une liste. MecaTool applique ces règles et ne prétend pas qu'une nuance lue existe dans une norme de produit.",
+          "Structure (4.2, 7.1, 7.2) : symboles principaux, puis symboles additionnels pour l'acier — groupe 1, puis groupe 2, qui ne s'emploie qu'avec le groupe 1 et se place après lui —, puis symboles pour les produits en acier, chacun précédé du signe « + » (Tableaux 16 à 18). Les symboles s'écrivent sans espace.",
+          "Les symboles additionnels dépendent du groupe d'emploi : H se lit « profil creux » pour un acier S (Tableau 1), « température élevée » pour un acier P (Tableau 2). Chaque groupe porte donc ses propres listes, et les tableaux de symboles pour les produits auxquels il renvoie.",
+          "Tableaux 1 et 4 : le groupe 1 d'un acier S, ou d'un acier E dont la résilience est spécifiée, commence par l'énergie de rupture (J = 27 J, K = 40 J, L = 60 J) suivie de la température d'essai (R = 20 °C, 0 = 0 °C, 2 = −20 °C … 6 = −60 °C). Les symboles A, M, N et Q du groupe 1 s'appliquent aux aciers à grain fin (Tableaux 1 à 3, note b).",
+          "Le nombre d'un acier S, P, L, E, B ou H est une limite d'élasticité « pour la gamme d'épaisseur la plus faible » : ReH, ReL, Rp ou Rt selon la norme de produit. Celui d'un acier T est une valeur nominale de Re ; celui d'un acier Y, la résistance nominale à la traction sur quatre chiffres ; celui d'un acier R, la dureté Brinell minimale ; celui d'un acier D n'est pas une caractéristique, mais deux symboles attribués par l'organisme responsable.",
+          "Teneur en carbone (Tableaux 12 à 14) : 100 × la teneur moyenne spécifiée. Le nombre peut être augmenté de 1 pour distinguer deux nuances voisines (note b) : la teneur lue est approchée à 0,01 % près.",
+          "Tableau 13 (aciers non alliés à manganèse moyen ≥ 1 %, aciers non alliés de décolletage, aciers alliés dont chaque élément est < 5 %, hors aciers rapides) : le nombre qui suit les symboles chimiques est la teneur moyenne multipliée par un facteur — 4 pour Cr, Co, Mn, Ni, Si, W ; 10 pour Al, Be, Cu, Mo, Nb, Pb, Ta, Ti, V, Zr ; 100 pour Ce, N, P, S ; 1000 pour B. Les nombres, séparés par un trait d'union, s'appliquent aux éléments dans l'ordre.",
+          "Les symboles chimiques se rangent par teneur moyenne décroissante, puis par ordre alphabétique à teneur égale (Tableaux 13 et 14, note c). MecaTool ne contrôle pas cet ordre : les nombres codés sont arrondis, et ne permettent pas de le juger sans fausse alerte.",
+          "7.4 : pour que la désignation reste courte, des chiffres ou des symboles peuvent être supprimés s'il n'y a pas de confusion possible. Un élément sans nombre est présent, sans teneur indiquée.",
+          "Tableau 14 (X) : la teneur moyenne d'au moins un élément d'alliage est ≥ 5 % ; les nombres sont les teneurs moyennes en pour cent, arrondies à l'entier le plus proche, sans facteur. Un symbole additionnel « -N5 » désigne un élément caractéristique dont la teneur est comprise entre 0,20 % et 1,0 %, suivi de 10 × sa teneur moyenne.",
+          "Tableau 15 : HS suivi des teneurs moyennes en pour cent, arrondies à l'entier le plus proche, dans l'ordre W, Mo, V, Co. Un symbole chimique final (HS6-5-2C) désigne l'élément dont la teneur est plus élevée, pour une même nuance.",
+          "Préfixes (7.1) : G pour un acier spécifié sous forme de pièce moulée (Tableaux 1 à 15), PM pour un acier élaboré par métallurgie des poudres (Tableaux 14 et 15).",
+          "Le chiffre qui suit un symbole chimique additionnel (Tableaux 1, 7, 8 et 12) vaut 10 × la teneur moyenne de la fourchette spécifiée, arrondie à 0,1 %. Celui qui suit E ou R d'un acier non allié (Tableau 12, note d) vaut 100 × la teneur maximale ou moyenne en soufre, arrondie à 0,01 %. Les autres chiffres distinguent des qualités selon la norme de produit.",
+          "+A, +S et +T figurent à la fois au Tableau 17 (revêtement) et au Tableau 18 (traitement) : le tableau du groupe dit lesquels s'appliquent ; s'ils s'appliquent tous les deux, MecaTool donne les deux sens.",
+          "Les teneurs lues sont des teneurs MOYENNES ARRONDIES, telles que la désignation les code. La composition garantie d'une nuance est dans sa norme de produit.",
+          "La désignation numérique de l'EN 10027-2 (1.4301) se reconnaît, mais la table des groupes d'aciers n'est pas embarquée : MecaTool ne dit pas ce qu'elle désigne. Les symboles des Tableaux 16 à 18 peuvent la suivre, après un « + » (7.2, note)."
+        ]
+      },
+      {
+        "id": "EN 10025-2",
+        "edition": "2019",
+        "title": "Produits laminés à chaud en aciers de construction — Partie 2 : Conditions techniques de livraison pour les aciers de construction non alliés",
+        "scope": "limite d'élasticité minimale ReH et résistance à la traction Rm selon l'épaisseur nominale, nuances S185, S235, S275, S355, S460 et S500",
+        "source": "Lu dans la norme EN 10025-2:2019, version française (reproduite à l'identique par SN EN 10025-2:2020), Tableaux 6 et 7, et Article 1 pour les domaines d'épaisseur. Exemplaire sous licence fourni par l'utilisateur.",
+        "verification": {
+          "state": "verified",
+          "against": "EN 10025-2:2019 (F), Tableau 6 page 29 (S235 à S500 : ReH sur 9 échelons, Rm sur 5 échelons, qualités) et Tableau 7 page 31 (S185) — chaque case relue sur la page de la norme ; Article 1 page 5 (domaines d'épaisseur) ; Tableau 8 page 33 (qualités et résilience, transcrites en notes seulement)",
+          "on": "2026-10-07"
+        },
+        "notes": [
+          "La limite d'élasticité DÉCROÎT quand l'épaisseur croît : S355 ne garantit 355 MPa que jusqu'à 16 mm. Le nombre de la désignation est la valeur de la plus petite épaisseur, d'où l'importance de choisir l'épaisseur réelle.",
+          "Le chargement vérifie cette décroissance, et que la première valeur de chaque nuance coïncide avec le nombre de sa désignation.",
+          "La norme donne Rm sur des échelons plus larges que ReH (< 3, 3 à 100, 100 à 150, 150 à 250, 250 à 400 mm). Chaque valeur de Rm est reportée sur les échelons de ReH qu'elle couvre ; aucune n'est interpolée.",
+          "Rm n'est embarquée qu'à partir de 3 mm. La norme donne aussi une plage de Rm sous 3 mm, différente pour S185, S275 et S355 : elle n'est pas embarquée, et la valeur tabulée de 3 à 16 mm ne vaut pas en dessous de 3 mm.",
+          "Domaines d'épaisseur (Article 1) : jusqu'à 400 mm pour les produits plats des qualités JR, J0, J2 et K2 ; jusqu'à 250 mm pour les produits plats et longs des autres nuances et qualités, donc pour les produits longs de S235 à S355 et pour S185. L'échelon 250 à 400 mm ne vaut que pour les produits plats.",
+          "S460 (JR, J0, J2, K2) et S500 (J0) ne s'appliquent qu'aux produits longs, de 3 à 150 mm : la norme ne donne rien au-delà de 150 mm, et la table s'arrête là pour ces nuances. S185 s'arrête à 250 mm.",
+          "Pour les tôles, bandes et larges plats de largeur supérieure ou égale à 600 mm, les valeurs s'entendent en sens travers ; pour les autres produits, en sens long.",
+          "Les qualités JR, J0, J2 et K2 ne changent ni ReH ni Rm : elles portent la résilience (Tableau 8, éprouvettes longitudinales). JR à 20 °C, J0 à 0 °C, J2 et K2 à -20 °C ; 27 J, sauf K2 : 40 J jusqu'à 150 mm, puis 33 J au-delà. S185 n'a pas de qualité.",
+          "Les nuances E295, E335 et E360 du Tableau 7 sont des aciers de construction mécanique (groupe E) : elles ne sont pas embarquées dans cette table, qui ne porte que les nuances S.",
+          "Une nuance absente n'est pas une nuance invalide."
+        ]
+      },
+      {
+        "id": "Propriétés physiques par famille",
+        "edition": "",
+        "title": "Ordres de grandeur des propriétés physiques des familles de matériaux",
+        "scope": "module d'élasticité, coefficient de Poisson, masse volumique et coefficient de dilatation linéique, à température ambiante",
+        "source": "Valeurs d'usage courant des manuels, saisies sans document ouvert lors de la saisie. Aucune norme ne les fixe pour une famille entière.",
+        "verification": {
+          "state": "unverified",
+          "pending": "À confronter à un recueil de propriétés des matériaux (VSM « Extrait de normes », chapitre matériaux, ou fiches de nuances), puis à requalifier en « recommended » avec sa source."
+        },
+        "notes": [
+          "CE NE SONT PAS LES VALEURS D'UNE NUANCE. Ce sont des valeurs représentatives d'une famille : une nuance précise peut s'en écarter de plusieurs pour cent, une fonte grise de bien davantage selon sa classe.",
+          "Le coefficient de dilatation est donné entre 20 et 100 °C environ. Il varie avec la température ; au-delà, la valeur moyenne sur l'intervalle utile est à rechercher.",
+          "Les plastiques techniques sont donnés à titre d'alerte : leur dilatation est dix fois celle de l'acier, et leurs propriétés dépendent de l'humidité et de la température."
+        ]
+      }
+    ]
+  },
+  "warnings": [
+    "Propriétés physiques par famille (module d'élasticité, coefficient de Poisson, masse volumique et coefficient de dilatation linéique, à température ambiante) : Donnée normative non vérifiée. À confronter à un recueil de propriétés des matériaux (VSM « Extrait de normes », chapitre matériaux, ou fiches de nuances), puis à requalifier en « recommended » avec sa source."
+  ]
+}

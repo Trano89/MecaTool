@@ -3,6 +3,211 @@
 Le format suit [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), et le
 projet adopte le [versionnage sémantique](https://semver.org/lang/fr/).
 
+## [0.3.0] — 2026-10-07
+
+### Vérifié — données confrontées aux normes elles-mêmes
+
+L'utilisateur a fourni plusieurs normes. Chaque jeu concerné a été relu sur
+la norme, valeur par valeur, et porte désormais l'état « vérifié » quand tout
+ce qu'il contient y a été lu.
+
+- **ISO 4063:2009** (version corrigée 2010, NF EN ISO 4063:2011) : la
+  sélection de 46 numéros devient la **nomenclature complète**, 157 numéros.
+  Un numéro absent n'appartient donc plus à la norme, et MecaTool le dit.
+  - Intitulés corrigés : 81 est le « coupage à la flamme » et non
+    l'oxycoupage ; 91 et 94 sont le brasage fort et le brasage tendre **avec
+    chauffage local**, non le brasage en général ; 135 et 131 sont « avec
+    fil-électrode fusible », non « plein » ; 786 est à amorçage « par
+    contact ».
+  - Variantes de l'article 2.2 lues : mode de transfert (`131-D`), nombre
+    d'électrodes (`131-2`), fil froid ou chaud (`121-C`). Procédés hybrides
+    de l'article 2.3 (`522+15`).
+  - Numéros remplacés ou dépassés de l'Annexe A (`137`, `181`…) : signalés
+    comme tels, non comme inconnus.
+  - Désignations US de l'Annexe B (`SMAW`, `GTAW`, `FCAW`…), seulement
+    celles que la norme donne pour exactement équivalentes.
+  - La hiérarchie admet un procédé sans groupe intermédiaire : la norme range
+    185 directement sous 1.
+- **EN 10025-2:2019** : les valeurs embarquées étaient justes. La table est
+  complétée jusqu'à 400 mm (trois échelons de plus). Elle gagne S185
+  (Tableau 7, sans qualité), S460 et S500 (produits longs seulement,
+  rappelé à la lecture).
+
+- **ISO 5817:2014** : toutes les lignes embarquées relues sur le Tableau 1.
+  - Une limite était fausse : la fissure de cratère (1.2) n'est admise à
+    **aucun** niveau, D compris.
+  - Le défaut d'alignement (3.1) se lit 5071 (tôles) et 5072 (profils creux),
+    non 507.
+  - **Procédés visés** : la norme vise les procédés 11 à 15, et 31 pour
+    l'acier seulement (article 1). Le soudage sous laitier (72) n'est pas
+    visé ; le soudage par résistance n'est pas « exclu » mais non cité.
+    Chaque procédé d'un procédé hybride passe ce contrôle.
+  - Le « défaut court » se compte sur les 100 mm de soudure qui en
+    contiennent le plus, non sur toute longueur de 100 mm.
+  - Les niveaux B, C et D ne portent plus de noms inventés : la norme ne dit
+    que leur rang.
+  - Six lignes ajoutées (1.5 micromanque de fusion, 1.8, 1.14, 1.17, 1.18,
+    1.19). Les défauts internes et les défauts multiples ne sont pas encore
+    embarqués, et l'écran le dit.
+
+- **EN 10027-1:2005** (édition remplacée par celle de 2016, qui n'a pas été
+  confrontée : chaque lecture le rappelle).
+  - Erreur de fond corrigée : une seule liste de symboles additionnels
+    servait à tous les groupes, alors que la norme en donne une par tableau.
+    `P265GH` lisait H « profil creux » au lieu de « température élevée » ;
+    `Y1770C` lisait C « formage à froid » au lieu de « fil tréfilé ».
+  - Groupes ajoutés : D, H (six formes), T, M (Tableaux 8 à 11). Les groupes
+    L, B, R, Y retrouvent leurs propres symboles : `L360NB`, `B500A`,
+    `R320Cr`, `Y1770S7` se lisent.
+  - Non alliés : `C20D2` et `C2D1` se lisent ; E ou R suivi d'un chiffre donne
+    la teneur en soufre. Fortement alliés : `-N5`. Aciers rapides : symbole
+    final (`HS6-5-2C`). Préfixe PM (métallurgie des poudres).
+  - Les symboles après « + » ne sont plus « lus sans être interprétés » :
+    les Tableaux 16 à 18 les définissent (`C45+A` recuit, `DX51D+Z`
+    galvanisé, `+AR` brut de laminage).
+  - Les 88 exemples des Tableaux 1 à 15 sont testés.
+- **ISO 2553:2013, cotation (article 5)** : la surcouche devient vérifiée.
+  - Les soudures évasées (8, 9) sont des soudures bout à bout, cotées en `s`,
+    et leur cote est **obligatoire** (§ 5.4.4) : MecaTool la réclame.
+  - La soudure sur chant (19) et le rechargement (21) se cotent en `s`,
+    épaisseur de métal fondu ou du rechargement.
+  - Définition de `z` corrigée (§ 3.17) ; `s` est la profondeur de
+    pénétration.
+  - Formes doubles : seuls le double V, le K et le double U ont un nom dans
+    la norme ; les six autres noms, inventés, sont retirés.
+  - Symboles supplémentaires rattachés aux familles où la norme les montre.
+- **ISO 2553:2019** : comparée à l'édition 2013 sans changer la référence.
+  Ses différences (renommage de 8, 9, 11, 21 ; 12 et 20 scindés ; cote `d`
+  de la soudure par transparence) sont relevées dans
+  [docs/standards.md](docs/standards.md).
+
+### Corrigé
+
+- Toutes les sources de la soudure étant lues dans les normes, l'écran de la
+  soudure n'affiche plus de réserve et le domaine passe à « prêt ».
+
+## [0.2.0] — 2026-10-07
+
+### Ajouté — matières
+
+Le dernier domaine prévu s'ouvre, sur données non vérifiées comme les trois
+précédents (`data/matieres/`).
+
+- **Désignation des aciers par règles** (EN 10027-1) : groupes d'emploi
+  (`S355J2`), résilience lue par règle (`J2` = 27 J à −20 °C), symboles
+  additionnels, aciers non alliés (`C45E`), faiblement alliés avec leurs
+  facteurs de teneur (`42CrMo4` : Cr = 4 / 4 = 1 %), fortement alliés
+  (`X5CrNi18-10`), aciers rapides (`HS6-5-2`), aciers moulés, état de livraison.
+  Un faiblement allié dont un élément atteindrait 5 % est signalé : il aurait
+  dû s'écrire en X.
+- **Aciers de construction** (EN 10025-2) : limite d'élasticité et résistance
+  selon l'épaisseur, S235, S275, S355. Le chargement vérifie que la limite
+  décroît avec l'épaisseur et que la première valeur est celle de la
+  désignation.
+- **Propriétés physiques** par famille, ordres de grandeur : E, ν, ρ, α.
+- **Ajustement à chaud** : alésage et arbre de matières différentes, la
+  variation du jeu se calcule en nanomètres entiers et l'ajustement ISO 286 est
+  repris à froid et à chaud. Un serrage qui disparaît ou un jeu qui devient
+  négatif est une faute.
+- Refus : une désignation bien formée n'est jamais dite exister ; la
+  désignation numérique (`1.4301`) se lit sans être devinée.
+
+### Ajouté — choisir plutôt que taper
+
+- Composant de choix par boutons, commun à tous les écrans, dont les options
+  viennent du moteur.
+- **Chaîne de cotes** : un maillon s'écrit `A = 20 h11` ou `A = 20 ISO 2768-m`,
+  et le moteur lit les écarts lui-même ; la chaîne porte la provenance de ses
+  maillons. Le composeur est ouvert d'office, et la tolérance d'un maillon s'y
+  choisit par boutons.
+- **États de surface** : symbole, paramètre, valeur (série des classes N),
+  règle, stries et procédé se composent par boutons.
+- **Visserie** : diamètre, pas (ceux du diamètre retenu) et classe de qualité
+  par boutons.
+- **Soudure** : le procédé se choisit dans la nomenclature embarquée.
+- Workflow de release : un tag `vX.Y.Z` construit les paquets Windows, macOS et
+  Linux et les joint à une release GitHub.
+
+
+### Ajouté — états de surface, soudure et visserie, sur données non vérifiées
+
+Les états de surface, la soudure et la visserie passent de « à venir » à
+**utilisables**. Leurs données ont été saisies **sans document normatif ouvert** :
+elles portent l'état `unverified`, chaque écran l'affiche avant toute saisie, et
+chaque fichier de `data/` dit contre quoi le confronter. Le registre en déduit
+seul l'état « réserve » des trois domaines.
+
+**États de surface** (`data/surface/`)
+
+- Lecture d'une indication : variante du symbole (`APA`, `MRR`, `NMR`),
+  paramètre d'amplitude, limite haute ou basse, règle du maximum, sens des
+  stries, procédé cité. Une classe N (`N7`) se lit en Ra, avec le rappel que
+  l'ISO 1302:1992 qui les définissait est retirée.
+- Rugosité par procédé : chaque procédé est situé par rapport à l'exigence —
+  d'ordinaire, avec des soins, hors d'atteinte, ou plus fin que nécessaire. Le
+  symbole écarte les procédés de l'autre famille, et une contradiction entre
+  symbole et procédé cité est une faute.
+- Graphique des plages par procédé, géométrie calculée en Rust, sur l'échelle
+  des classes N.
+- **Le blocage des deux générations de normes est levé en retrécissant le
+  périmètre** : seul ce que l'ISO 21920 et l'ISO 4287/1302 ont en commun est
+  embarqué. Longueurs de base, filtres et règle d'acceptation par défaut ne le
+  sont pas, et le moteur le dit.
+- Refus : aucune conversion entre Rz et Ra.
+
+**Soudure** (`data/soudure/`)
+
+- Numéros de procédés ISO 4063, avec leur hiérarchie. Un nom d'atelier (`MAG`,
+  `TIG`) rend toutes ses lectures ; un numéro absent n'est pas dit inexistant.
+- Symboles de l'**ISO 2553:2013 lue dans la norme** (`verified`) : vingt-deux
+  symboles élémentaires, six supplémentaires, systèmes A et B. Le recueil, qui
+  reproduit l'édition de 1992, n'est pas suivi. La cotation — famille, cotes
+  admises, forme double — est une surcouche non vérifiée, accrochée au tableau
+  par son numéro et recoupée avec la pleine pénétration que la norme déclare.
+- Lecture d'un symbole complet : symbole élémentaire et côté, cote
+  (`a`, `z`, `s`, `d`, `c`), discontinuité `n × l (e)`, symboles
+  supplémentaires, procédé, niveau de qualité. Restitution en clair, constats à
+  l'appui. `z = a·√2` est calculé en entiers et annoncé arrondi.
+- Limites ISO 5817 chiffrées pour la géométrie saisie, niveaux B, C, D. Une
+  limite dont la grandeur manque reste écrite sous sa forme littérale.
+- La validation au chargement vérifie qu'**un niveau plus exigeant ne tolère
+  jamais davantage** : une valeur saisie dans la mauvaise colonne fait tomber le
+  chargement.
+- Refus : aucun niveau de qualité recommandé ; pas de limites ISO 5817 pour le
+  brasage, le soudage par résistance ou par faisceau.
+
+**Visserie** (`data/visserie/`)
+
+- Désignations `M10`, `M12 x 1.5`, `M10-6g`, `M8 8.8`. Pas gros ou fin, choix
+  de diamètre, pas non listé signalé mais calculable.
+- Diamètres de base par la règle du profil ISO 68-1, en entiers au femtomètre,
+  annoncés au micromètre : ils retrouvent les tableaux de l'ISO 724.
+- Section résistante As, perçage avant taraudage `D − P` présenté comme règle
+  d'atelier.
+- Trous de passage ISO 273 en trois séries, **poursuivis jusqu'aux écarts réels
+  par le moteur ISO 286** — deux natures de source dans un même résultat, comme
+  pour les roulements.
+- Classe de qualité lue selon la règle du symbole, écrou associé.
+- Refus : aucun effort admissible, les minimums garantis n'étant pas embarqués.
+
+### Corrigé
+
+- Une rugosité fine s'affichait arrondie au dixième de micromètre : Ra 0,025
+  devenait « 0 ». Un formateur au nanomètre la remplace sur l'écran concerné.
+
+### Distribution
+
+- Compilation de l'application sur GitHub Actions pour **Windows x64**
+  (`.msi`, `.exe`) et **macOS Apple Silicon** (`.dmg`), à chaque pull request
+  et à chaque poussée sur `master` (workflow « Compilation »). Les
+  installeurs se téléchargent dans les artefacts du run.
+- L'application macOS reçoit une signature ad hoc, faute de certificat Apple :
+  elle s'ouvre par clic droit → Ouvrir au premier lancement.
+- Releases GitHub publiques, téléchargeables par tous : dès qu'un commit poussé
+  porte une version qui n'a pas encore de release, le workflow « Release » crée
+  le tag, construit les deux installeurs, les joint et publie. Un commit sans
+  changement de version ne republie rien.
+
 ## [0.1.1] — 2026-09-11
 
 ### Renommé

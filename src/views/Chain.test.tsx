@@ -10,11 +10,13 @@ import { userEvent } from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import fixture from "../fixtures/chain-report.json";
-import type { ChainReport } from "../types";
+import classesFixture from "../fixtures/tolerance-classes.json";
+import type { ChainReport, ClassCatalogue } from "../types";
 import { Chain } from "./Chain";
 
 vi.mock("../api", () => ({
   dimensionChain: vi.fn(),
+  toleranceClasses: vi.fn(),
   compare: vi.fn(),
   analyse: vi.fn(),
   generalTolerances: vi.fn(),
@@ -23,10 +25,11 @@ vi.mock("../api", () => ({
   isDesktop: () => true,
 }));
 
-const { dimensionChain } = await import("../api");
+const { dimensionChain, toleranceClasses } = await import("../api");
 
 async function show(report: ChainReport = fixture as ChainReport) {
   vi.mocked(dimensionChain).mockResolvedValue(report);
+  vi.mocked(toleranceClasses).mockResolvedValue(classesFixture as ClassCatalogue);
   render(<Chain />);
   await waitFor(() => expect(dimensionChain).toHaveBeenCalled());
 }
@@ -130,33 +133,56 @@ describe("écran des chaînes de cotes", () => {
     expect(alert).toHaveTextContent("Écarts absents");
   });
 
-  it("compose les maillons par lignes, sens compris", async () => {
+  it("ouvre le composeur garni de la chaîne d'exemple", async () => {
     await show();
+    // Le composeur est ouvert d'office : on choisit, on ne tape pas.
+    expect(screen.getByRole("button", { name: "Masquer le composeur" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Repère du maillon 1")).toHaveValue("A");
+    expect(screen.getByLabelText("Cote nominale du maillon 3")).toHaveValue("5");
+  });
 
-    await userEvent.click(screen.getByRole("button", { name: "Composer les maillons" }));
+  it("choisit la tolérance d'un maillon par boutons, sans la taper", async () => {
+    await show();
+    await waitFor(() => expect(toleranceClasses).toHaveBeenCalled());
+
     await userEvent.click(screen.getByRole("button", { name: /Ajouter un maillon/ }));
+    await userEvent.type(screen.getByLabelText("Repère du maillon 4"), "D");
+    await userEvent.type(screen.getByLabelText("Cote nominale du maillon 4"), "30");
 
-    await userEvent.type(screen.getByLabelText("Repère du maillon 1"), "A");
-    await userEvent.type(screen.getByLabelText("Cote nominale du maillon 1"), "20");
+    // Par défaut, une cote sans tolérance relève de la tolérance générale, et
+    // la classe moyenne est retenue : le moteur lira lui-même ± 0,2.
+    const field = screen.getByLabelText("Maillons, un par ligne");
+    expect(field).toHaveValue("A = 20 ±0.1\nB = 10 ±0.05\n-C = 5 ±0.02\nD = 30 ISO 2768-m");
 
-    // La grammaire du moteur est écrite pour l'utilisateur, pas par lui.
-    expect(screen.getByLabelText("Maillons, un par ligne")).toHaveValue("A = 20 ±0.1");
+    // Une autre classe générale, d'un clic.
+    const general = screen.getByRole("group", { name: "Classe générale du maillon 4" });
+    await userEvent.click(within(general).getByRole("button", { name: /^f$/ }));
+    expect(field).toHaveValue("A = 20 ±0.1\nB = 10 ±0.05\n-C = 5 ±0.02\nD = 30 ISO 2768-f");
+
+    // Ou une classe ISO 286, choisie dans la liste du moteur.
+    const origin = screen.getByRole("group", { name: "Origine de la tolérance du maillon 4" });
+    await userEvent.click(within(origin).getByRole("button", { name: "Classe ISO 286" }));
+    await userEvent.click(screen.getByLabelText("Classe du maillon 4"));
+    await userEvent.click(within(await screen.findByRole("listbox")).getByText("h7"));
+    expect(field).toHaveValue("A = 20 ±0.1\nB = 10 ±0.05\n-C = 5 ±0.02\nD = 30 h7");
   });
 
   it("écrit le signe du maillon diminuant à la place de l'utilisateur", async () => {
     await show();
+    await waitFor(() => expect(toleranceClasses).toHaveBeenCalled());
 
-    await userEvent.click(screen.getByRole("button", { name: "Composer les maillons" }));
     await userEvent.click(screen.getByRole("button", { name: /Ajouter un maillon/ }));
-    await userEvent.type(screen.getByLabelText("Repère du maillon 1"), "C");
-    await userEvent.type(screen.getByLabelText("Cote nominale du maillon 1"), "5");
+    await userEvent.type(screen.getByLabelText("Repère du maillon 4"), "D");
+    await userEvent.type(screen.getByLabelText("Cote nominale du maillon 4"), "5");
 
     // « Un signe moins devant le repère marque un maillon diminuant » est une
     // convention qu'il fallait connaître. Deux libellés la rendent inutile.
-    await userEvent.click(screen.getByLabelText("Sens du maillon 1"));
+    await userEvent.click(screen.getByLabelText("Sens du maillon 4"));
     await userEvent.click(within(await screen.findByRole("listbox")).getByText("Diminuant"));
 
-    expect(screen.getByLabelText("Maillons, un par ligne")).toHaveValue("-C = 5 ±0.1");
+    expect(screen.getByLabelText("Maillons, un par ligne")).toHaveValue(
+      "A = 20 ±0.1\nB = 10 ±0.05\n-C = 5 ±0.02\n-D = 5 ISO 2768-m",
+    );
   });
 
   it("n'efface pas la chaîne déjà saisie en ajoutant un maillon vide", async () => {
@@ -166,7 +192,6 @@ describe("écran des chaînes de cotes", () => {
     const before = (field as HTMLTextAreaElement).value;
     expect(before).not.toBe("");
 
-    await userEvent.click(screen.getByRole("button", { name: "Composer les maillons" }));
     await userEvent.click(screen.getByRole("button", { name: /Ajouter un maillon/ }));
 
     // Une ligne neuve n'a pas encore de cote : le composeur n'a rien à dire, et
