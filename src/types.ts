@@ -803,3 +803,446 @@ export interface ClassCatalogue {
   grades: string[];
   provenance: Provenance;
 }
+
+/* ---------- États de surface ---------- */
+
+/** La variante du symbole : tout procédé, enlèvement exigé, enlèvement interdit. */
+export type ProcessRequirement = "any" | "removal_required" | "removal_prohibited";
+
+export interface SymbolVariant {
+  id: ProcessRequirement;
+  /** L'écriture en texte, faute de glyphe : `APA`, `MRR`, `NMR`. */
+  code: string;
+  name: string;
+  meaning: string;
+}
+
+export interface LaySymbol {
+  symbol: string;
+  aliases: string[];
+  name: string;
+  meaning: string;
+}
+
+export interface ProfileParameter {
+  symbol: string;
+  name: string;
+  definition: string;
+  note: string | null;
+}
+
+/** Une classe N de l'ISO 1302:1992, retirée — lue, jamais écrite. */
+export interface RoughnessGrade {
+  grade: string;
+  ra: Nanometres;
+}
+
+export interface RaRange {
+  finest: Nanometres;
+  coarsest: Nanometres;
+}
+
+/** Ordres de grandeur d'atelier, sans caractère normatif. */
+export interface ProcessRoughness {
+  id: string;
+  name: string;
+  aliases: string[];
+  /** Vrai pour un usinage, faux pour une mise en forme. */
+  removal: boolean;
+  usual: RaRange;
+  possible: RaRange;
+}
+
+/**
+ * Où se situe un procédé par rapport à la valeur demandée.
+ *
+ * `finer` n'est pas un succès sans nuance : le procédé fait mieux sans effort,
+ * donc probablement plus cher que nécessaire.
+ */
+export type Reach = "usual" | "finer" | "possible" | "out_of_reach";
+
+export interface ProcessFit {
+  process: ProcessRoughness;
+  reach: Reach;
+  reach_label: string;
+  /** Pourquoi le symbole écarte ce procédé, le cas échéant. */
+  excluded: string | null;
+}
+
+export interface ChartSpan {
+  x: number;
+  width: number;
+}
+
+export interface ChartColumn {
+  grade: string;
+  ra_label: string;
+  x: number;
+  width: number;
+}
+
+export interface ChartRow {
+  id: string;
+  name: string;
+  removal: boolean;
+  y: number;
+  height: number;
+  usual: ChartSpan;
+  possible: ChartSpan;
+  reach: Reach | null;
+  excluded: boolean;
+}
+
+/** Les plages par procédé, géométrie calculée par le moteur. */
+export interface RoughnessChart {
+  width: number;
+  height: number;
+  origin: number;
+  columns: ChartColumn[];
+  rows: ChartRow[];
+  marker: { x: number; label: string } | null;
+  caption: string;
+}
+
+export type LimitKind = "upper" | "lower";
+
+export interface SurfaceIndication {
+  requirement: ProcessRequirement | null;
+  parameter: string;
+  value: Nanometres;
+  limit: LimitKind;
+  max_rule: boolean;
+  lay: string | null;
+  process: string | null;
+  grade: string | null;
+  input: string;
+}
+
+export interface SurfaceAnalysis {
+  indication: SurfaceIndication;
+  /** L'indication reconstituée, normalisée : `MRR Ra 0.8 ⊥`. */
+  designation: string;
+  requirement: SymbolVariant | null;
+  parameter: ProfileParameter;
+  lay: LaySymbol | null;
+  grade: RoughnessGrade | null;
+  /** Vide quand la confrontation n'a pas de sens — `process_note` dit pourquoi. */
+  processes: ProcessFit[];
+  process_note: string | null;
+  stated_process: ProcessFit | null;
+  findings: Finding[];
+  chart: RoughnessChart;
+  conclusion: Conclusion;
+  provenance: Provenance;
+}
+
+export interface SurfaceCatalogue {
+  symbols: SymbolVariant[];
+  lays: LaySymbol[];
+  parameters: ProfileParameter[];
+  grades: RoughnessGrade[];
+  processes: ProcessRoughness[];
+  chart: RoughnessChart;
+  provenance: Provenance;
+  warnings: string[];
+}
+
+/* ---------- Soudure ---------- */
+
+export interface WeldingProcess {
+  number: string;
+  name: string;
+  aliases: string[];
+}
+
+export type JointFamily = "butt" | "fillet" | "other";
+
+export interface SizeLetter {
+  letter: string;
+  name: string;
+  meaning: string;
+}
+
+export interface ElementarySymbol {
+  id: string;
+  name: string;
+  both_sides_name: string | null;
+  family: JointFamily;
+  sizes: string[];
+}
+
+export interface SupplementarySymbol {
+  id: string;
+  name: string;
+  meaning: string;
+  families: JointFamily[];
+}
+
+export interface QualityLevel {
+  id: string;
+  name: string;
+  meaning: string;
+}
+
+export interface QualityVariable {
+  symbol: string;
+  meaning: string;
+}
+
+/** La grandeur à laquelle un coefficient s'applique. `weld` vaut s ou a selon le joint. */
+export type QualityBasis = "t" | "a" | "s" | "b" | "weld";
+
+export type Limit =
+  | { kind: "not_permitted" }
+  | { kind: "permitted"; condition: string | null }
+  | {
+      kind: "bound";
+      measure: string;
+      constant: Nanometres;
+      factor_hundredths: number;
+      of: QualityBasis | null;
+      max: Nanometres | null;
+      short: boolean;
+    }
+  | { kind: "min_angle"; degrees: number };
+
+export interface ThicknessRange {
+  from: Nanometres | null;
+  above: Nanometres | null;
+  to: Nanometres | null;
+}
+
+export interface LimitRow {
+  thickness: ThicknessRange;
+  limits: { level: string; limit: Limit }[];
+}
+
+export interface Imperfection {
+  reference: string;
+  iso6520: string;
+  name: string;
+  applies_to: "butt" | "fillet" | "both";
+  remark: string | null;
+  rows: LimitRow[];
+}
+
+export interface ProcessScope {
+  note: string;
+  fusion: string[];
+  excluded: { prefix: string; reason: string }[];
+}
+
+export type ScopeVerdict =
+  | { kind: "in_scope" }
+  | { kind: "excluded"; reason: string }
+  | { kind: "unknown" };
+
+export interface WeldingCatalogue {
+  processes: WeldingProcess[];
+  sizes: SizeLetter[];
+  elementary: ElementarySymbol[];
+  supplementary: SupplementarySymbol[];
+  levels: QualityLevel[];
+  variables: QualityVariable[];
+  imperfections: Imperfection[];
+  process_scope: ProcessScope;
+  provenance: Provenance;
+  warnings: string[];
+}
+
+export interface ProcessReading {
+  process: WeldingProcess;
+  /** Du groupe au procédé lui-même. */
+  lineage: WeldingProcess[];
+  is_group: boolean;
+  children: WeldingProcess[];
+  quality_scope: ScopeVerdict;
+  explanation: string;
+}
+
+export type Side = "arrow" | "other" | "both";
+
+/**
+ * Une demande de lecture de symbole.
+ *
+ * Les grandeurs voyagent en **texte**, en millimètres : c'est le moteur qui les
+ * lit. L'interface ne convertit rien.
+ */
+export interface WeldRequest {
+  symbol: string;
+  side: Side;
+  size_letter: string | null;
+  size_mm: string | null;
+  count: string | null;
+  length_mm: string | null;
+  spacing_mm: string | null;
+  staggered: boolean;
+  supplementary: string[];
+  all_around: boolean;
+  field_weld: boolean;
+  process: string | null;
+  level: string | null;
+  thickness_mm: string | null;
+  width_mm: string | null;
+}
+
+export interface SizeReading {
+  letter: string;
+  name: string;
+  value: Nanometres;
+  label: string;
+  /** Vrai pour une cote déduite par √2 : arrondie, et annoncée comme telle. */
+  rounded: boolean;
+}
+
+export interface IntermittentReading {
+  count: number;
+  length: Nanometres;
+  spacing: Nanometres;
+  welded_length: Nanometres;
+  notation: string;
+}
+
+export type LimitStatus = "not_permitted" | "permitted" | "bounded" | "min_angle" | "needs_input";
+
+export interface ImperfectionLimit {
+  reference: string;
+  iso6520: string;
+  name: string;
+  remark: string | null;
+  thickness_label: string;
+  status: LimitStatus;
+  /** La limite telle que la norme l'écrit. */
+  formula: string;
+  value: Nanometres | null;
+  value_label: string | null;
+  /** La grandeur qui manque pour chiffrer. */
+  missing: string | null;
+  rounded: boolean;
+  short: boolean;
+}
+
+export interface QualityAssessment {
+  level: QualityLevel;
+  joint: JointFamily;
+  thickness: Nanometres | null;
+  weld_size: Nanometres | null;
+  width: Nanometres | null;
+  limits: ImperfectionLimit[];
+  notes: string[];
+}
+
+export interface WeldReading {
+  designation: string;
+  symbol: ElementarySymbol;
+  side: Side;
+  /** La lecture en clair, une phrase par élément du symbole. */
+  sentences: string[];
+  size: SizeReading | null;
+  equivalent: SizeReading | null;
+  intermittent: IntermittentReading | null;
+  supplementary: SupplementarySymbol[];
+  process: ProcessReading | null;
+  quality: QualityAssessment | null;
+  findings: Finding[];
+  conclusion: Conclusion;
+  provenance: Provenance;
+}
+
+export const LIMIT_STATUS_LABEL: Record<LimitStatus, string> = {
+  not_permitted: "Non admis",
+  permitted: "Admis",
+  bounded: "Borné",
+  min_angle: "Angle minimal",
+  needs_input: "À chiffrer",
+};
+
+/* ---------- Visserie ---------- */
+
+export interface MetricThread {
+  d: Nanometres;
+  choice: number;
+  coarse: Nanometres;
+  fine: Nanometres[];
+}
+
+export interface ClearanceSeries {
+  id: string;
+  name: string;
+  class: string;
+}
+
+export interface BoltClass {
+  class: string;
+  first: number;
+  second: number;
+  tensile_mpa: number;
+  yield_mpa: number;
+  max_d: number | null;
+}
+
+export interface FastenerCatalogue {
+  threads: MetricThread[];
+  clearance_series: ClearanceSeries[];
+  bolt_classes: BoltClass[];
+  nut_classes: number[];
+  provenance: Provenance;
+  warnings: string[];
+}
+
+export type PitchKind = "coarse" | "fine" | "not_listed";
+
+export interface ThreadDesignation {
+  d: Nanometres;
+  pitch: Nanometres;
+  pitch_kind: PitchKind;
+  explicit_pitch: boolean;
+  tolerance_class: string | null;
+  strength_class: string | null;
+  input: string;
+}
+
+export interface ThreadDimension {
+  symbol: string;
+  name: string;
+  value: Nanometres;
+  label: string;
+  formula: string;
+}
+
+/**
+ * Un trou de passage. Le diamètre et la classe viennent de l'ISO 273 ; les
+ * écarts, du moteur ISO 286 — deux natures de source dans une même ligne.
+ */
+export interface ClearanceHole {
+  series: string;
+  series_name: string;
+  diameter: Nanometres;
+  class: string;
+  designation: string;
+  tolerance: FeatureAnalysis | null;
+  unavailable: string | null;
+}
+
+export interface StrengthReading {
+  class: BoltClass;
+  nut_class: number | null;
+  explanation: string;
+}
+
+export interface ThreadReport {
+  designation: ThreadDesignation;
+  normalised: string;
+  thread: MetricThread;
+  h: ThreadDimension;
+  dimensions: ThreadDimension[];
+  stress_area_hundredths_mm2: number;
+  stress_area_label: string;
+  tap_drill: Nanometres;
+  tap_drill_label: string;
+  clearance_holes: ClearanceHole[];
+  strength: StrengthReading | null;
+  findings: Finding[];
+  conclusion: Conclusion;
+  provenance: Provenance;
+}
