@@ -125,7 +125,7 @@ recueil, ou recommandation de fabricant.
 | Chaînes de cotes | Que donne cet empilement ? | — (géométrie) | ✅ sans source externe |
 | Tolérancement géométrique | Que dit ce cadre, que lui manque-t-il ? | ISO 1101 | ⚠️ recueil |
 | **Roulements** | **Quel alésage, quelle tolérance de portée ?** | **ISO 15, fabricants** | **✅ construit** |
-| **Soudure** | **Que dit ce symbole, que tolère son niveau de qualité ?** | **ISO 2553, 4063, 5817** | **🟠 construit, données non vérifiées** |
+| **Soudure** | **Que dit ce symbole, que tolère son niveau de qualité ?** | **ISO 2553:2013, 4063, 5817** | **🟠 construit ; symboles ✅ vérifiés, le reste non** |
 | **Visserie** | **Quel filetage, quel trou de passage ?** | **ISO 261, 68-1, 273, 898-1** | **🟠 construit, données non vérifiées** |
 | Matériaux | Quelle nuance, quelles propriétés ? | EN 10027 et suivantes | ⏳ à relever |
 | **États de surface** | **Que dit cette indication, quel procédé l'obtient ?** | **ISO 21920-1, ISO 1302:1992** | **🟠 construit, données non vérifiées** |

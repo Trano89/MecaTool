@@ -156,7 +156,7 @@ impl WeldingProcessTable {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Symboles — ISO 2553                                                */
+/*  Symboles — ISO 2553:2013, et sa cotation                           */
 /* ------------------------------------------------------------------ */
 
 /// La famille d'un symbole elementaire.
@@ -179,64 +179,224 @@ pub struct SizeLetter {
     pub meaning: String,
 }
 
-/// Un symbole elementaire.
+/// Un systeme de representation : A ou B.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct ElementarySymbol {
+pub struct WeldSystem {
     pub id: String,
     pub name: String,
-    /// Le nom de la forme symetrique, quand elle existe : V des deux cotes
-    /// donne un X.
+    pub reference_line: String,
+    pub note: Option<String>,
+}
+
+/// Un symbole elementaire : le tableau verifie, complete de sa cotation.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ElementarySymbol {
+    /// Identifiant stable, celui de la surcouche : `fillet`.
+    pub id: String,
+    /// Le numero du tableau 1 de l'ISO 2553:2013.
+    pub number: u32,
+    /// La designation de la norme, mot pour mot.
+    pub name: String,
+    /// Vrai quand la norme le declare a pleine penetration par defaut.
+    pub full_penetration: bool,
+    /// Vrai quand il peut servir pour plus de deux parties.
+    pub multi_part: bool,
+    pub note: Option<String>,
+    /// Surcouche non verifiee : le nom de la forme symetrique.
     pub both_sides_name: Option<String>,
+    /// Surcouche non verifiee : la famille de joint.
     pub family: JointFamily,
-    /// Les lettres de cote admises.
+    /// Surcouche non verifiee : les lettres de cote admises.
     pub sizes: Vec<String>,
 }
 
-/// Un symbole supplementaire : forme de surface, support envers.
+/// Un symbole supplementaire : le tableau verifie, complete de son usage.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SupplementarySymbol {
     pub id: String,
+    /// Le numero du tableau 3 de l'ISO 2553:2013.
+    pub number: u32,
+    /// La designation de la norme, mot pour mot.
     pub name: String,
-    pub meaning: String,
-    /// Les familles sur lesquelles on le rencontre.
+    /// La note de la norme, quand elle en porte une.
+    pub meaning: Option<String>,
+    /// Surcouche non verifiee : les familles sur lesquelles on le rencontre.
     pub families: Vec<JointFamily>,
 }
 
-/// Les symboles embarques.
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
-pub struct WeldSymbolTable {
+#[derive(Debug, Deserialize)]
+struct VerifiedElementary {
+    number: u32,
+    designation: String,
+    full_penetration: bool,
+    multi_part: bool,
+    #[serde(default)]
+    note: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+struct VerifiedSupplementary {
+    number: u32,
+    designation: String,
+    #[serde(default)]
+    note: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+struct VerifiedFootnotes {
+    full_penetration: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct VerifiedSymbols {
     dataset: String,
     standard: StandardReference,
+    systems: Vec<WeldSystem>,
+    system_rules: Vec<String>,
+    footnotes: VerifiedFootnotes,
+    elementary: Vec<VerifiedElementary>,
+    supplementary: Vec<VerifiedSupplementary>,
+}
+
+#[derive(Debug, Deserialize)]
+struct OverlayElementary {
+    number: u32,
+    id: String,
+    family: JointFamily,
+    sizes: Vec<String>,
+    both_sides_name: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+struct OverlaySupplementary {
+    number: u32,
+    id: String,
+    families: Vec<JointFamily>,
+}
+
+#[derive(Debug, Deserialize)]
+struct Overlay {
+    dataset: String,
+    standard: StandardReference,
+    sizes: Vec<SizeLetter>,
+    elementary: Vec<OverlayElementary>,
+    supplementary: Vec<OverlaySupplementary>,
+}
+
+/// Les symboles embarques.
+///
+/// Deux jeux de donnees, deux etats : le tableau des symboles vient de
+/// l'ISO 2553:2013 lue dans la norme (`verified`) ; la cotation — famille, cotes
+/// admises, forme double — est une surcouche saisie sans document ouvert
+/// (`unverified`). La surcouche ne remplace aucun mot du tableau verifie : elle
+/// s'y accroche par le numero.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct WeldSymbolTable {
+    standard: StandardReference,
+    cotation: StandardReference,
+    systems: Vec<WeldSystem>,
+    system_rules: Vec<String>,
+    full_penetration_rule: String,
     sizes: Vec<SizeLetter>,
     elementary: Vec<ElementarySymbol>,
     supplementary: Vec<SupplementarySymbol>,
 }
 
-const SYMBOLS_EMBEDDED: &str = include_str!("../../../data/soudure/iso2553.symboles.json");
+const SYMBOLS_EMBEDDED: &str = include_str!("../../../data/soudure/iso2553-2013.symbols.json");
+const COTATION_EMBEDDED: &str = include_str!("../../../data/soudure/iso2553-2013.cotation.json");
 
 impl WeldSymbolTable {
     pub fn embedded() -> Result<&'static WeldSymbolTable> {
         static CACHE: OnceLock<core::result::Result<WeldSymbolTable, StandardsError>> =
             OnceLock::new();
         CACHE
-            .get_or_init(|| WeldSymbolTable::parse(SYMBOLS_EMBEDDED))
+            .get_or_init(|| WeldSymbolTable::parse(SYMBOLS_EMBEDDED, COTATION_EMBEDDED))
             .as_ref()
             .map_err(Clone::clone)
     }
 
-    fn parse(text: &str) -> Result<WeldSymbolTable> {
-        let table: WeldSymbolTable =
-            serde_json::from_str(text).map_err(|source| StandardsError::Malformed {
-                dataset: "iso2553.symboles".into(),
+    fn parse(symbols: &str, cotation: &str) -> Result<WeldSymbolTable> {
+        let verified: VerifiedSymbols =
+            serde_json::from_str(symbols).map_err(|source| StandardsError::Malformed {
+                dataset: "iso2553-2013.symbols".into(),
                 detail: source.to_string(),
             })?;
-        table.validate()?;
+        let overlay: Overlay =
+            serde_json::from_str(cotation).map_err(|source| StandardsError::Malformed {
+                dataset: "iso2553-2013.cotation".into(),
+                detail: source.to_string(),
+            })?;
+        let bad = |detail: String| StandardsError::Inconsistent {
+            dataset: overlay.dataset.clone(),
+            detail,
+        };
+
+        // La surcouche couvre exactement le tableau verifie : ni symbole oublie,
+        // ni symbole invente.
+        let verified_numbers: Vec<u32> = verified.elementary.iter().map(|e| e.number).collect();
+        let overlay_numbers: Vec<u32> = overlay.elementary.iter().map(|e| e.number).collect();
+        if verified_numbers != overlay_numbers {
+            return Err(bad(format!(
+                "la surcouche ne couvre pas exactement le tableau verifie ({} : {overlay_numbers:?}, {} : {verified_numbers:?})",
+                overlay.dataset, verified.dataset
+            )));
+        }
+        let verified_supplementary: Vec<u32> =
+            verified.supplementary.iter().map(|e| e.number).collect();
+        let overlay_supplementary: Vec<u32> =
+            overlay.supplementary.iter().map(|e| e.number).collect();
+        if verified_supplementary != overlay_supplementary {
+            return Err(bad(
+                "la surcouche ne couvre pas exactement les symboles supplementaires".into(),
+            ));
+        }
+
+        let elementary = verified
+            .elementary
+            .into_iter()
+            .zip(overlay.elementary)
+            .map(|(v, o)| ElementarySymbol {
+                id: o.id,
+                number: v.number,
+                name: v.designation,
+                full_penetration: v.full_penetration,
+                multi_part: v.multi_part,
+                note: v.note,
+                both_sides_name: o.both_sides_name,
+                family: o.family,
+                sizes: o.sizes,
+            })
+            .collect();
+        let supplementary = verified
+            .supplementary
+            .into_iter()
+            .zip(overlay.supplementary)
+            .map(|(v, o)| SupplementarySymbol {
+                id: o.id,
+                number: v.number,
+                name: v.designation,
+                meaning: v.note,
+                families: o.families,
+            })
+            .collect();
+
+        let table = WeldSymbolTable {
+            standard: verified.standard,
+            cotation: overlay.standard,
+            systems: verified.systems,
+            system_rules: verified.system_rules,
+            full_penetration_rule: verified.footnotes.full_penetration,
+            sizes: overlay.sizes,
+            elementary,
+            supplementary,
+        };
+        table.validate(&overlay.dataset)?;
         Ok(table)
     }
 
-    fn validate(&self) -> Result<()> {
+    fn validate(&self, dataset: &str) -> Result<()> {
         let bad = |detail: String| StandardsError::Inconsistent {
-            dataset: self.dataset.clone(),
+            dataset: dataset.to_string(),
             detail,
         };
         let letters: BTreeSet<&str> = self.sizes.iter().map(|s| s.letter.as_str()).collect();
@@ -250,8 +410,18 @@ impl WeldSymbolTable {
                     return Err(bad(format!("{} : cote inconnue {size}", symbol.id)));
                 }
             }
-            // La regle de lecture la plus utile : une soudure bout a bout se
-            // cote en s, une soudure d'angle en a ou z, et jamais l'inverse.
+            // Le recoupement entre les deux jeux : la norme declare a pleine
+            // penetration par defaut exactement les soudures bout a bout. Une
+            // famille mal rangee dans la surcouche fait tomber le chargement.
+            if (symbol.family == JointFamily::Butt) != symbol.full_penetration {
+                return Err(bad(format!(
+                    "{} (n° {}) : la famille de la surcouche contredit la pleine penetration \
+                     declaree par la norme",
+                    symbol.id, symbol.number
+                )));
+            }
+            // Une soudure bout a bout se cote en s, une soudure d'angle en a ou
+            // z, et jamais l'inverse.
             let expected: &[&str] = match symbol.family {
                 JointFamily::Butt => &["s"],
                 JointFamily::Fillet => &["a", "z"],
@@ -290,8 +460,27 @@ impl WeldSymbolTable {
         Ok(())
     }
 
+    /// Le tableau des symboles, verifie sur la norme.
     pub fn standard(&self) -> &StandardReference {
         &self.standard
+    }
+
+    /// La surcouche de cotation, non verifiee.
+    pub fn cotation_standard(&self) -> &StandardReference {
+        &self.cotation
+    }
+
+    pub fn systems(&self) -> &[WeldSystem] {
+        &self.systems
+    }
+
+    pub fn system_rules(&self) -> &[String] {
+        &self.system_rules
+    }
+
+    /// La regle de pleine penetration, telle que la norme l'enonce.
+    pub fn full_penetration_rule(&self) -> &str {
+        &self.full_penetration_rule
     }
 
     pub fn sizes(&self) -> &[SizeLetter] {
@@ -926,10 +1115,10 @@ mod tests {
     }
 
     #[test]
-    fn les_trois_jeux_chargent_et_ne_se_disent_pas_verifies() {
+    fn les_jeux_saisis_ne_se_disent_pas_verifies() {
         for reference in [
             processes().standard(),
-            symbols().standard(),
+            symbols().cotation_standard(),
             quality().standard(),
         ] {
             assert!(!reference.verification.is_verified(), "{}", reference.id);
@@ -979,22 +1168,59 @@ mod tests {
     fn une_soudure_dangle_se_cote_en_a_ou_z_et_une_bout_a_bout_en_s() {
         assert_eq!(symbols().symbol("fillet").unwrap().sizes, ["a", "z"]);
         assert_eq!(symbols().symbol("single_v").unwrap().sizes, ["s"]);
-        let mut broken: serde_json::Value = serde_json::from_str(SYMBOLS_EMBEDDED).unwrap();
+        let mut broken: serde_json::Value = serde_json::from_str(COTATION_EMBEDDED).unwrap();
         broken["elementary"][1]["sizes"] = serde_json::json!(["a"]);
-        let err = WeldSymbolTable::parse(&broken.to_string()).unwrap_err();
+        let err = WeldSymbolTable::parse(SYMBOLS_EMBEDDED, &broken.to_string()).unwrap_err();
         assert!(err.to_string().contains("se cote en"), "{err}");
     }
 
     #[test]
+    fn les_designations_sont_celles_de_ledition_2013() {
+        // Le recueil reproduit l'edition 1992 (« soudure en I ») ; MecaTool suit
+        // la norme lue elle-meme.
+        let square = symbols().symbol("square_butt").unwrap();
+        assert_eq!(square.number, 1);
+        assert_eq!(square.name, "soudure bout à bout à bords droits");
+        assert_eq!(symbols().elementary().len(), 22);
+        assert_eq!(symbols().supplementary().len(), 6);
+        assert_eq!(symbols().systems().len(), 2);
+    }
+
+    #[test]
+    fn deux_jeux_deux_etats() {
+        assert!(symbols().standard().verification.is_verified());
+        assert_eq!(symbols().standard().citation(), "ISO 2553:2013");
+        assert!(!symbols().cotation_standard().verification.is_verified());
+    }
+
+    #[test]
+    fn la_famille_bout_a_bout_coincide_avec_la_pleine_penetration_de_la_norme() {
+        // On range la soudure d'angle parmi les bout a bout : la norme ne la
+        // declare pas a pleine penetration, le recoupement doit tomber.
+        let mut broken: serde_json::Value = serde_json::from_str(COTATION_EMBEDDED).unwrap();
+        broken["elementary"][9]["family"] = serde_json::json!("butt");
+        broken["elementary"][9]["sizes"] = serde_json::json!(["s"]);
+        let err = WeldSymbolTable::parse(SYMBOLS_EMBEDDED, &broken.to_string()).unwrap_err();
+        assert!(err.to_string().contains("pleine penetration"), "{err}");
+    }
+
+    #[test]
+    fn la_surcouche_couvre_exactement_le_tableau_verifie() {
+        let mut broken: serde_json::Value = serde_json::from_str(COTATION_EMBEDDED).unwrap();
+        broken["elementary"].as_array_mut().unwrap().pop();
+        let err = WeldSymbolTable::parse(SYMBOLS_EMBEDDED, &broken.to_string()).unwrap_err();
+        assert!(err.to_string().contains("exactement"), "{err}");
+    }
+
+    #[test]
     fn le_v_des_deux_cotes_est_un_x() {
-        assert_eq!(
-            symbols()
-                .symbol("single_v")
-                .unwrap()
-                .both_sides_name
-                .as_deref(),
-            Some("soudure en X")
-        );
+        assert!(symbols()
+            .symbol("single_v")
+            .unwrap()
+            .both_sides_name
+            .as_deref()
+            .unwrap()
+            .contains("en X"));
     }
 
     #[test]

@@ -387,6 +387,7 @@ export function Welding() {
                   options={catalogue.elementary.map((option) => ({
                     value: option.id,
                     label: option.name,
+                    hint: `n° ${option.number}`,
                   }))}
                   value={symbol}
                   onChange={(value) => {
@@ -414,6 +415,14 @@ export function Welding() {
                 </div>
               </fieldset>
             </div>
+            {/* Les systèmes viennent de la norme : le côté se lit différemment
+                selon celui qu'emploie le dessin. */}
+            <p className="hint">
+              {catalogue.systems
+                .map((system) => `${system.name} : ${system.reference_line}`)
+                .join(" ; ")}
+              . {catalogue.system_rules[0] ?? ""}
+            </p>
 
             {chosen && chosen.sizes.length > 0 ? (
               <div className="row">
@@ -512,7 +521,7 @@ export function Welding() {
                     type="button"
                     className="chip"
                     aria-pressed={supplementary.includes(extra.id)}
-                    title={extra.meaning}
+                    title={extra.meaning ?? undefined}
                     onClick={() => toggle(extra.id)}
                   >
                     {supplementary.includes(extra.id) ? "✓ " : ""}

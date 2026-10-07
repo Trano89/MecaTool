@@ -133,11 +133,12 @@
     "group_label": "Composants",
     "status": "reserved",
     "sources": [
-      "ISO 2553",
+      "ISO 2553:2013",
+      "ISO 2553 — cotation",
       "ISO 4063",
       "ISO 5817"
     ],
-    "reserve": "ISO 2553 (symboles élémentaires et supplémentaires, cotes principales, côté de la flèche) : Donnée normative non vérifiée. À confronter à l'ISO 2553, ou à son relevé dans le recueil (chapitre soudage du VSM « Extrait de normes ») : symboles, cotes autorisées par symbole, convention de côté.",
+    "reserve": "ISO 2553 — cotation (famille de joint, cotes principales admises et forme double de chaque symbole élémentaire) : Donnée normative non vérifiée. À confronter à l'Article 5 de l'ISO 2553:2013 (cotation des soudures), présent dans l'exemplaire fourni mais non transcrit, et au tableau des symboles combinés pour les formes doubles.",
     "unavailable": null,
     "examples": [
       "135",

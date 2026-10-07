@@ -35,7 +35,12 @@ seul l'état « réserve » des trois domaines.
 
 - Numéros de procédés ISO 4063, avec leur hiérarchie. Un nom d'atelier (`MAG`,
   `TIG`) rend toutes ses lectures ; un numéro absent n'est pas dit inexistant.
-- Lecture d'un symbole ISO 2553 complet : symbole élémentaire et côté, cote
+- Symboles de l'**ISO 2553:2013 lue dans la norme** (`verified`) : vingt-deux
+  symboles élémentaires, six supplémentaires, systèmes A et B. Le recueil, qui
+  reproduit l'édition de 1992, n'est pas suivi. La cotation — famille, cotes
+  admises, forme double — est une surcouche non vérifiée, accrochée au tableau
+  par son numéro et recoupée avec la pleine pénétration que la norme déclare.
+- Lecture d'un symbole complet : symbole élémentaire et côté, cote
   (`a`, `z`, `s`, `d`, `c`), discontinuité `n × l (e)`, symboles
   supplémentaires, procédé, niveau de qualité. Restitution en clair, constats à
   l'appui. `z = a·√2` est calculé en entiers et annoncé arrondi.

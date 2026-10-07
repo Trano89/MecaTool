@@ -35,7 +35,7 @@ use mecatool_standards::iso2768::MeasureKind;
 use mecatool_standards::roulements::{BearingFamily, LoadRegime, MountingCase};
 use mecatool_standards::soudure::{
     ElementarySymbol, Imperfection, ProcessScope, QualityLevel, QualityVariable, SizeLetter,
-    SupplementarySymbol, WeldingProcess,
+    SupplementarySymbol, WeldSystem, WeldingProcess,
 };
 use mecatool_standards::surface::{
     LaySymbol, ProcessRoughness, ProfileParameter, RoughnessGrade, SymbolVariant,
@@ -399,6 +399,9 @@ pub fn surface_read(input: String) -> Result<SurfaceAnalysis, AppError> {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WeldingCatalogue {
     pub processes: Vec<WeldingProcess>,
+    /// Les systemes A et B, et les regles qui les separent.
+    pub systems: Vec<WeldSystem>,
+    pub system_rules: Vec<String>,
     pub sizes: Vec<SizeLetter>,
     pub elementary: Vec<ElementarySymbol>,
     pub supplementary: Vec<SupplementarySymbol>,
@@ -418,6 +421,8 @@ pub fn welding_catalogue() -> Result<WeldingCatalogue, AppError> {
     let provenance = engine.provenance();
     Ok(WeldingCatalogue {
         processes: engine.process_table().processes().to_vec(),
+        systems: symbols.systems().to_vec(),
+        system_rules: symbols.system_rules().to_vec(),
         sizes: symbols.sizes().to_vec(),
         elementary: symbols.elementary().to_vec(),
         supplementary: symbols.supplementary().to_vec(),

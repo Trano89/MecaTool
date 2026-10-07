@@ -55,9 +55,10 @@ data/
 │   ├── iso21920.indication.json                 symboles, stries, paramètres
 │   ├── iso1302-1992.classes-n.json              classes N1 à N12 (norme retirée)
 │   └── procedes.rugosite.json                   Ra par procédé, ordres de grandeur
-├── soudure/          non vérifiés
+├── soudure/          non vérifiés, sauf les symboles
 │   ├── iso4063.procedes.json                    numéros de procédés
-│   ├── iso2553.symboles.json                    symboles et cotes
+│   ├── iso2553-2013.symbols.json                symboles — VÉRIFIÉS sur la norme
+│   ├── iso2553-2013.cotation.json               cotation, surcouche non vérifiée
 │   └── iso5817.niveaux-qualite.json             limites des niveaux B, C, D
 └── visserie/         non vérifiés
     ├── iso261.filetages-metriques.json          diamètres et pas
@@ -165,7 +166,8 @@ nulle part.
 | Classes N ISO 1302:1992 | 🟠 non vérifié | N1 à N12 | à confronter : ISO 1302:1992 |
 | Rugosité par procédé | 🟠 non vérifié, non normatif | 22 procédés | à confronter : VSM 2022, p. 211 |
 | Procédés de soudage ISO 4063 | 🟠 non vérifié | 46 numéros, sélection | à confronter : ISO 4063 |
-| Symboles de soudure ISO 2553 | 🟠 non vérifié | 13 symboles élémentaires, 6 supplémentaires | à confronter : ISO 2553 |
+| Symboles de soudure ISO 2553:2013 | ✅ vérifié | 22 symboles élémentaires, 6 supplémentaires, systèmes A et B | ISO 2553:2013(F), tableaux 1 et 3, § 4.2 à 4.4 |
+| Cotation des symboles ISO 2553 | 🟠 non vérifié | famille, cotes admises et forme double des 22 symboles | à confronter : ISO 2553:2013, Article 5 |
 | Niveaux de qualité ISO 5817 | 🟠 non vérifié | 21 lignes de défauts de surface et de géométrie | à confronter : ISO 5817 |
 | Filetages ISO 261 | 🟠 non vérifié | M1 à M64, 1er et 2e choix | à confronter : ISO 261 |
 | Profil de base ISO 68-1 | 🟠 non vérifié | une règle : d2, d1, d3 en fractions de H | à confronter : ISO 68-1, et ISO 724 pour les valeurs |

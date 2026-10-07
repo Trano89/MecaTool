@@ -963,9 +963,21 @@ export interface SizeLetter {
   meaning: string;
 }
 
+/**
+ * Un symbole élémentaire.
+ *
+ * Deux natures de source dans un même objet : `number`, `name`,
+ * `full_penetration` et `multi_part` viennent de l'ISO 2553:2013 lue dans la
+ * norme ; `family`, `sizes` et `both_sides_name` d'une surcouche de cotation
+ * non vérifiée.
+ */
 export interface ElementarySymbol {
   id: string;
+  number: number;
   name: string;
+  full_penetration: boolean;
+  multi_part: boolean;
+  note: string | null;
   both_sides_name: string | null;
   family: JointFamily;
   sizes: string[];
@@ -973,9 +985,18 @@ export interface ElementarySymbol {
 
 export interface SupplementarySymbol {
   id: string;
+  number: number;
   name: string;
-  meaning: string;
+  meaning: string | null;
   families: JointFamily[];
+}
+
+/** Système A (double trait de référence) ou B (trait unique). */
+export interface WeldSystem {
+  id: string;
+  name: string;
+  reference_line: string;
+  note: string | null;
 }
 
 export interface QualityLevel {
@@ -1039,6 +1060,9 @@ export type ScopeVerdict =
 
 export interface WeldingCatalogue {
   processes: WeldingProcess[];
+  systems: WeldSystem[];
+  /** Les règles de la norme : les deux systèmes ne se mélangent pas. */
+  system_rules: string[];
   sizes: SizeLetter[];
   elementary: ElementarySymbol[];
   supplementary: SupplementarySymbol[];

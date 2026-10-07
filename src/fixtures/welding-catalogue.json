@@ -327,6 +327,25 @@
       ]
     }
   ],
+  "systems": [
+    {
+      "id": "A",
+      "name": "système A",
+      "reference_line": "double trait de référence : une ligne continue et une ligne interrompue",
+      "note": "Quand la seule exigence est d'indiquer qu'un assemblage doit être soudé, le double trait de référence n'est pas requis, puisqu'aucun détail n'est communiqué."
+    },
+    {
+      "id": "B",
+      "name": "système B",
+      "reference_line": "un seul trait de référence",
+      "note": null
+    }
+  ],
+  "system_rules": [
+    "Les systèmes A et B ne doivent pas être mélangés sur un même dessin.",
+    "Le dessin doit clairement indiquer quel système est utilisé, y compris les unités de mesure conformément à l'ISO 129-1.",
+    "Les articles, tableaux et figures suffixés « A » ou « B » ne s'appliquent respectivement qu'au système A ou au système B ; ceux sans suffixe s'appliquent aux deux."
+  ],
   "sizes": [
     {
       "letter": "a",
@@ -341,24 +360,28 @@
     {
       "letter": "s",
       "name": "épaisseur nominale de la soudure",
-      "meaning": "Profondeur de pénétration d'une soudure bout à bout. Sans cote, la pénétration est complète."
+      "meaning": "Profondeur de pénétration d'une soudure bout à bout, quand elle n'est pas complète."
     },
     {
       "letter": "d",
       "name": "diamètre",
-      "meaning": "Diamètre du point, du bouchon ou du trou."
+      "meaning": "Diamètre du point, du bouchon, du goujon ou du trou."
     },
     {
       "letter": "c",
       "name": "largeur",
-      "meaning": "Largeur de la soudure en ligne continue ou de l'entaille."
+      "meaning": "Largeur de la soudure à la molette ou de l'entaille."
     }
   ],
   "elementary": [
     {
       "id": "square_butt",
-      "name": "soudure bout à bout sur bords droits",
-      "both_sides_name": "soudure sur bords droits des deux côtés",
+      "number": 1,
+      "name": "soudure bout à bout à bords droits",
+      "full_penetration": true,
+      "multi_part": false,
+      "note": null,
+      "both_sides_name": "soudure bout à bout à bords droits des deux côtés",
       "family": "butt",
       "sizes": [
         "s"
@@ -366,17 +389,12 @@
     },
     {
       "id": "single_v",
-      "name": "soudure en V",
-      "both_sides_name": "soudure en X",
-      "family": "butt",
-      "sizes": [
-        "s"
-      ]
-    },
-    {
-      "id": "single_bevel",
-      "name": "soudure en demi-V",
-      "both_sides_name": "soudure en K",
+      "number": 2,
+      "name": "soudure bout à bout en V",
+      "full_penetration": true,
+      "multi_part": false,
+      "note": null,
+      "both_sides_name": "soudure bout à bout en V des deux côtés (dite en X)",
       "family": "butt",
       "sizes": [
         "s"
@@ -384,8 +402,38 @@
     },
     {
       "id": "single_y",
-      "name": "soudure en Y (V à méplat)",
-      "both_sides_name": "soudure en double Y",
+      "number": 3,
+      "name": "soudure bout à bout en Y",
+      "full_penetration": true,
+      "multi_part": false,
+      "note": null,
+      "both_sides_name": "soudure bout à bout en Y des deux côtés",
+      "family": "butt",
+      "sizes": [
+        "s"
+      ]
+    },
+    {
+      "id": "single_bevel",
+      "number": 4,
+      "name": "soudure bout à bout en demi V",
+      "full_penetration": true,
+      "multi_part": false,
+      "note": null,
+      "both_sides_name": "soudure bout à bout en demi V des deux côtés (dite en K)",
+      "family": "butt",
+      "sizes": [
+        "s"
+      ]
+    },
+    {
+      "id": "single_bevel_y",
+      "number": 5,
+      "name": "soudure bout à bout en demi Y",
+      "full_penetration": true,
+      "multi_part": false,
+      "note": null,
+      "both_sides_name": "soudure bout à bout en demi Y des deux côtés",
       "family": "butt",
       "sizes": [
         "s"
@@ -393,8 +441,12 @@
     },
     {
       "id": "single_u",
-      "name": "soudure en U",
-      "both_sides_name": "soudure en double U",
+      "number": 6,
+      "name": "soudure bout à bout en U",
+      "full_penetration": true,
+      "multi_part": false,
+      "note": null,
+      "both_sides_name": "soudure bout à bout en U des deux côtés",
       "family": "butt",
       "sizes": [
         "s"
@@ -402,16 +454,46 @@
     },
     {
       "id": "single_j",
-      "name": "soudure en J (demi-U)",
-      "both_sides_name": "soudure en double J",
+      "number": 7,
+      "name": "soudure bout à bout en J",
+      "full_penetration": true,
+      "multi_part": false,
+      "note": null,
+      "both_sides_name": "soudure bout à bout en J des deux côtés",
       "family": "butt",
       "sizes": [
         "s"
       ]
     },
     {
+      "id": "flare_v",
+      "number": 8,
+      "name": "soudure évasée en V",
+      "full_penetration": false,
+      "multi_part": false,
+      "note": null,
+      "both_sides_name": null,
+      "family": "other",
+      "sizes": []
+    },
+    {
+      "id": "flare_bevel",
+      "number": 9,
+      "name": "soudure évasée à chanfrein",
+      "full_penetration": false,
+      "multi_part": false,
+      "note": null,
+      "both_sides_name": null,
+      "family": "other",
+      "sizes": []
+    },
+    {
       "id": "fillet",
+      "number": 10,
       "name": "soudure d'angle",
+      "full_penetration": false,
+      "multi_part": false,
+      "note": null,
       "both_sides_name": "soudure d'angle des deux côtés",
       "family": "fillet",
       "sizes": [
@@ -420,15 +502,12 @@
       ]
     },
     {
-      "id": "backing_run",
-      "name": "reprise à l'envers",
-      "both_sides_name": null,
-      "family": "other",
-      "sizes": []
-    },
-    {
       "id": "plug",
-      "name": "soudure en bouchon ou en entaille",
+      "number": 11,
+      "name": "soudure en bouchons ou sur entailles",
+      "full_penetration": false,
+      "multi_part": false,
+      "note": null,
       "both_sides_name": null,
       "family": "other",
       "sizes": [
@@ -437,8 +516,12 @@
       ]
     },
     {
-      "id": "spot",
-      "name": "soudure par points",
+      "id": "resistance_spot",
+      "number": 12,
+      "name": "soudure par points par résistance",
+      "full_penetration": false,
+      "multi_part": false,
+      "note": "Y compris le bossage pour le système A.",
       "both_sides_name": null,
       "family": "other",
       "sizes": [
@@ -446,8 +529,25 @@
       ]
     },
     {
-      "id": "seam",
-      "name": "soudure en ligne continue",
+      "id": "fusion_spot",
+      "number": 13,
+      "name": "soudure par points par fusion",
+      "full_penetration": false,
+      "multi_part": false,
+      "note": "Et soudure par bossage pour le système B.",
+      "both_sides_name": null,
+      "family": "other",
+      "sizes": [
+        "d"
+      ]
+    },
+    {
+      "id": "resistance_seam",
+      "number": 14,
+      "name": "soudure à la molette par résistance",
+      "full_penetration": false,
+      "multi_part": false,
+      "note": null,
       "both_sides_name": null,
       "family": "other",
       "sizes": [
@@ -455,15 +555,97 @@
       ]
     },
     {
+      "id": "fusion_seam",
+      "number": 15,
+      "name": "soudure à la molette fusion",
+      "full_penetration": false,
+      "multi_part": false,
+      "note": null,
+      "both_sides_name": null,
+      "family": "other",
+      "sizes": [
+        "c"
+      ]
+    },
+    {
+      "id": "stud",
+      "number": 16,
+      "name": "soudure des goujons",
+      "full_penetration": false,
+      "multi_part": false,
+      "note": null,
+      "both_sides_name": null,
+      "family": "other",
+      "sizes": [
+        "d"
+      ]
+    },
+    {
+      "id": "steep_v",
+      "number": 17,
+      "name": "soudure bout à bout en V à flancs droits",
+      "full_penetration": true,
+      "multi_part": false,
+      "note": null,
+      "both_sides_name": "soudure bout à bout en V à flancs droits des deux côtés",
+      "family": "butt",
+      "sizes": [
+        "s"
+      ]
+    },
+    {
+      "id": "steep_bevel",
+      "number": 18,
+      "name": "soudure bout à bout en demi V à flancs droits",
+      "full_penetration": true,
+      "multi_part": false,
+      "note": null,
+      "both_sides_name": "soudure bout à bout en demi V à flancs droits des deux côtés",
+      "family": "butt",
+      "sizes": [
+        "s"
+      ]
+    },
+    {
       "id": "edge",
+      "number": 19,
       "name": "soudure sur chant",
+      "full_penetration": false,
+      "multi_part": true,
+      "note": null,
+      "both_sides_name": null,
+      "family": "other",
+      "sizes": []
+    },
+    {
+      "id": "flanged",
+      "number": 20,
+      "name": "soudure bout à bout à bords relevés, ou soudure en angle extérieure",
+      "full_penetration": false,
+      "multi_part": false,
+      "note": null,
       "both_sides_name": null,
       "family": "other",
       "sizes": []
     },
     {
       "id": "surfacing",
-      "name": "rechargement",
+      "number": 21,
+      "name": "soudure par rechargement",
+      "full_penetration": false,
+      "multi_part": true,
+      "note": null,
+      "both_sides_name": null,
+      "family": "other",
+      "sizes": []
+    },
+    {
+      "id": "transparency",
+      "number": 22,
+      "name": "soudure par transparence",
+      "full_penetration": false,
+      "multi_part": false,
+      "note": null,
       "both_sides_name": null,
       "family": "other",
       "sizes": []
@@ -472,16 +654,19 @@
   "supplementary": [
     {
       "id": "flush",
-      "name": "plat",
-      "meaning": "Surface de la soudure arasée, à fleur de la pièce.",
+      "number": 1,
+      "name": "plate — finition affleurée",
+      "meaning": "Une soudure qui nécessite une face affleurée ou convexe SANS finition après soudage se spécifie par ce symbole de contour. Une finition obtenue par traitement après soudage exige une information supplémentaire, par exemple une note dans la fourche.",
       "families": [
-        "butt"
+        "butt",
+        "fillet"
       ]
     },
     {
       "id": "convex",
+      "number": 2,
       "name": "convexe",
-      "meaning": "Surface de la soudure bombée.",
+      "meaning": null,
       "families": [
         "butt",
         "fillet"
@@ -489,33 +674,37 @@
     },
     {
       "id": "concave",
+      "number": 3,
       "name": "concave",
-      "meaning": "Surface de la soudure creuse.",
+      "meaning": null,
       "families": [
         "fillet"
       ]
     },
     {
       "id": "toes_blended",
-      "name": "raccordement progressif",
-      "meaning": "Bords de la soudure raccordés sans discontinuité au métal de base.",
+      "number": 4,
+      "name": "bords du cordon de soudure convenablement mouillés",
+      "meaning": "Les bords doivent être convenablement mouillés par soudure ou finition. Le procédé détaillé peut être spécifié par instruction ou par le DMOS.",
       "families": [
         "butt",
         "fillet"
       ]
     },
     {
-      "id": "permanent_backing",
-      "name": "support envers permanent (M)",
-      "meaning": "Une latte support reste en place après soudage.",
+      "id": "root_run",
+      "number": 5,
+      "name": "passe de racine, ou reprise à l'envers",
+      "meaning": "La passe de racine se réalise APRÈS une soudure bout à bout en V ; la reprise à l'envers, AVANT. La séquence des passes peut être indiquée par des traits de référence multiples, une note dans la fourche, ou un descriptif de mode opératoire.",
       "families": [
         "butt"
       ]
     },
     {
-      "id": "removable_backing",
-      "name": "support envers amovible (MR)",
-      "meaning": "Une latte support est retirée après soudage.",
+      "id": "root_reinforcement",
+      "number": 6,
+      "name": "surépaisseur spécifiée à la racine",
+      "meaning": "Pour le système B, également utilisé pour désigner les soudures bout à bout entre tôles à bords relevés et les soudures en angle extérieures.",
       "families": [
         "butt"
       ]
@@ -1840,19 +2029,39 @@
     "references": [
       {
         "id": "ISO 2553",
-        "edition": "",
+        "edition": "2013",
         "title": "Soudage et techniques connexes — Représentations symboliques sur les dessins — Joints soudés",
-        "scope": "symboles élémentaires et supplémentaires, cotes principales, côté de la flèche",
-        "source": "Saisi sans document normatif ouvert lors de la saisie, à partir des règles de lecture d'usage courant.",
+        "scope": "symboles élémentaires et supplémentaires, et les deux systèmes de représentation",
+        "source": "ISO 2553:2013(F), quatrième édition 2013-12-15. Exemplaire sous licence fourni par l'utilisateur.",
         "verification": {
-          "state": "unverified",
-          "pending": "À confronter à l'ISO 2553, ou à son relevé dans le recueil (chapitre soudage du VSM « Extrait de normes ») : symboles, cotes autorisées par symbole, convention de côté."
+          "state": "verified",
+          "against": "ISO 2553:2013(F), Tableau 1 (symboles élémentaires, 22 entrées), Tableau 3 (symboles supplémentaires, 6 entrées) et § 4.2 à 4.4 — lus dans la norme elle-même, couche de texte",
+          "on": "2026-09-13"
         },
         "notes": [
-          "SÉLECTION. Seuls les symboles élémentaires les plus courants sont embarqués. Un symbole absent n'est pas un symbole invalide.",
-          "La norme connaît deux systèmes de lecture du côté. Système A : le symbole porté sur la ligne de référence continue désigne le côté de la flèche, celui porté sur la ligne d'identification en traits interrompus désigne l'autre côté. Système B : le symbole sous la ligne de référence désigne le côté de la flèche, au-dessus l'autre côté. MecaTool lit le côté tel que vous le déclarez ; il ne déduit pas le système d'un dessin.",
-          "En l'absence de cote, une soudure bout à bout s'entend à pleine pénétration. Une soudure d'angle, elle, se cote : sans épaisseur de gorge ni côté, rien ne dit ce qu'il faut déposer.",
-          "Le préfixe d'une cote d'angle se lit sans ambiguïté : a est l'épaisseur de gorge, z la longueur du côté. Les deux sont liées, pour un cordon à côtés égaux et à 90°, par z = a·√2 — une relation géométrique, pas une valeur de la norme."
+          "PREMIÈRE SOURCE PRIMAIRE du domaine soudure. Contrairement aux données ISO 1101 et ISO 15, celle-ci ne vient pas d'un recueil : elle est lue dans la norme.",
+          "Le recueil VSM 2014 reproduit une édition PÉRIMÉE. Son tableau 135/1 porte quinze symboles numérotés 1 à 13 puis 18 et 19, sous des désignations différentes (« Soudure en I », « Soudure sur bords relevés »). Il cite SN EN 22553, c'est-à-dire l'ISO 2553:1992. La quatrième édition de 2013 a renuméroté et renommé : elle compte vingt-deux symboles élémentaires. MecaTool suit la norme, pas le recueil.",
+          "La numérotation qui semblait « sauter » de 13 à 18 dans le recueil n'était donc pas une lacune de transcription : c'est celle de l'édition antérieure.",
+          "Le changement majeur de 2013 est l'existence de DEUX systèmes, A et B. Ils ne se distinguent pas par les symboles mais par la façon de désigner le côté de la soudure, et la norme interdit de les mélanger.",
+          "Les symboles sont des tracés, non des caractères : la plupart n'ont pas d'équivalent Unicode fidèle. Ce jeu de données porte le vocabulaire — numéros, désignations, règles — et non les glyphes. Forcer un caractère approchant ferait afficher un symbole faux, ce qui est pire que pas de symbole.",
+          "Les dimensions des soudures (a, z, n, l, e) relèvent de l'Article 5 de la norme, non transcrit ici."
+        ]
+      },
+      {
+        "id": "ISO 2553 — cotation",
+        "edition": "",
+        "title": "Soudage et techniques connexes — Représentations symboliques sur les dessins — cotation des soudures",
+        "scope": "famille de joint, cotes principales admises et forme double de chaque symbole élémentaire",
+        "source": "Surcouche saisie sans document ouvert, indexée sur les numéros du tableau 1 de l'ISO 2553:2013 lu dans la norme. Elle ne reprend ni ne modifie ce tableau : elle lui ajoute ce que sa transcription ne couvre pas.",
+        "verification": {
+          "state": "unverified",
+          "pending": "À confronter à l'Article 5 de l'ISO 2553:2013 (cotation des soudures), présent dans l'exemplaire fourni mais non transcrit, et au tableau des symboles combinés pour les formes doubles."
+        },
+        "notes": [
+          "DEUX JEUX, DEUX ÉTATS. Les numéros, désignations, symboles supplémentaires et systèmes A et B viennent du jeu iso2553-2013.symbols, vérifié sur la norme. Cette surcouche n'ajoute que la cotation : quelle famille, quelles lettres de cote, quel nom pour la forme double. Elle ne remplace aucun mot du jeu vérifié.",
+          "Le chargement vérifie que la surcouche couvre exactement les numéros du tableau vérifié, et que la famille « bout à bout » coïncide avec les symboles que la norme déclare à pleine pénétration par défaut (1 à 7, 17 et 18). Un désaccord ferait tomber le chargement.",
+          "Les noms des formes doubles (« dite en X », « dite en K ») sont des noms d'usage, donnés entre parenthèses après la désignation de la norme.",
+          "Les soudures évasées, par points, à la molette, des goujons, sur chant, à bords relevés, par rechargement et par transparence sont rangées hors des familles bout à bout et d'angle : MecaTool ne leur applique ni les cotes a, z, s ni les limites de l'ISO 5817."
         ]
       },
       {
@@ -1893,7 +2102,7 @@
     ]
   },
   "warnings": [
-    "ISO 2553 (symboles élémentaires et supplémentaires, cotes principales, côté de la flèche) : Donnée normative non vérifiée. À confronter à l'ISO 2553, ou à son relevé dans le recueil (chapitre soudage du VSM « Extrait de normes ») : symboles, cotes autorisées par symbole, convention de côté.",
+    "ISO 2553 — cotation (famille de joint, cotes principales admises et forme double de chaque symbole élémentaire) : Donnée normative non vérifiée. À confronter à l'Article 5 de l'ISO 2553:2013 (cotation des soudures), présent dans l'exemplaire fourni mais non transcrit, et au tableau des symboles combinés pour les formes doubles.",
     "ISO 4063 (numéros de référence des procédés les plus courants, et leur hiérarchie) : Donnée normative non vérifiée. À confronter numéro par numéro à l'ISO 4063, ou à son relevé dans le recueil (chapitre soudage du VSM « Extrait de normes »).",
     "ISO 5817 (limites des défauts de surface et de géométrie du joint, pour les niveaux B, C et D) : Donnée normative non vérifiée. À confronter ligne par ligne au tableau des limites de l'ISO 5817, ou à son relevé dans le recueil (chapitre soudage du VSM « Extrait de normes »). Ne pas s'en servir pour réceptionner un ouvrage avant cette confrontation."
   ]

@@ -37,9 +37,11 @@ Voir [docs/domaines.md](docs/domaines.md).
 >
 > 🟠 **États de surface, soudure et visserie : données non vérifiées.** Ces trois
 > domaines fonctionnent, mais leurs données ont été saisies sans document
-> normatif ouvert. Elles portent l'état `unverified`, que chaque écran affiche
-> avant toute saisie, et chaque fichier dit contre quoi le confronter. Ne pas
-> s'en servir pour réceptionner un ouvrage avant cette confrontation.
+> normatif ouvert — à une exception près : le tableau des symboles de soudure,
+> lu dans l'ISO 2553:2013 elle-même. Les autres portent l'état `unverified`, que
+> chaque écran affiche avant toute saisie, et chaque fichier dit contre quoi le
+> confronter. Ne pas s'en servir pour réceptionner un ouvrage avant cette
+> confrontation.
 
 ## Les domaines
 
@@ -57,7 +59,7 @@ qu'un jeu qui changerait de statut déplacerait le domaine sans que personne ait
 | Tolérancement géométrique | Que dit ce cadre, que lui manque-t-il ? | ISO 1101 | ⚠️ recueil |
 | **Roulements** | **Quel alésage, quelle tolérance de portée ?** | **ISO 15 + fabricants** | **⚠️ recueil + recommandation** |
 | **États de surface** | **Que dit cette indication, quel procédé l'obtient ?** | **ISO 21920-1, ISO 1302:1992, ordres de grandeur d'atelier** | **🟠 non vérifiée** |
-| **Soudure** | **Que dit ce symbole, que tolère son niveau de qualité ?** | **ISO 2553, 4063, 5817** | **🟠 non vérifiée** |
+| **Soudure** | **Que dit ce symbole, que tolère son niveau de qualité ?** | **ISO 2553:2013 + cotation, 4063, 5817** | **✅ symboles confrontés + 🟠 le reste non vérifié** |
 | **Visserie** | **Quel filetage, quel trou de passage ?** | **ISO 261, 68-1, 273, 898-1 + ISO 286** | **🟠 non vérifiée + ✅ confrontée** |
 | Matières | Quelle nuance, quelles propriétés ? | — | ⏳ |
 
@@ -188,7 +190,13 @@ périmètre : symboles, sens des stries et paramètres d'amplitude, communs aux
 deux, sont embarqués ; longueurs de base, filtres et règle d'acceptation par
 défaut, qui les distinguent, ne le sont pas — et le raisonnement le dit.
 
-**Soudure.** Un numéro de procédé se lit avec sa hiérarchie (`135` relève de
+**Soudure.** Les symboles viennent de l'ISO 2553:2013 **lue dans la norme** —
+vingt-deux symboles élémentaires, six supplémentaires, les systèmes A et B — et
+non du recueil, qui reproduit l'édition de 1992. Seule leur cotation (famille,
+cotes admises, forme double) est une surcouche non vérifiée, accrochée au
+tableau par son numéro ; le chargement vérifie que sa famille « bout à bout »
+coïncide avec les symboles que la norme déclare à pleine pénétration. Un numéro
+de procédé se lit avec sa hiérarchie (`135` relève de
 `13`, qui relève de `1`) ; un nom d'atelier rend toutes ses lectures (`MAG` →
 135, 136, 138). Un symbole complet se restitue phrase par phrase, avec ce qui
 cloche : une cote `s` sur une soudure d'angle, une soudure alternée d'un seul
@@ -367,7 +375,7 @@ Chacun de ces refus est couvert par un test.
 ## Développement
 
 ```bash
-cargo test --workspace        # 440 tests : moteur
+cargo test --workspace        # 445 tests : moteur
 cd src-tauri && cargo test    #  36 tests : frontiere Tauri + echantillons
 npm test                      # 103 tests : interface
 cargo clippy --workspace --all-targets

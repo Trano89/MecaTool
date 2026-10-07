@@ -243,6 +243,7 @@ impl WeldingEngine {
     pub fn provenance(&self) -> Provenance {
         Provenance::new()
             .with(self.symbols.standard().clone())
+            .with(self.symbols.cotation_standard().clone())
             .with(self.processes.standard().clone())
             .with(self.quality.standard().clone())
     }
@@ -407,12 +408,12 @@ impl WeldingEngine {
                 }
                 sentences.push(sentence);
             }
-            (None, JointFamily::Butt) => {
+            (None, _) if symbol.full_penetration => {
                 sentences.push("Sans cote : pénétration complète.".into());
                 findings.push(Finding::new(
                     "full_penetration",
                     Severity::Note,
-                    "Aucune cote s : la soudure bout à bout s'entend à pleine pénétration.",
+                    format!("Aucune cote s. {}", self.symbols.full_penetration_rule()),
                 ));
             }
             (None, JointFamily::Fillet) => findings.push(Finding::new(
@@ -421,7 +422,7 @@ impl WeldingEngine {
                 "Une soudure d'angle se cote : sans épaisseur de gorge a ni côté z, rien ne dit \
                  ce qu'il faut déposer.",
             )),
-            (None, JointFamily::Other) => {}
+            (None, _) => {}
         }
 
         // La discontinuite.
@@ -458,11 +459,12 @@ impl WeldingEngine {
         // Les symboles supplementaires.
         let supplementary = self.supplementary(request, &symbol, &mut findings)?;
         for extra in &supplementary {
-            sentences.push(format!(
-                "{} : {}",
-                capitalise(&extra.name),
-                lowercase_first(&extra.meaning)
-            ));
+            sentences.push(match &extra.meaning {
+                Some(meaning) => {
+                    format!("{} : {}", capitalise(&extra.name), lowercase_first(meaning))
+                }
+                None => format!("{}.", capitalise(&extra.name)),
+            });
         }
         if request.all_around {
             sentences.push("Sur tout le pourtour de la pièce.".into());
@@ -910,8 +912,7 @@ impl WeldingEngine {
             }
         }
 
-        // Une surface ne peut pas etre a la fois plate, convexe et concave ;
-        // un support ne peut pas etre a la fois permanent et amovible.
+        // Une surface ne peut pas etre a la fois plate, convexe et concave.
         let has = |id: &str| chosen.iter().any(|c| c.id == id);
         let shapes = ["flush", "convex", "concave"]
             .iter()
@@ -922,13 +923,6 @@ impl WeldingEngine {
                 "contradictory_shape",
                 Severity::Error,
                 "Une surface de soudure est plate, convexe ou concave : pas plusieurs à la fois.",
-            ));
-        }
-        if has("permanent_backing") && has("removable_backing") {
-            findings.push(Finding::new(
-                "contradictory_backing",
-                Severity::Error,
-                "Un support envers est permanent ou amovible : pas les deux.",
             ));
         }
         Ok(chosen)
@@ -984,7 +978,7 @@ impl WeldingEngine {
     ) -> Vec<ReasoningStep> {
         let mut steps = vec![
             ReasoningStep::new("Symbole élémentaire")
-                .with_expression(symbol.name.clone())
+                .with_expression(format!("n° {} — {}", symbol.number, symbol.name))
                 .with_value(match symbol.family {
                     JointFamily::Butt => "soudure bout à bout : se cote en s",
                     JointFamily::Fillet => "soudure d'angle : se cote en a ou en z",
@@ -992,10 +986,20 @@ impl WeldingEngine {
                 }),
             ReasoningStep::new("Côté")
                 .with_expression(side.label_fr())
-                .with_value(
-                    "Lu tel que déclaré. Système A : ligne continue = côté flèche, ligne \
-                     interrompue = autre côté. Système B : sous la ligne = côté flèche.",
-                ),
+                .with_value(format!(
+                    "Lu tel que déclaré : le côté se lit selon le système du dessin. {} {}",
+                    self.symbols
+                        .systems()
+                        .iter()
+                        .map(|s| format!("{} : {}.", capitalise(&s.name), s.reference_line))
+                        .collect::<Vec<_>>()
+                        .join(" "),
+                    self.symbols
+                        .system_rules()
+                        .first()
+                        .cloned()
+                        .unwrap_or_default()
+                )),
         ];
         if let Some(size) = size {
             steps.push(
@@ -1448,7 +1452,14 @@ mod tests {
             .iter()
             .any(|f| f.code == "full_penetration"));
         // Et un V des deux cotes se nomme X.
-        assert!(reading.designation.starts_with("soudure en X"));
+        assert!(reading.designation.contains("dite en X"));
+        // La regle vient de la norme, mot pour mot.
+        let finding = reading
+            .findings
+            .iter()
+            .find(|f| f.code == "full_penetration")
+            .unwrap();
+        assert!(finding.message.contains("sauf spécification contraire"));
     }
 
     #[test]
@@ -1678,7 +1689,7 @@ mod tests {
     #[test]
     fn une_soudure_par_points_ne_recoit_pas_les_limites() {
         let request = WeldRequest {
-            symbol: "spot".into(),
+            symbol: "resistance_spot".into(),
             level: Some("C".into()),
             ..WeldRequest::default()
         };
@@ -1719,9 +1730,24 @@ mod tests {
 
     #[test]
     fn la_reserve_suit_chaque_lecture() {
+        // Quatre sources, dont une verifiee : le tableau des symboles. Les trois
+        // autres portent leur reserve.
         let reading = engine().read_weld(&fillet_a5()).unwrap();
+        assert_eq!(reading.provenance.references.len(), 4);
         assert_eq!(reading.conclusion.warnings.len(), 3);
         assert!(!reading.provenance.is_fully_verified());
+    }
+
+    #[test]
+    fn le_nom_du_symbole_est_celui_de_la_norme() {
+        let reading = engine()
+            .read_weld(&WeldRequest {
+                symbol: "single_v".into(),
+                ..WeldRequest::default()
+            })
+            .unwrap();
+        assert_eq!(reading.symbol.name, "soudure bout à bout en V");
+        assert_eq!(reading.symbol.number, 2);
     }
 
     #[test]

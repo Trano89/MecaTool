@@ -359,15 +359,26 @@ describe("échantillons du moteur", () => {
 });
 
 describe("échantillons des domaines états de surface, soudure et visserie", () => {
-  it("ne présentent aucune de leurs sources comme vérifiée", () => {
-    // Saisies sans document ouvert : chaque catalogue porte une réserve par
-    // source, et aucune ne se dit confrontée à la norme.
+  it("portent une réserve par source non vérifiée, et aucune autre", () => {
+    // Une réserve par source saisie sans document ouvert. Le tableau des
+    // symboles de soudure, lu dans l'ISO 2553:2013, n'en porte pas.
     for (const catalogue of [surfaceCatalogue, weldingCatalogue, fastenerCatalogue]) {
-      expect(catalogue.warnings.length).toBe(catalogue.provenance.references.length);
+      const unverified = catalogue.provenance.references.filter(
+        (reference) => reference.verification.state === "unverified",
+      );
+      expect(catalogue.warnings.length).toBe(unverified.length);
       for (const reference of catalogue.provenance.references) {
-        expect(reference.verification.state).toBe("unverified");
+        expect(["unverified", "verified"]).toContain(reference.verification.state);
       }
     }
+    const verified = weldingCatalogue.provenance.references.filter(
+      (reference) => reference.verification.state === "verified",
+    );
+    expect(verified.map((reference) => `${reference.id}:${reference.edition}`)).toEqual([
+      "ISO 2553:2013",
+    ]);
+    expect(weldingCatalogue.elementary).toHaveLength(22);
+    expect(weldingCatalogue.systems.map((system) => system.id)).toEqual(["A", "B"]);
   });
 
   it("décrit une indication de surface et son graphique", () => {

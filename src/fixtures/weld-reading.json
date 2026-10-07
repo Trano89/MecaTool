@@ -2,7 +2,11 @@
   "designation": "a5 soudure d'angle · côté de la flèche · 3 × 100 (50) · 135 / ISO 5817-C",
   "symbol": {
     "id": "fillet",
+    "number": 10,
     "name": "soudure d'angle",
+    "full_penetration": false,
+    "multi_part": false,
+    "note": null,
     "both_sides_name": "soudure d'angle des deux côtés",
     "family": "fillet",
     "sizes": [
@@ -15,7 +19,7 @@
     "Soudure d'angle — côté de la flèche.",
     "Épaisseur de gorge a = 5 mm — soit z ≈ 7.07 mm (longueur du côté), pour un cordon à côtés égaux et à 90°.",
     "Discontinue : 3 éléments de 100 mm, espacés de 50 mm — 300 mm soudés au total.",
-    "Convexe : surface de la soudure bombée.",
+    "Convexe.",
     "Procédé 135 : soudage MAG avec fil-électrode plein.",
     "Niveau de qualité C (intermédiaire) selon l'ISO 5817."
   ],
@@ -43,8 +47,9 @@
   "supplementary": [
     {
       "id": "convex",
+      "number": 2,
       "name": "convexe",
-      "meaning": "Surface de la soudure bombée.",
+      "meaning": null,
       "families": [
         "butt",
         "fillet"
@@ -319,17 +324,17 @@
   "findings": [],
   "conclusion": {
     "verdict": "caution",
-    "detail": "Soudure d'angle — côté de la flèche. Épaisseur de gorge a = 5 mm — soit z ≈ 7.07 mm (longueur du côté), pour un cordon à côtés égaux et à 90°. Discontinue : 3 éléments de 100 mm, espacés de 50 mm — 300 mm soudés au total. Convexe : surface de la soudure bombée. Procédé 135 : soudage MAG avec fil-électrode plein. Niveau de qualité C (intermédiaire) selon l'ISO 5817.",
+    "detail": "Soudure d'angle — côté de la flèche. Épaisseur de gorge a = 5 mm — soit z ≈ 7.07 mm (longueur du côté), pour un cordon à côtés égaux et à 90°. Discontinue : 3 éléments de 100 mm, espacés de 50 mm — 300 mm soudés au total. Convexe. Procédé 135 : soudage MAG avec fil-électrode plein. Niveau de qualité C (intermédiaire) selon l'ISO 5817.",
     "why": [
       {
         "label": "Symbole élémentaire",
-        "expression": "soudure d'angle",
+        "expression": "n° 10 — soudure d'angle",
         "value": "soudure d'angle : se cote en a ou en z"
       },
       {
         "label": "Côté",
         "expression": "côté de la flèche",
-        "value": "Lu tel que déclaré. Système A : ligne continue = côté flèche, ligne interrompue = autre côté. Système B : sous la ligne = côté flèche."
+        "value": "Lu tel que déclaré : le côté se lit selon le système du dessin. Système A : double trait de référence : une ligne continue et une ligne interrompue. Système B : un seul trait de référence. Les systèmes A et B ne doivent pas être mélangés sur un même dessin."
       },
       {
         "label": "Cote principale",
@@ -348,7 +353,7 @@
       }
     ],
     "warnings": [
-      "ISO 2553 (symboles élémentaires et supplémentaires, cotes principales, côté de la flèche) : Donnée normative non vérifiée. À confronter à l'ISO 2553, ou à son relevé dans le recueil (chapitre soudage du VSM « Extrait de normes ») : symboles, cotes autorisées par symbole, convention de côté.",
+      "ISO 2553 — cotation (famille de joint, cotes principales admises et forme double de chaque symbole élémentaire) : Donnée normative non vérifiée. À confronter à l'Article 5 de l'ISO 2553:2013 (cotation des soudures), présent dans l'exemplaire fourni mais non transcrit, et au tableau des symboles combinés pour les formes doubles.",
       "ISO 4063 (numéros de référence des procédés les plus courants, et leur hiérarchie) : Donnée normative non vérifiée. À confronter numéro par numéro à l'ISO 4063, ou à son relevé dans le recueil (chapitre soudage du VSM « Extrait de normes »).",
       "ISO 5817 (limites des défauts de surface et de géométrie du joint, pour les niveaux B, C et D) : Donnée normative non vérifiée. À confronter ligne par ligne au tableau des limites de l'ISO 5817, ou à son relevé dans le recueil (chapitre soudage du VSM « Extrait de normes »). Ne pas s'en servir pour réceptionner un ouvrage avant cette confrontation."
     ]
@@ -357,19 +362,39 @@
     "references": [
       {
         "id": "ISO 2553",
-        "edition": "",
+        "edition": "2013",
         "title": "Soudage et techniques connexes — Représentations symboliques sur les dessins — Joints soudés",
-        "scope": "symboles élémentaires et supplémentaires, cotes principales, côté de la flèche",
-        "source": "Saisi sans document normatif ouvert lors de la saisie, à partir des règles de lecture d'usage courant.",
+        "scope": "symboles élémentaires et supplémentaires, et les deux systèmes de représentation",
+        "source": "ISO 2553:2013(F), quatrième édition 2013-12-15. Exemplaire sous licence fourni par l'utilisateur.",
         "verification": {
-          "state": "unverified",
-          "pending": "À confronter à l'ISO 2553, ou à son relevé dans le recueil (chapitre soudage du VSM « Extrait de normes ») : symboles, cotes autorisées par symbole, convention de côté."
+          "state": "verified",
+          "against": "ISO 2553:2013(F), Tableau 1 (symboles élémentaires, 22 entrées), Tableau 3 (symboles supplémentaires, 6 entrées) et § 4.2 à 4.4 — lus dans la norme elle-même, couche de texte",
+          "on": "2026-09-13"
         },
         "notes": [
-          "SÉLECTION. Seuls les symboles élémentaires les plus courants sont embarqués. Un symbole absent n'est pas un symbole invalide.",
-          "La norme connaît deux systèmes de lecture du côté. Système A : le symbole porté sur la ligne de référence continue désigne le côté de la flèche, celui porté sur la ligne d'identification en traits interrompus désigne l'autre côté. Système B : le symbole sous la ligne de référence désigne le côté de la flèche, au-dessus l'autre côté. MecaTool lit le côté tel que vous le déclarez ; il ne déduit pas le système d'un dessin.",
-          "En l'absence de cote, une soudure bout à bout s'entend à pleine pénétration. Une soudure d'angle, elle, se cote : sans épaisseur de gorge ni côté, rien ne dit ce qu'il faut déposer.",
-          "Le préfixe d'une cote d'angle se lit sans ambiguïté : a est l'épaisseur de gorge, z la longueur du côté. Les deux sont liées, pour un cordon à côtés égaux et à 90°, par z = a·√2 — une relation géométrique, pas une valeur de la norme."
+          "PREMIÈRE SOURCE PRIMAIRE du domaine soudure. Contrairement aux données ISO 1101 et ISO 15, celle-ci ne vient pas d'un recueil : elle est lue dans la norme.",
+          "Le recueil VSM 2014 reproduit une édition PÉRIMÉE. Son tableau 135/1 porte quinze symboles numérotés 1 à 13 puis 18 et 19, sous des désignations différentes (« Soudure en I », « Soudure sur bords relevés »). Il cite SN EN 22553, c'est-à-dire l'ISO 2553:1992. La quatrième édition de 2013 a renuméroté et renommé : elle compte vingt-deux symboles élémentaires. MecaTool suit la norme, pas le recueil.",
+          "La numérotation qui semblait « sauter » de 13 à 18 dans le recueil n'était donc pas une lacune de transcription : c'est celle de l'édition antérieure.",
+          "Le changement majeur de 2013 est l'existence de DEUX systèmes, A et B. Ils ne se distinguent pas par les symboles mais par la façon de désigner le côté de la soudure, et la norme interdit de les mélanger.",
+          "Les symboles sont des tracés, non des caractères : la plupart n'ont pas d'équivalent Unicode fidèle. Ce jeu de données porte le vocabulaire — numéros, désignations, règles — et non les glyphes. Forcer un caractère approchant ferait afficher un symbole faux, ce qui est pire que pas de symbole.",
+          "Les dimensions des soudures (a, z, n, l, e) relèvent de l'Article 5 de la norme, non transcrit ici."
+        ]
+      },
+      {
+        "id": "ISO 2553 — cotation",
+        "edition": "",
+        "title": "Soudage et techniques connexes — Représentations symboliques sur les dessins — cotation des soudures",
+        "scope": "famille de joint, cotes principales admises et forme double de chaque symbole élémentaire",
+        "source": "Surcouche saisie sans document ouvert, indexée sur les numéros du tableau 1 de l'ISO 2553:2013 lu dans la norme. Elle ne reprend ni ne modifie ce tableau : elle lui ajoute ce que sa transcription ne couvre pas.",
+        "verification": {
+          "state": "unverified",
+          "pending": "À confronter à l'Article 5 de l'ISO 2553:2013 (cotation des soudures), présent dans l'exemplaire fourni mais non transcrit, et au tableau des symboles combinés pour les formes doubles."
+        },
+        "notes": [
+          "DEUX JEUX, DEUX ÉTATS. Les numéros, désignations, symboles supplémentaires et systèmes A et B viennent du jeu iso2553-2013.symbols, vérifié sur la norme. Cette surcouche n'ajoute que la cotation : quelle famille, quelles lettres de cote, quel nom pour la forme double. Elle ne remplace aucun mot du jeu vérifié.",
+          "Le chargement vérifie que la surcouche couvre exactement les numéros du tableau vérifié, et que la famille « bout à bout » coïncide avec les symboles que la norme déclare à pleine pénétration par défaut (1 à 7, 17 et 18). Un désaccord ferait tomber le chargement.",
+          "Les noms des formes doubles (« dite en X », « dite en K ») sont des noms d'usage, donnés entre parenthèses après la désignation de la norme.",
+          "Les soudures évasées, par points, à la molette, des goujons, sur chant, à bords relevés, par rechargement et par transparence sont rangées hors des familles bout à bout et d'angle : MecaTool ne leur applique ni les cotes a, z, s ni les limites de l'ISO 5817."
         ]
       },
       {
